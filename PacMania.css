@@ -1,0 +1,17 @@
+	
+#CenterLargeText{
+	position: absolute;
+	top: 40%;
+	width: 100%;
+	text-align: center;
+	
+	z-index: 1;
+	font-size:75px;
+	color:rgb(243, 123, 3);
+	text-shadow:
+		-1.5px -1.5px 0 #000,
+		1.5px -1.5px 0 #000,
+		-1.5px 1.5px 0 #000,
+		-1.5px 1.5px 0 #000;
+	/*wpshout.com/quick-guides/create-text-outline-css/*/
+	}
