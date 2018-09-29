@@ -304,7 +304,7 @@ PacMania.on('connection',function(socket){
 		 mapNodes.push(node); 
 		 //Node Forty Two
 		 connection = [41,43,54];
-		 node = {x:4, y:4, Connectednodes:connection,
+		 node = {x:8, y:4, Connectednodes:connection,
 							North:-1, East:43,South:54,West:41};
 		 mapNodes.push(node);
 		 //Node Forty Three
@@ -313,9 +313,9 @@ PacMania.on('connection',function(socket){
 							North:34, East:-1,South:55,West:42};
 		 mapNodes.push(node);
 		 //Node Forty Four
-		 connection = [44,60];
+		 connection = [45,60];
 		 node = {x:-10, y:2, Connectednodes:connection,
-							North:-1, East:44,South:60,West:-1};
+							North:-1, East:45,South:60,West:-1};
 		 mapNodes.push(node);
 		 //Node Forty Five
 		 connection = [35,44,46];
@@ -358,9 +358,9 @@ PacMania.on('connection',function(socket){
 							North:30, East:-1,South:58,West:51};
 		 mapNodes.push(node);
 		 //Node Fifty Three
-		 connection = [48,57];
+		 connection = [54,59];
 		 node = {x:6, y:2, Connectednodes:connection,
-							North:-1, East:48,South:57,West:-1};
+							North:-1, East:54,South:59,West:-1};
 		 mapNodes.push(node);
 		 //Node Fifty Four
 		 connection = [42,53,55,67];
@@ -508,13 +508,13 @@ PacMania.on('connection',function(socket){
 							North:70, East:83,South:-1,West:81};
 		 mapNodes.push(node); 
 		 //Node Eighty Three
-		 connection = [73,82,85];
+		 connection = [72,82,85];
 		 node = {x:0, y:-4, Connectednodes:connection,
-							North:66, East:-1,South:84,West:76};
+							North:72, East:-1,South:85,West:82};
 		 mapNodes.push(node);
 		 //Node Eighty Four
 		 connection = [77,94,120];
-		 node = {x:0, y:-4, Connectednodes:connection,
+		 node = {x:6, y:-4, Connectednodes:connection,
 							North:77, East:120,South:94,West:-1};
 		 mapNodes.push(node);
 		 //Node Eighty Five
@@ -658,9 +658,9 @@ PacMania.on('connection',function(socket){
 							North:100, East:113,South:-1,West:111};
 		 mapNodes.push(node); 
 		 //Node One Hundred Thirteen
-		 connection = [112,113];
+		 connection = [106, 112];
 		 node = {x:-3, y:-10, Connectednodes:connection,
-							North:112, East:-1,South:-1,West:113};
+							North:106, East:-1,South:-1,West:112};
 		 mapNodes.push(node); 
 		 //Node One Hundred Fourteen
 		 connection = [109,115];
@@ -751,7 +751,6 @@ PacMania.on('connection',function(socket){
 		 
 	 }
 	 
-	 
 	 //Start Game
      socket.on('Initiate Game Render', function(data) {
 		 if(gameRender == null){			 
@@ -759,15 +758,17 @@ PacMania.on('connection',function(socket){
 			 console.log("Nodes: "+mapNodes.length);
 			 if(mapNodes.length <= 1)
 				 loadNodesMaze1();
-			 else console.log("Maze 1 already loaded");
+			 else
+				 console.log("Maze 1 already loaded");
 			 
-			 addGhost();
+			 if(ghostsArray.length < 2)
+				 for ( var x=0; x<9; x++)
+					 addGhost();
+			 
 			 console.log(ghostsArray);
 			 console.log("Nodes: "+mapNodes.length);
 			  
-			 gameRender = setInterval( UpdateGameState, 15);
-			 console.log("start node: "+ghostsArray[0].lastNode+" x:"+mapNodes[ ghostsArray[0].lastNode ].x+"  y:"+mapNodes[ ghostsArray[0].lastNode ].y);
-			 console.log("next node: "+ghostsArray[0].nextNode+" x:"+mapNodes[ ghostsArray[0].nextNode ].x+"  y:"+mapNodes[ ghostsArray[0].nextNode ].y);
+			 gameRender = setInterval( UpdateGameState, 25);
 		 }
 		 else{
 			 console.log("Ended the Game State");
@@ -776,69 +777,104 @@ PacMania.on('connection',function(socket){
 		 } 
      });
 	 
+	 socket.on('Add Ghost', function(data) {
+		 
+		// addGhost();
+		 console.log("Ghosts #: "+ghostsArray.length);
+		 //PacMania.emit('Add Ghost');
+	 });
 	 
 	 function UpdateGameState(){
-		 //console.log("Step:"+step);
-		 //console.log("x:"+ghostsArray[0].x +"  " +"y:"+ghostsArray[0].y );
-		 //console.log("x':"+mapNodes[ ghostsArray[0].nextNode ].x +"  " +"y':"+mapNodes[ ghostsArray[0].nextNode ].y );
-		 step++;		 
-		 
-		 //Difference in X Axis
-		 if(ghostsArray[0].x < mapNodes[ ghostsArray[0].nextNode ].x)
-			 ghostsArray[0].x = (ghostsArray[0].x*100 + 1)/100;
-		 else if(ghostsArray[0].x > mapNodes[ ghostsArray[0].nextNode ].x)
-			 ghostsArray[0].x = (ghostsArray[0].x*100 - 1)/100;
-		 //Difference in Y Axis
-		 else if(ghostsArray[0].y < mapNodes[ ghostsArray[0].nextNode ].y)
-			 ghostsArray[0].y = (ghostsArray[0].y*100 + 1)/100;
-		 else if(ghostsArray[0].y > mapNodes[ ghostsArray[0].nextNode ].y)
-			 ghostsArray[0].y = (ghostsArray[0].y*100 - 1)/100;
-		 else{
-			 var temp = ghostsArray[0].lastNode;
-			 while(temp ==  ghostsArray[0].lastNode){
-				 var temp = mapNodes[ ghostsArray[0].nextNode ].Connectednodes[ Math.floor( Math.random()*mapNodes[ ghostsArray[0].nextNode ].Connectednodes.length ) ];
+		 //step++;		 
+		 var pacmanDistanceTravelDivsor = 20;
+		 //Loops for Ghosts
+		 for(var ghostCount =0; ghostCount<ghostsArray.length;ghostCount++){
+			 //Difference in X Axis
+			 if(ghostsArray[ghostCount].x < mapNodes[ ghostsArray[ghostCount].nextNode ].x)
+				 ghostsArray[ghostCount].x = (ghostsArray[ghostCount].x*pacmanDistanceTravelDivsor + 1)/pacmanDistanceTravelDivsor;
+			 else if(ghostsArray[ghostCount].x > mapNodes[ ghostsArray[ghostCount].nextNode ].x)
+				 ghostsArray[ghostCount].x = (ghostsArray[ghostCount].x*pacmanDistanceTravelDivsor - 1)/pacmanDistanceTravelDivsor;
+			 //Difference in Y Axis
+			 else if(ghostsArray[ghostCount].y < mapNodes[ ghostsArray[ghostCount].nextNode ].y)
+				 ghostsArray[ghostCount].y = (ghostsArray[ghostCount].y*pacmanDistanceTravelDivsor + 1)/pacmanDistanceTravelDivsor;
+			 else if(ghostsArray[ghostCount].y > mapNodes[ ghostsArray[ghostCount].nextNode ].y)
+				 ghostsArray[ghostCount].y = (ghostsArray[ghostCount].y*pacmanDistanceTravelDivsor - 1)/pacmanDistanceTravelDivsor;
+			 else if(ghostsArray[ghostCount].x == mapNodes[ ghostsArray[ghostCount].nextNode ].x && ghostsArray[ghostCount].y == mapNodes[ ghostsArray[ghostCount].nextNode ].y ){ 
+				 // When the ghosts arrives at the nextNode location
+				 //For the portals
+				 //A117 -> A118
+				 if(ghostsArray[ghostCount].nextNode == 117){
+					 ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+					 ghostsArray[ghostCount].lastNode = 117;
+					 ghostsArray[ghostCount].nextNode = 118;
+					 ghostsArray[ghostCount].x = -4;
+					 ghostsArray[ghostCount].y = -7;
+				 }
+				 //A118 -> A117
+				 else if(ghostsArray[ghostCount].nextNode == 118){
+					 ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+					 ghostsArray[ghostCount].lastNode = 118;
+					 ghostsArray[ghostCount].nextNode = 117;
+					 ghostsArray[ghostCount].x = 4;
+					 ghostsArray[ghostCount].y = 8;
+				 }
 				 
-				 if((temp !=  ghostsArray[0].lastNode || temp != ghostsArray[0].nextNode)&& temp !=-1){
-					 ghostsArray[0].oldNode = ghostsArray[0].lastNode;
-					 ghostsArray[0].lastNode = ghostsArray[0].nextNode;
-					 ghostsArray[0].nextNode = temp;
-					 try{
-						 if(mapNodes[ ghostsArray[0].nextNode ].x == null)
-							 console.log("**"+mapNodes[ ghostsArray[0].nextNode ].x)
-						 console.log("next node: "+ghostsArray[0].nextNode+ " x:" +mapNodes[ ghostsArray[0].nextNode ].x + "  y:"+mapNodes[ ghostsArray[0].nextNode ].y);
-					 }
-					 catch(e){
-						 console.log("Temp was equal to "+temp);
-						 console.log("Next Node: "+ghostsArray[0].nextNode);
-						 console.log(mapNodes[ ghostsArray[0].nextNode ]);
-					 }
-				 }				
-					else console.log("still searching...");
+				 //B119 -> B120
+				 else if(ghostsArray[ghostCount].nextNode == 119){
+					 ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+					 ghostsArray[ghostCount].lastNode = 119;
+					 ghostsArray[ghostCount].nextNode = 120;
+					 ghostsArray[ghostCount].x = 10;
+					 ghostsArray[ghostCount].y = -4;
+				 }
+				 //B120 -> B119
+				 else if(ghostsArray[ghostCount].nextNode == 120){
+					 ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+					 ghostsArray[ghostCount].lastNode = 120;
+					 ghostsArray[ghostCount].nextNode = 119;
+					 ghostsArray[ghostCount].x = -10;
+					 ghostsArray[ghostCount].y = 4;
+				 }
+				 
+				 
+				 var temp = ghostsArray[ghostCount].lastNode;
+				 while(temp ==  ghostsArray[ghostCount].lastNode){
+					 var temp = mapNodes[ ghostsArray[ghostCount].nextNode ].Connectednodes[ Math.floor( Math.random()*mapNodes[ ghostsArray[ghostCount].nextNode ].Connectednodes.length ) ];
+					 
+					 if((temp !=  ghostsArray[ghostCount].lastNode && temp != ghostsArray[ghostCount].nextNode)&& temp !=-1){
+						 ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+						 ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
+						 ghostsArray[ghostCount].nextNode = temp;
+						 try{
+							 console.log("next node: "+ghostsArray[ghostCount].nextNode+ " x:" +mapNodes[ ghostsArray[ghostCount].nextNode ].x + "  y:"+mapNodes[ ghostsArray[ghostCount].nextNode ].y);
+						 }
+						 catch(e){
+							 console.log("Temp was equal to "+temp+" for ghost "+ ghostCount);
+							 console.log("Old Node: "+ghostsArray[ghostCount].oldNode);
+							 console.log("Last Node: "+ghostsArray[ghostCount].lastNode);
+							 console.log("Next Node: "+ghostsArray[ghostCount].nextNode);
+							 console.log(mapNodes[ ghostsArray[ghostCount].nextNode ]);
+						 }
+					 }				
+					 //else console.log("still searching...");
+				 }
 			 }
-			 
-			 
-			 
-			 
-			 
 		 }
-			 
 		 
-		 PacMania.emit('Update Game State', 
-						 data={
-							 //Ghost
-								 GhostList : ghostsArray
-						 });
+		 PacMania.emit('Update Game State', data={	 GhostList : ghostsArray	 });
 	 }
 	 
 	 //Add a Ghost
 	 function addGhost () {
 		 var g = {
 			 //Ghost Object
-			  x : -10,
-			  y : 10,
-			  lastNode : 0,
-			  nextNode : 1,
+			 id:11,
+			  x : -0,
+			  y : 1,
+			  lastNode : 122,
+			  nextNode : 50,
 			  oldNode: -1,
+			  type: "Blinky",
 			  status : null
 		 };
 		 ghostsArray.push (	g	); 
