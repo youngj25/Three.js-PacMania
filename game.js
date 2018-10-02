@@ -11,8 +11,9 @@ var clickable = [];
 var ghost,ghost2,ghost3,ghost4,ghost5,ghost6,ghost7,ghost8,ghost9;
 var Outline, Board, gameMaze = [];
 var Width = 0, Height = 0;
-var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -1;
+var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -1,ySpriteShifter= 0.21;
 var backgroundButton, ghostButton; //Background functions
+var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [];
 
 function init() {
 	 // create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -61,47 +62,225 @@ function init() {
 		 
 		 for(var x=0; x<data.GhostList.length; x++){
 			 if(x == 0){
-				 if(scene.getObjectByName('Ghost1') == null)
-					 scene.add(ghost);
+				 if(scene.getObjectByName('Ghost1') == null){
+					 ghost =  new THREE.Sprite(BlinkyTexture[0]);		
+					 ghost.scale.set(1.75,1.75,1);
+					 ghost.position.z = -2; //reset to the z-axis of -2
+					 ghost.name = 'Ghost1';
+					 scene.add(ghost);		
+				 }
+				 //Blinky
+				 if(data.GhostList[x].type == "Blinky"){
+					 //Blinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[0];	
+						 else
+							 Texture =  BlinkyTexture[1];	
+					 }
+					 //Blinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[2];	
+						 else
+							 Texture =  BlinkyTexture[3];	
+					 }
+					 //Blinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[4];	
+						 else
+							 Texture =  BlinkyTexture[5];	
+					 }
+					 //Blinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[6];	
+						 else
+							 Texture =  BlinkyTexture[7];	
+					 }
+					 
+					 ghost.name = 'Ghost1';
+					 ghost.scale.set(1.75,1.75,1);
+				 }
+				 //Pinky
+				 else if(data.GhostList[x].type == "Pinky"){
+					 //Pinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[0];	
+						 else
+							 Texture =  PinkyTexture[1];	
+					 }
+					 //Pinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[2];	
+						 else
+							 Texture =  PinkyTexture[3];	
+					 }
+					 //Pinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[4];	
+						 else
+							 Texture =  PinkyTexture[5];	
+					 }
+					 //Pinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[6];	
+						 else
+							 Texture =  PinkyTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Inky"){
+					 //Inky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[0];	
+						 else
+							 Texture =  InkyTexture[1];	
+					 }
+					 //Inky East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[2];	
+						 else
+							 Texture =  InkyTexture[3];	
+					 }
+					 //Inky South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[4];	
+						 else
+							 Texture =  InkyTexture[5];	
+					 }
+					 //Inky West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[6];	
+						 else
+							 Texture =  InkyTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Clyde"){
+					 
+				 }
+				 else if(data.GhostList[x].type == "Courage")
+					 ghost.material.color = new THREE.Color( "rgb(200,200,50)");
+			 
+				 ghost.material =  Texture;	
 				 ghost.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost.position.y = data.GhostList[x].y*yMultiplier+yShifter;
-				// gameMaze[0].block.position.x = data.GhostList[x].x*xMultiplier;
-				 //gameMaze[0].block.position.y =data.GhostList[x].y*yMultiplier+yShifter-0.75;
 			 
 			}
-			else  if(x == 1){
-				 if(scene.getObjectByName('Ghost2') == null)
+			else if(x == 1){
+				 if(scene.getObjectByName('Ghost2') == null){
 					 scene.add(ghost2);
+				 
+					 if(data.GhostList[x].type == "Blinky")
+						 ghost2.material.color = new THREE.Color( "rgb(255,50,50)");
+					 else if(data.GhostList[x].type == "Pinky")
+						 ghost2.material.color = new THREE.Color( "rgb(255,162,210)");
+					 else if(data.GhostList[x].type == "Inky")
+						 ghost2.material.color = new THREE.Color( "rgb(0,255,255)");
+					 else if(data.GhostList[x].type == "Clyde")
+						 ghost2.material.color = new THREE.Color( "rgb(255,170,0)");
+					 else if(data.GhostList[x].type == "Courage")
+						 ghost2.material.color = new THREE.Color( "rgb(200,200,50)");
+				 }
 				 ghost2.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost2.position.y = data.GhostList[x].y*yMultiplier+yShifter;
 			}
 			else  if(x == 2){
-				 if(scene.getObjectByName('Ghost3') == null)
+				 if(scene.getObjectByName('Ghost3') == null){
 					 scene.add(ghost3);
+				 
+					 if(data.GhostList[x].type == "Blinky")
+						 ghost3.material.color = new THREE.Color( "rgb(255,50,50)");
+					 else if(data.GhostList[x].type == "Pinky")
+						 ghost3.material.color = new THREE.Color( "rgb(255,162,210)");
+					 else if(data.GhostList[x].type == "Inky")
+						 ghost3.material.color = new THREE.Color( "rgb(0,255,255)");
+					 else if(data.GhostList[x].type == "Clyde")
+						 ghost3.material.color = new THREE.Color( "rgb(255,170,0)");
+					 else if(data.GhostList[x].type == "Courage")
+						 ghost3.material.color = new THREE.Color( "rgb(200,200,50)");
+				 }
 				 ghost3.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost3.position.y = data.GhostList[x].y*yMultiplier+yShifter;
-			}
+			 }
 			else  if(x == 3){
-				 if(scene.getObjectByName('Ghost4') == null)
+				 if(scene.getObjectByName('Ghost4') == null){
 					 scene.add(ghost4);
+					 
+					 if(data.GhostList[x].type == "Blinky")
+						 ghost4.material.color = new THREE.Color( "rgb(255,50,50)");
+					 else if(data.GhostList[x].type == "Pinky")
+						 ghost4.material.color = new THREE.Color( "rgb(255,162,210)");
+					 else if(data.GhostList[x].type == "Inky")
+						 ghost4.material.color = new THREE.Color( "rgb(0,255,255)");
+					 else if(data.GhostList[x].type == "Clyde")
+						 ghost4.material.color = new THREE.Color( "rgb(255,170,0)");
+					 else if(data.GhostList[x].type == "Courage")
+						 ghost4.material.color = new THREE.Color( "rgb(200,200,50)");
+				 }				 
+				 
 				 ghost4.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost4.position.y = data.GhostList[x].y*yMultiplier+yShifter;
 			}
 			else  if(x == 4){
-				 if(scene.getObjectByName('Ghost5') == null)
+				 if(scene.getObjectByName('Ghost5') == null){
 					 scene.add(ghost5);
+				 
+					 if(data.GhostList[x].type == "Blinky")
+						 ghost5.material.color = new THREE.Color( "rgb(255,50,50)");
+					 else if(data.GhostList[x].type == "Pinky")
+						 ghost5.material.color = new THREE.Color( "rgb(255,162,210)");
+					 else if(data.GhostList[x].type == "Inky")
+						 ghost5.material.color = new THREE.Color( "rgb(0,255,255)");
+					 else if(data.GhostList[x].type == "Clyde")
+						 ghost5.material.color = new THREE.Color( "rgb(255,170,0)");
+					 else if(data.GhostList[x].type == "Courage")
+						 ghost5.material.color = new THREE.Color( "rgb(200,200,50)");
+				 }
 				 ghost5.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost5.position.y = data.GhostList[x].y*yMultiplier+yShifter;
 			}
 			else  if(x == 5){
-				 if(scene.getObjectByName('Ghost6') == null)
+				 if(scene.getObjectByName('Ghost6') == null){
 					 scene.add(ghost6);
+				 
+					 if(data.GhostList[x].type == "Blinky")
+						 ghost6.material.color = new THREE.Color( "rgb(255,50,50)");
+					 else if(data.GhostList[x].type == "Pinky")
+						 ghost6.material.color = new THREE.Color( "rgb(255,162,210)");
+					 else if(data.GhostList[x].type == "Inky")
+						 ghost6.material.color = new THREE.Color( "rgb(0,255,255)");
+					 else if(data.GhostList[x].type == "Clyde")
+						 ghost6.material.color = new THREE.Color( "rgb(255,170,0)");
+					 else if(data.GhostList[x].type == "Courage")
+						 ghost6.material.color = new THREE.Color( "rgb(200,200,50)");
+				 }
 				 ghost6.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost6.position.y = data.GhostList[x].y*yMultiplier+yShifter;
 			}
 			else  if(x == 6){
-				 if(scene.getObjectByName('Ghost7') == null)
+				 if(scene.getObjectByName('Ghost7') == null){
 					 scene.add(ghost7);
+				 
+					 if(data.GhostList[x].type == "Blinky")
+						 ghost7.material.color = new THREE.Color( "rgb(255,50,50)");
+					 else if(data.GhostList[x].type == "Pinky")
+						 ghost7.material.color = new THREE.Color( "rgb(255,162,210)");
+					 else if(data.GhostList[x].type == "Inky")
+						 ghost7.material.color = new THREE.Color( "rgb(0,255,255)");
+					 else if(data.GhostList[x].type == "Clyde")
+						 ghost7.material.color = new THREE.Color( "rgb(255,170,0)");
+					 else if(data.GhostList[x].type == "Courage")
+						 ghost7.material.color = new THREE.Color( "rgb(200,200,50)");
+				 }
 				 ghost7.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost7.position.y = data.GhostList[x].y*yMultiplier+yShifter;
 			}
@@ -235,7 +414,7 @@ function init() {
 		 var ghostGeometry = new THREE.PlaneGeometry(1.5,1.5,0);
 		 var Material = new THREE.MeshBasicMaterial({color: 0xffffff}); //RGB
 		 ghost = new THREE.Mesh(ghostGeometry, Material);
-		 scene.add(ghost);
+		 //scene.add(ghost);
 		 ghost.position.set(0,0,-2); //xyz
 		 ghost.name = 'Ghost1';
 		 
@@ -278,8 +457,168 @@ function init() {
 		 ghost9 = new THREE.Mesh(ghostGeometry, Material);
 		 ghost9.position.set(0,0,-2); //xyz
 		 ghost9.name = 'Ghost9';
+		 
+		 
+		 //Sprites
+		 var loader = new THREE.TextureLoader();
+		 loader.crossOrigin = true;
+		 
+		 //Blinky Sprites
+		 //Blinky North
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 BlinkyTexture.push(BlinkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 BlinkyTexture.push(BlinkyText);
+		 //Blinky East
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 BlinkyTexture.push(BlinkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 BlinkyTexture.push(BlinkyText);
+		 //Blinky South
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 BlinkyTexture.push(BlinkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 BlinkyTexture.push(BlinkyText);
+		 //Blinky West
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 BlinkyTexture.push(BlinkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 BlinkyTexture.push(BlinkyText);
+		 
+		 //Pinky Sprites
+		 //Pinky North
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 PinkyTexture.push(PinkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 PinkyTexture.push(PinkyText);
+		 //Pinky East
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 PinkyTexture.push(PinkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 PinkyTexture.push(PinkyText);
+		 //Pinky South
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 PinkyTexture.push(PinkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 PinkyTexture.push(PinkyText);
+		 //Pinky West
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 PinkyTexture.push(PinkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 PinkyTexture.push(PinkyText);
+		 
+		 //Inky Sprites
+		 //Inky North
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 InkyTexture.push(InkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 InkyTexture.push(InkyText);
+		 //Inky East
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 InkyTexture.push(InkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 InkyTexture.push(InkyText);
+		 //Inky South
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 InkyTexture.push(InkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 InkyTexture.push(InkyText);
+		 //Inky West
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 InkyTexture.push(InkyText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 InkyTexture.push(InkyText);
+		 
+		 //Clyde Sprites
+		 //Clyde North
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 ClydeTexture.push(ClydeText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 ClydeTexture.push(ClydeText);
+		 //Clyde East
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 ClydeTexture.push(ClydeText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 ClydeTexture.push(ClydeText);
+		 //Clyde South
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 ClydeTexture.push(ClydeText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 ClydeTexture.push(ClydeText);
+		 //Clyde West
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 ClydeTexture.push(ClydeText);
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 ClydeTexture.push(ClydeText);
+		 
+		 
+		 
 	 }
-	
+	 	
 	 function load_Board(){
 		 
 		 //Load Board
