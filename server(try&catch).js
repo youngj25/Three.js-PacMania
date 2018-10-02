@@ -81,15 +81,15 @@ io.sockets.on('connection',
 //New Pac-man Server
 var PacMania = io.of('/pacMania'), PacSocketList=[];
 
-
 PacMania.on('connection',function(socket){
 	 console.log("Pac-Mania Served has been accessed");
 	 console.log("The client's ID:" + socket.id);
 	 
 	 PacSocketList.push(socket);
 	  
-	 var mapNodes = [], gameRender = null,step=0;
-	 var ghostsArray = [], pacArray = [];
+	 var mapNodes = [], gameRender = null, step=0;
+	 var ghostsArray = [], pacArray = []; 
+	 var ghostsStatus = "Scatter", ghostsCountDown=100;
 	  
 	 function loadNodesMaze1(){
 		 //Node Zero
@@ -238,9 +238,9 @@ PacMania.on('connection',function(socket){
 							North:11, East:29,South:36,West:-1};
 		 mapNodes.push(node);
 		 //Node Twenty Nine
-		 connection = [13, 28, 37];
+		 connection = [20, 28, 37];
 		 node = {x:-1, y:6, Connectednodes:connection,
-							North:13, East:-1,South:37,West:28};
+							North:20, East:-1,South:37,West:28};
 		 mapNodes.push(node);
 		 //Node Thirty
 		 connection = [21, 31, 39];
@@ -761,12 +761,20 @@ PacMania.on('connection',function(socket){
 			 else
 				 console.log("Maze 1 already loaded");
 			 
-			 if(ghostsArray.length < 2)
-				 for ( var x=0; x<9; x++)
-					 addGhost();
+			 if(ghostsArray.length < 2){
+				 //addGhost("Blinky");			 
+				 addGhost("Random");			 
+				 addGhost("Inky");			 
+				 addGhost("Clyde");			 
+				 addGhost("Random");			 
+				 addGhost("Random");			 
+				 addGhost("Random");			 
+				 addGhost("Random");			 
+			 }
+				 
 			 
-			 console.log(ghostsArray);
-			 console.log("Nodes: "+mapNodes.length);
+			 //console.log(ghostsArray);
+			 //console.log("Nodes: "+mapNodes.length);
 			  
 			 gameRender = setInterval( UpdateGameState, 25);
 		 }
@@ -785,20 +793,33 @@ PacMania.on('connection',function(socket){
 	 });
 	 
 	 function UpdateGameState(){
-		 //step++;		 
-		 var pacmanDistanceTravelDivsor = 20;
+		 //step++;
+		  var pacmanDistanceTravelDivsor = 20;
+		 
+		 
+		 
+		 //Ghost
+		 ghostStatusUpdate();
 		 //Loops for Ghosts
 		 for(var ghostCount =0; ghostCount<ghostsArray.length;ghostCount++){
 			 //Difference in X Axis
-			 if(ghostsArray[ghostCount].x < mapNodes[ ghostsArray[ghostCount].nextNode ].x)
+			 if(ghostsArray[ghostCount].x < mapNodes[ ghostsArray[ghostCount].nextNode ].x){
 				 ghostsArray[ghostCount].x = (ghostsArray[ghostCount].x*pacmanDistanceTravelDivsor + 1)/pacmanDistanceTravelDivsor;
-			 else if(ghostsArray[ghostCount].x > mapNodes[ ghostsArray[ghostCount].nextNode ].x)
+				 ghostsArray[ghostCount].directionPhase += 1;
+			 }
+			 else if(ghostsArray[ghostCount].x > mapNodes[ ghostsArray[ghostCount].nextNode ].x){
 				 ghostsArray[ghostCount].x = (ghostsArray[ghostCount].x*pacmanDistanceTravelDivsor - 1)/pacmanDistanceTravelDivsor;
+				 ghostsArray[ghostCount].directionPhase += 1;
+			 }
 			 //Difference in Y Axis
-			 else if(ghostsArray[ghostCount].y < mapNodes[ ghostsArray[ghostCount].nextNode ].y)
+			 else if(ghostsArray[ghostCount].y < mapNodes[ ghostsArray[ghostCount].nextNode ].y){
 				 ghostsArray[ghostCount].y = (ghostsArray[ghostCount].y*pacmanDistanceTravelDivsor + 1)/pacmanDistanceTravelDivsor;
-			 else if(ghostsArray[ghostCount].y > mapNodes[ ghostsArray[ghostCount].nextNode ].y)
+				 ghostsArray[ghostCount].directionPhase += 1;
+			 }
+			 else if(ghostsArray[ghostCount].y > mapNodes[ ghostsArray[ghostCount].nextNode ].y){
 				 ghostsArray[ghostCount].y = (ghostsArray[ghostCount].y*pacmanDistanceTravelDivsor - 1)/pacmanDistanceTravelDivsor;
+				 ghostsArray[ghostCount].directionPhase += 1;
+			 }
 			 else if(ghostsArray[ghostCount].x == mapNodes[ ghostsArray[ghostCount].nextNode ].x && ghostsArray[ghostCount].y == mapNodes[ ghostsArray[ghostCount].nextNode ].y ){ 
 				 // When the ghosts arrives at the nextNode location
 				 //For the portals
@@ -817,8 +838,7 @@ PacMania.on('connection',function(socket){
 					 ghostsArray[ghostCount].nextNode = 117;
 					 ghostsArray[ghostCount].x = 4;
 					 ghostsArray[ghostCount].y = 8;
-				 }
-				 
+				 }				 
 				 //B119 -> B120
 				 else if(ghostsArray[ghostCount].nextNode == 119){
 					 ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
@@ -836,53 +856,115 @@ PacMania.on('connection',function(socket){
 					 ghostsArray[ghostCount].y = 4;
 				 }
 				 
-				 
-				 var temp = ghostsArray[ghostCount].lastNode;
-				 while(temp ==  ghostsArray[ghostCount].lastNode){
-					 var temp = mapNodes[ ghostsArray[ghostCount].nextNode ].Connectednodes[ Math.floor( Math.random()*mapNodes[ ghostsArray[ghostCount].nextNode ].Connectednodes.length ) ];
+				 //Next Node Selected
+				 try{
+					 ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+					 ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
 					 
-					 if((temp !=  ghostsArray[ghostCount].lastNode && temp != ghostsArray[ghostCount].nextNode)&& temp !=-1){
-						 ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
-						 ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
-						 ghostsArray[ghostCount].nextNode = temp;
-						 try{
-							 console.log("next node: "+ghostsArray[ghostCount].nextNode+ " x:" +mapNodes[ ghostsArray[ghostCount].nextNode ].x + "  y:"+mapNodes[ ghostsArray[ghostCount].nextNode ].y);
+					 if(ghostsStatus == "Scatter")
+						ghostsArray[ghostCount].nextNode = loadRandomNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode );
+					 
+					 //console.log("next node: "+ghostsArray[ghostCount].nextNode+ " x:" +mapNodes[ ghostsArray[ghostCount].nextNode ].x + "  y:"+mapNodes[ ghostsArray[ghostCount].nextNode ].y);
+				 
+					 //If the direction had change reset the Direction and DirectionPhase
+					 if(mapNodes[ ghostsArray[ghostCount].lastNode ].North == ghostsArray[ghostCount].nextNode && ghostsArray[ghostCount].direction != 'North'){
+							 ghostsArray[ghostCount].direction = 'North';
+							 ghostsArray[ghostCount].directionPhase = 0;
 						 }
-						 catch(e){
-							 console.log("Temp was equal to "+temp+" for ghost "+ ghostCount);
-							 console.log("Old Node: "+ghostsArray[ghostCount].oldNode);
-							 console.log("Last Node: "+ghostsArray[ghostCount].lastNode);
-							 console.log("Next Node: "+ghostsArray[ghostCount].nextNode);
-							 console.log(mapNodes[ ghostsArray[ghostCount].nextNode ]);
+					 else if(mapNodes[ ghostsArray[ghostCount].lastNode ].East == ghostsArray[ghostCount].nextNode && ghostsArray[ghostCount].direction != 'East'){
+							 ghostsArray[ghostCount].direction = 'East';
+							 ghostsArray[ghostCount].directionPhase = 0;
 						 }
-					 }				
-					 //else console.log("still searching...");
+					 else if(mapNodes[ ghostsArray[ghostCount].lastNode ].South == ghostsArray[ghostCount].nextNode && ghostsArray[ghostCount].direction != 'South'){
+							 ghostsArray[ghostCount].direction = 'South';
+							 ghostsArray[ghostCount].directionPhase = 0;
+						 }
+					 else if(mapNodes[ ghostsArray[ghostCount].lastNode ].West == ghostsArray[ghostCount].nextNode && ghostsArray[ghostCount].direction != 'West'){
+							 ghostsArray[ghostCount].direction = 'West';
+							 ghostsArray[ghostCount].directionPhase = 0;
+						 }
+					 else ghostsArray[ghostCount].directionPhase += 1;
+					
+				 }
+				 catch(e){
+					 console.log("Temp was equal to "+temp+" for ghost "+ ghostCount);
+					 console.log("Old Node: "+ghostsArray[ghostCount].oldNode);
+					 console.log("Last Node: "+ghostsArray[ghostCount].lastNode);
+					 console.log("Next Node: "+ghostsArray[ghostCount].nextNode);
+					 console.log(mapNodes[ ghostsArray[ghostCount].nextNode ]);
 				 }
 			 }
+			 
+				 if(ghostsArray[ghostCount].directionPhase % 10 == 0)
+					 ghostsArray[ghostCount].directionSprite=  (ghostsArray[ghostCount].directionSprite+1)%2; 
+					 
 		 }
+		 
+		 
 		 
 		 PacMania.emit('Update Game State', data={	 GhostList : ghostsArray	 });
 	 }
 	 
 	 //Add a Ghost
-	 function addGhost () {
+	 function addGhost (ghost) {
+		 
+		 if(ghost == "Random"){
+			 var random = Math.floor(Math.random()*4);
+			 
+			 if(random == 0) ghost = "Blinky";
+			 else if(random == 1) ghost = "Pinky";
+			 else if(random == 2) ghost = "Inky";
+			 else if(random == 3) ghost = "Clyde";
+		 }
+			 
+		 
 		 var g = {
 			 //Ghost Object
 			 id:11,
-			  x : -0,
-			  y : 1,
-			  lastNode : 122,
-			  nextNode : 50,
-			  oldNode: -1,
-			  type: "Blinky",
-			  status : null
+			 x : -0,
+			 y : 1,
+			 lastNode : 122,
+			 nextNode : 50,
+			 oldNode: -1,
+			 type: ghost,
+			 direction:'North',
+			 directionShiftCount:0,
+			 directionSprite:0,
+			 status : null
 		 };
+			 
 		 ghostsArray.push (	g	); 
 	 }
+	 
+	 //Ghost Status/Updates
+	 function ghostStatusUpdate(){
+		 ghostsCountDown--;
+		 
+		 if(ghostsCountDown <= 0)
+			 ghostsCountDown = 100;
+		 
+	 }
+	 	 
+	 //Loads a random node	
+	 function loadRandomNode(lastNode,nextNode){		
+		 var nodeNumber = mapNodes[ nextNode ].Connectednodes[ Math.floor( Math.random()*mapNodes[ nextNode ].Connectednodes.length ) ];
+			
+		 while(nodeNumber == lastNode || nodeNumber == nextNode || nodeNumber == -1)
+			 nodeNumber = mapNodes[ nextNode ].Connectednodes[ Math.floor( Math.random()*mapNodes[ nextNode ].Connectednodes.length ) ];
+		 
+		 return nodeNumber;
+	 }
+	
+	 //
+	 
+	
 	 
 	 //Leaving the PacMania Game
      socket.on('disconnect', function() {
 		 console.log(socket.id+" has Disconnected!");
+		 console.log("Ended the Game State");
+		 clearInterval(gameRender);
+		 gameRender = null;
     });
  
 });
@@ -1173,7 +1255,6 @@ Pong.on('connection', function(socket){
     });
  
  });
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////
