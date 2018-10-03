@@ -9,6 +9,7 @@ var clickable = [];
 
 //PacMania
 var ghost,ghost2,ghost3,ghost4,ghost5,ghost6,ghost7,ghost8,ghost9;
+var pac;
 var Outline, Board, gameMaze = [];
 var Width = 0, Height = 0;
 var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -1,ySpriteShifter= 0.21;
@@ -58,8 +59,7 @@ function init() {
 	 //socket = io.connect('ec2-34-205-146-82.compute-1.amazonaws.com:9000');
 	
 	 PacMania.on('Update Game State', function(data){
-		 //console.log(data)
-		 
+		 //Update the Ghost Sprites
 		 for(var x=0; x<data.GhostList.length; x++){
 			 if(x == 0){
 				 if(scene.getObjectByName('Ghost1') == null){
@@ -68,6 +68,145 @@ function init() {
 					 ghost.position.z = -2; //reset to the z-axis of -2
 					 ghost.name = 'Ghost1';
 					 scene.add(ghost);		
+				 }
+				 //Blinky
+				 if(data.GhostList[x].type == "Blinky"){
+					 //Blinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[0];	
+						 else
+							 Texture =  BlinkyTexture[1];	
+					 }
+					 //Blinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[2];	
+						 else
+							 Texture =  BlinkyTexture[3];	
+					 }
+					 //Blinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[4];	
+						 else
+							 Texture =  BlinkyTexture[5];	
+					 }
+					 //Blinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[6];	
+						 else
+							 Texture =  BlinkyTexture[7];	
+					 }
+				 }
+				 //Pinky
+				 else if(data.GhostList[x].type == "Pinky"){
+					 //Pinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[0];	
+						 else
+							 Texture =  PinkyTexture[1];	
+					 }
+					 //Pinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[2];	
+						 else
+							 Texture =  PinkyTexture[3];	
+					 }
+					 //Pinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[4];	
+						 else
+							 Texture =  PinkyTexture[5];	
+					 }
+					 //Pinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[6];	
+						 else
+							 Texture =  PinkyTexture[7];	
+					 }
+				 }
+				 //Inky
+				 else if(data.GhostList[x].type == "Inky"){
+					 //Inky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[0];	
+						 else
+							 Texture =  InkyTexture[1];	
+					 }
+					 //Inky East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[2];	
+						 else
+							 Texture =  InkyTexture[3];	
+					 }
+					 //Inky South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[4];	
+						 else
+							 Texture =  InkyTexture[5];	
+					 }
+					 //Inky West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[6];	
+						 else
+							 Texture =  InkyTexture[7];	
+					 }
+				 }
+				 //Clyde
+				 else if(data.GhostList[x].type == "Clyde"){
+					 //Clyde North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[0];	
+						 else
+							 Texture =  ClydeTexture[1];	
+					 }
+					 //Clyde East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[2];	
+						 else
+							 Texture =  ClydeTexture[3];	
+					 }
+					 //Clyde South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[4];	
+						 else
+							 Texture =  ClydeTexture[5];	
+					 }
+					 //Clyde West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[6];	
+						 else
+							 Texture =  ClydeTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Courage")
+					 ghost.material.color = new THREE.Color( "rgb(200,200,50)");
+			 
+				 ghost.material =  Texture;	
+				 ghost.position.x = data.GhostList[x].x*xMultiplier;
+				 ghost.position.y = data.GhostList[x].y*yMultiplier+yShifter;
+			 }
+			 else if(x == 1){
+				 if(scene.getObjectByName('Ghost2') == null){
+					 ghost2 =  new THREE.Sprite(BlinkyTexture[0]);		
+					 ghost2.scale.set(1.75,1.75,1);
+					 ghost2.position.z = -2; //reset to the z-axis of -2
+					 ghost2.name = 'Ghost2';
+					 scene.add(ghost2);		
 				 }
 				 //Blinky
 				 if(data.GhostList[x].type == "Blinky"){
@@ -134,6 +273,7 @@ function init() {
 							 Texture =  PinkyTexture[7];	
 					 }
 				 }
+				 //Inky
 				 else if(data.GhostList[x].type == "Inky"){
 					 //Inky North
 					 if(data.GhostList[x].direction == "North"){
@@ -164,141 +304,1033 @@ function init() {
 							 Texture =  InkyTexture[7];	
 					 }
 				 }
+				 //Clyde
 				 else if(data.GhostList[x].type == "Clyde"){
-					 
+					 //Clyde North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[0];	
+						 else
+							 Texture =  ClydeTexture[1];	
+					 }
+					 //Clyde East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[2];	
+						 else
+							 Texture =  ClydeTexture[3];	
+					 }
+					 //Clyde South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[4];	
+						 else
+							 Texture =  ClydeTexture[5];	
+					 }
+					 //Clyde West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[6];	
+						 else
+							 Texture =  ClydeTexture[7];	
+					 }
 				 }
 				 else if(data.GhostList[x].type == "Courage")
-					 ghost.material.color = new THREE.Color( "rgb(200,200,50)");
+					 ghost2.material.color = new THREE.Color( "rgb(200,200,50)");
 			 
-				 ghost.material =  Texture;	
-				 ghost.position.x = data.GhostList[x].x*xMultiplier;
-				 ghost.position.y = data.GhostList[x].y*yMultiplier+yShifter;
-			 
-			}
-			else if(x == 1){
-				 if(scene.getObjectByName('Ghost2') == null){
-					 scene.add(ghost2);
-				 
-					 if(data.GhostList[x].type == "Blinky")
-						 ghost2.material.color = new THREE.Color( "rgb(255,50,50)");
-					 else if(data.GhostList[x].type == "Pinky")
-						 ghost2.material.color = new THREE.Color( "rgb(255,162,210)");
-					 else if(data.GhostList[x].type == "Inky")
-						 ghost2.material.color = new THREE.Color( "rgb(0,255,255)");
-					 else if(data.GhostList[x].type == "Clyde")
-						 ghost2.material.color = new THREE.Color( "rgb(255,170,0)");
-					 else if(data.GhostList[x].type == "Courage")
-						 ghost2.material.color = new THREE.Color( "rgb(200,200,50)");
-				 }
+				 ghost2.material =  Texture;	
 				 ghost2.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost2.position.y = data.GhostList[x].y*yMultiplier+yShifter;
 			}
-			else  if(x == 2){
+			 else if(x == 2){
 				 if(scene.getObjectByName('Ghost3') == null){
-					 scene.add(ghost3);
-				 
-					 if(data.GhostList[x].type == "Blinky")
-						 ghost3.material.color = new THREE.Color( "rgb(255,50,50)");
-					 else if(data.GhostList[x].type == "Pinky")
-						 ghost3.material.color = new THREE.Color( "rgb(255,162,210)");
-					 else if(data.GhostList[x].type == "Inky")
-						 ghost3.material.color = new THREE.Color( "rgb(0,255,255)");
-					 else if(data.GhostList[x].type == "Clyde")
-						 ghost3.material.color = new THREE.Color( "rgb(255,170,0)");
-					 else if(data.GhostList[x].type == "Courage")
-						 ghost3.material.color = new THREE.Color( "rgb(200,200,50)");
+					 ghost3 =  new THREE.Sprite(BlinkyTexture[0]);		
+					 ghost3.scale.set(1.75,1.75,1);
+					 ghost3.position.z = -2; //reset to the z-axis of -2
+					 ghost3.name = 'Ghost3';
+					 scene.add(ghost3);		
 				 }
+				 //Blinky
+				 if(data.GhostList[x].type == "Blinky"){
+					 //Blinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[0];	
+						 else
+							 Texture =  BlinkyTexture[1];	
+					 }
+					 //Blinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[2];	
+						 else
+							 Texture =  BlinkyTexture[3];	
+					 }
+					 //Blinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[4];	
+						 else
+							 Texture =  BlinkyTexture[5];	
+					 }
+					 //Blinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[6];	
+						 else
+							 Texture =  BlinkyTexture[7];	
+					 }
+				 }
+				 //Pinky
+				 else if(data.GhostList[x].type == "Pinky"){
+					 //Pinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[0];	
+						 else
+							 Texture =  PinkyTexture[1];	
+					 }
+					 //Pinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[2];	
+						 else
+							 Texture =  PinkyTexture[3];	
+					 }
+					 //Pinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[4];	
+						 else
+							 Texture =  PinkyTexture[5];	
+					 }
+					 //Pinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[6];	
+						 else
+							 Texture =  PinkyTexture[7];	
+					 }
+				 }
+				 //Inky
+				 else if(data.GhostList[x].type == "Inky"){
+					 //Inky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[0];	
+						 else
+							 Texture =  InkyTexture[1];	
+					 }
+					 //Inky East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[2];	
+						 else
+							 Texture =  InkyTexture[3];	
+					 }
+					 //Inky South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[4];	
+						 else
+							 Texture =  InkyTexture[5];	
+					 }
+					 //Inky West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[6];	
+						 else
+							 Texture =  InkyTexture[7];	
+					 }
+				 }
+				 //Clyde
+				 else if(data.GhostList[x].type == "Clyde"){
+					 //Clyde North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[0];	
+						 else
+							 Texture =  ClydeTexture[1];	
+					 }
+					 //Clyde East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[2];	
+						 else
+							 Texture =  ClydeTexture[3];	
+					 }
+					 //Clyde South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[4];	
+						 else
+							 Texture =  ClydeTexture[5];	
+					 }
+					 //Clyde West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[6];	
+						 else
+							 Texture =  ClydeTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Courage")
+					 ghost3.material.color = new THREE.Color( "rgb(200,200,50)");
+			 
+				 ghost3.material =  Texture;
+				 //ghost3.name = 'Ghost2';
+				 //ghost3.scale.set(1.75,1.75,1);
 				 ghost3.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost3.position.y = data.GhostList[x].y*yMultiplier+yShifter;
 			 }
-			else  if(x == 3){
+			 else if(x == 3){
 				 if(scene.getObjectByName('Ghost4') == null){
-					 scene.add(ghost4);
-					 
-					 if(data.GhostList[x].type == "Blinky")
-						 ghost4.material.color = new THREE.Color( "rgb(255,50,50)");
-					 else if(data.GhostList[x].type == "Pinky")
-						 ghost4.material.color = new THREE.Color( "rgb(255,162,210)");
-					 else if(data.GhostList[x].type == "Inky")
-						 ghost4.material.color = new THREE.Color( "rgb(0,255,255)");
-					 else if(data.GhostList[x].type == "Clyde")
-						 ghost4.material.color = new THREE.Color( "rgb(255,170,0)");
-					 else if(data.GhostList[x].type == "Courage")
-						 ghost4.material.color = new THREE.Color( "rgb(200,200,50)");
-				 }				 
-				 
+					 ghost4 =  new THREE.Sprite(BlinkyTexture[0]);		
+					 ghost4.scale.set(1.75,1.75,1);
+					 ghost4.position.z = -2; //reset to the z-axis of -2
+					 ghost4.name = 'Ghost4';
+					 scene.add(ghost4);		
+				 }
+				 //Blinky
+				 if(data.GhostList[x].type == "Blinky"){
+					 //Blinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[0];	
+						 else
+							 Texture =  BlinkyTexture[1];	
+					 }
+					 //Blinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[2];	
+						 else
+							 Texture =  BlinkyTexture[3];	
+					 }
+					 //Blinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[4];	
+						 else
+							 Texture =  BlinkyTexture[5];	
+					 }
+					 //Blinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[6];	
+						 else
+							 Texture =  BlinkyTexture[7];	
+					 }
+				 }
+				 //Pinky
+				 else if(data.GhostList[x].type == "Pinky"){
+					 //Pinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[0];	
+						 else
+							 Texture =  PinkyTexture[1];	
+					 }
+					 //Pinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[2];	
+						 else
+							 Texture =  PinkyTexture[3];	
+					 }
+					 //Pinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[4];	
+						 else
+							 Texture =  PinkyTexture[5];	
+					 }
+					 //Pinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[6];	
+						 else
+							 Texture =  PinkyTexture[7];	
+					 }
+				 }
+				 //Inky
+				 else if(data.GhostList[x].type == "Inky"){
+					 //Inky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[0];	
+						 else
+							 Texture =  InkyTexture[1];	
+					 }
+					 //Inky East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[2];	
+						 else
+							 Texture =  InkyTexture[3];	
+					 }
+					 //Inky South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[4];	
+						 else
+							 Texture =  InkyTexture[5];	
+					 }
+					 //Inky West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[6];	
+						 else
+							 Texture =  InkyTexture[7];	
+					 }
+				 }
+				 //Clyde
+				 else if(data.GhostList[x].type == "Clyde"){
+					 //Clyde North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[0];	
+						 else
+							 Texture =  ClydeTexture[1];	
+					 }
+					 //Clyde East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[2];	
+						 else
+							 Texture =  ClydeTexture[3];	
+					 }
+					 //Clyde South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[4];	
+						 else
+							 Texture =  ClydeTexture[5];	
+					 }
+					 //Clyde West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[6];	
+						 else
+							 Texture =  ClydeTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Courage")
+					 ghost4.material.color = new THREE.Color( "rgb(200,200,50)");
+			 
+				 ghost4.material =  Texture;
 				 ghost4.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost4.position.y = data.GhostList[x].y*yMultiplier+yShifter;
-			}
-			else  if(x == 4){
+			 }
+			 else if(x == 4){
 				 if(scene.getObjectByName('Ghost5') == null){
-					 scene.add(ghost5);
-				 
-					 if(data.GhostList[x].type == "Blinky")
-						 ghost5.material.color = new THREE.Color( "rgb(255,50,50)");
-					 else if(data.GhostList[x].type == "Pinky")
-						 ghost5.material.color = new THREE.Color( "rgb(255,162,210)");
-					 else if(data.GhostList[x].type == "Inky")
-						 ghost5.material.color = new THREE.Color( "rgb(0,255,255)");
-					 else if(data.GhostList[x].type == "Clyde")
-						 ghost5.material.color = new THREE.Color( "rgb(255,170,0)");
-					 else if(data.GhostList[x].type == "Courage")
-						 ghost5.material.color = new THREE.Color( "rgb(200,200,50)");
+					 ghost5 =  new THREE.Sprite(BlinkyTexture[0]);		
+					 ghost5.scale.set(1.75,1.75,1);
+					 ghost5.position.z = -2; //reset to the z-axis of -2
+					 ghost5.name = 'Ghost5';
+					 scene.add(ghost5);		
 				 }
+				 //Blinky
+				 if(data.GhostList[x].type == "Blinky"){
+					 //Blinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[0];	
+						 else
+							 Texture =  BlinkyTexture[1];	
+					 }
+					 //Blinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[2];	
+						 else
+							 Texture =  BlinkyTexture[3];	
+					 }
+					 //Blinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[4];	
+						 else
+							 Texture =  BlinkyTexture[5];	
+					 }
+					 //Blinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[6];	
+						 else
+							 Texture =  BlinkyTexture[7];	
+					 }
+				 }
+				 //Pinky
+				 else if(data.GhostList[x].type == "Pinky"){
+					 //Pinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[0];	
+						 else
+							 Texture =  PinkyTexture[1];	
+					 }
+					 //Pinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[2];	
+						 else
+							 Texture =  PinkyTexture[3];	
+					 }
+					 //Pinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[4];	
+						 else
+							 Texture =  PinkyTexture[5];	
+					 }
+					 //Pinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[6];	
+						 else
+							 Texture =  PinkyTexture[7];	
+					 }
+				 }
+				 //Inky
+				 else if(data.GhostList[x].type == "Inky"){
+					 //Inky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[0];	
+						 else
+							 Texture =  InkyTexture[1];	
+					 }
+					 //Inky East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[2];	
+						 else
+							 Texture =  InkyTexture[3];	
+					 }
+					 //Inky South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[4];	
+						 else
+							 Texture =  InkyTexture[5];	
+					 }
+					 //Inky West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[6];	
+						 else
+							 Texture =  InkyTexture[7];	
+					 }
+				 }
+				 //Clyde
+				 else if(data.GhostList[x].type == "Clyde"){
+					 //Clyde North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[0];	
+						 else
+							 Texture =  ClydeTexture[1];	
+					 }
+					 //Clyde East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[2];	
+						 else
+							 Texture =  ClydeTexture[3];	
+					 }
+					 //Clyde South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[4];	
+						 else
+							 Texture =  ClydeTexture[5];	
+					 }
+					 //Clyde West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[6];	
+						 else
+							 Texture =  ClydeTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Courage")
+					 ghost5.material.color = new THREE.Color( "rgb(200,200,50)");
+			 
+				 ghost5.material =  Texture;
 				 ghost5.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost5.position.y = data.GhostList[x].y*yMultiplier+yShifter;
-			}
-			else  if(x == 5){
+			 }
+			 else if(x == 5){
 				 if(scene.getObjectByName('Ghost6') == null){
-					 scene.add(ghost6);
-				 
-					 if(data.GhostList[x].type == "Blinky")
-						 ghost6.material.color = new THREE.Color( "rgb(255,50,50)");
-					 else if(data.GhostList[x].type == "Pinky")
-						 ghost6.material.color = new THREE.Color( "rgb(255,162,210)");
-					 else if(data.GhostList[x].type == "Inky")
-						 ghost6.material.color = new THREE.Color( "rgb(0,255,255)");
-					 else if(data.GhostList[x].type == "Clyde")
-						 ghost6.material.color = new THREE.Color( "rgb(255,170,0)");
-					 else if(data.GhostList[x].type == "Courage")
-						 ghost6.material.color = new THREE.Color( "rgb(200,200,50)");
+					 ghost6 =  new THREE.Sprite(BlinkyTexture[0]);		
+					 ghost6.scale.set(1.75,1.75,1);
+					 ghost6.position.z = -2; //reset to the z-axis of -2
+					 ghost6.name = 'Ghost6';
+					 scene.add(ghost6);		
 				 }
+				 //Blinky
+				 if(data.GhostList[x].type == "Blinky"){
+					 //Blinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[0];	
+						 else
+							 Texture =  BlinkyTexture[1];	
+					 }
+					 //Blinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[2];	
+						 else
+							 Texture =  BlinkyTexture[3];	
+					 }
+					 //Blinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[4];	
+						 else
+							 Texture =  BlinkyTexture[5];	
+					 }
+					 //Blinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[6];	
+						 else
+							 Texture =  BlinkyTexture[7];	
+					 }
+				 }
+				 //Pinky
+				 else if(data.GhostList[x].type == "Pinky"){
+					 //Pinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[0];	
+						 else
+							 Texture =  PinkyTexture[1];	
+					 }
+					 //Pinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[2];	
+						 else
+							 Texture =  PinkyTexture[3];	
+					 }
+					 //Pinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[4];	
+						 else
+							 Texture =  PinkyTexture[5];	
+					 }
+					 //Pinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[6];	
+						 else
+							 Texture =  PinkyTexture[7];	
+					 }
+				 }
+				 //Inky
+				 else if(data.GhostList[x].type == "Inky"){
+					 //Inky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[0];	
+						 else
+							 Texture =  InkyTexture[1];	
+					 }
+					 //Inky East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[2];	
+						 else
+							 Texture =  InkyTexture[3];	
+					 }
+					 //Inky South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[4];	
+						 else
+							 Texture =  InkyTexture[5];	
+					 }
+					 //Inky West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[6];	
+						 else
+							 Texture =  InkyTexture[7];	
+					 }
+				 }
+				 //Clyde
+				 else if(data.GhostList[x].type == "Clyde"){
+					 //Clyde North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[0];	
+						 else
+							 Texture =  ClydeTexture[1];	
+					 }
+					 //Clyde East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[2];	
+						 else
+							 Texture =  ClydeTexture[3];	
+					 }
+					 //Clyde South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[4];	
+						 else
+							 Texture =  ClydeTexture[5];	
+					 }
+					 //Clyde West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[6];	
+						 else
+							 Texture =  ClydeTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Courage")
+					 ghost6.material.color = new THREE.Color( "rgb(200,200,50)");
+			 
+				 ghost6.material =  Texture;
 				 ghost6.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost6.position.y = data.GhostList[x].y*yMultiplier+yShifter;
-			}
-			else  if(x == 6){
+			 }
+			 else if(x == 6){
 				 if(scene.getObjectByName('Ghost7') == null){
-					 scene.add(ghost7);
-				 
-					 if(data.GhostList[x].type == "Blinky")
-						 ghost7.material.color = new THREE.Color( "rgb(255,50,50)");
-					 else if(data.GhostList[x].type == "Pinky")
-						 ghost7.material.color = new THREE.Color( "rgb(255,162,210)");
-					 else if(data.GhostList[x].type == "Inky")
-						 ghost7.material.color = new THREE.Color( "rgb(0,255,255)");
-					 else if(data.GhostList[x].type == "Clyde")
-						 ghost7.material.color = new THREE.Color( "rgb(255,170,0)");
-					 else if(data.GhostList[x].type == "Courage")
-						 ghost7.material.color = new THREE.Color( "rgb(200,200,50)");
+					 ghost7 =  new THREE.Sprite(BlinkyTexture[0]);		
+					 ghost7.scale.set(1.75,1.75,1);
+					 ghost7.position.z = -2; //reset to the z-axis of -2
+					 ghost7.name = 'Ghost7';
+					 scene.add(ghost7);		
 				 }
+				 //Blinky
+				 if(data.GhostList[x].type == "Blinky"){
+					 //Blinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[0];	
+						 else
+							 Texture =  BlinkyTexture[1];	
+					 }
+					 //Blinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[2];	
+						 else
+							 Texture =  BlinkyTexture[3];	
+					 }
+					 //Blinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[4];	
+						 else
+							 Texture =  BlinkyTexture[5];	
+					 }
+					 //Blinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[6];	
+						 else
+							 Texture =  BlinkyTexture[7];	
+					 }
+				 }
+				 //Pinky
+				 else if(data.GhostList[x].type == "Pinky"){
+					 //Pinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[0];	
+						 else
+							 Texture =  PinkyTexture[1];	
+					 }
+					 //Pinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[2];	
+						 else
+							 Texture =  PinkyTexture[3];	
+					 }
+					 //Pinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[4];	
+						 else
+							 Texture =  PinkyTexture[5];	
+					 }
+					 //Pinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[6];	
+						 else
+							 Texture =  PinkyTexture[7];	
+					 }
+				 }
+				 //Inky
+				 else if(data.GhostList[x].type == "Inky"){
+					 //Inky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[0];	
+						 else
+							 Texture =  InkyTexture[1];	
+					 }
+					 //Inky East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[2];	
+						 else
+							 Texture =  InkyTexture[3];	
+					 }
+					 //Inky South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[4];	
+						 else
+							 Texture =  InkyTexture[5];	
+					 }
+					 //Inky West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[6];	
+						 else
+							 Texture =  InkyTexture[7];	
+					 }
+				 }
+				 //Clyde
+				 else if(data.GhostList[x].type == "Clyde"){
+					 //Clyde North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[0];	
+						 else
+							 Texture =  ClydeTexture[1];	
+					 }
+					 //Clyde East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[2];	
+						 else
+							 Texture =  ClydeTexture[3];	
+					 }
+					 //Clyde South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[4];	
+						 else
+							 Texture =  ClydeTexture[5];	
+					 }
+					 //Clyde West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[6];	
+						 else
+							 Texture =  ClydeTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Courage")
+					 ghost7.material.color = new THREE.Color( "rgb(200,200,50)");
+			 
+				 ghost7.material =  Texture;
 				 ghost7.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost7.position.y = data.GhostList[x].y*yMultiplier+yShifter;
-			}
-			else  if(x == 7){
-				 if(scene.getObjectByName('Ghost8') == null)
-					 scene.add(ghost8);
+			 }
+			 else if(x == 7){
+				 if(scene.getObjectByName('Ghost8') == null){
+					 ghost8 =  new THREE.Sprite(BlinkyTexture[0]);		
+					 ghost8.scale.set(1.75,1.75,1);
+					 ghost8.position.z = -2; //reset to the z-axis of -2
+					 ghost8.name = 'Ghost8';
+					 scene.add(ghost8);		
+				 }
+				 //Blinky
+				 if(data.GhostList[x].type == "Blinky"){
+					 //Blinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[0];	
+						 else
+							 Texture =  BlinkyTexture[1];	
+					 }
+					 //Blinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[2];	
+						 else
+							 Texture =  BlinkyTexture[3];	
+					 }
+					 //Blinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[4];	
+						 else
+							 Texture =  BlinkyTexture[5];	
+					 }
+					 //Blinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[6];	
+						 else
+							 Texture =  BlinkyTexture[7];	
+					 }
+				 }
+				 //Pinky
+				 else if(data.GhostList[x].type == "Pinky"){
+					 //Pinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[0];	
+						 else
+							 Texture =  PinkyTexture[1];	
+					 }
+					 //Pinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[2];	
+						 else
+							 Texture =  PinkyTexture[3];	
+					 }
+					 //Pinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[4];	
+						 else
+							 Texture =  PinkyTexture[5];	
+					 }
+					 //Pinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[6];	
+						 else
+							 Texture =  PinkyTexture[7];	
+					 }
+				 }
+				 //Inky
+				 else if(data.GhostList[x].type == "Inky"){
+					 //Inky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[0];	
+						 else
+							 Texture =  InkyTexture[1];	
+					 }
+					 //Inky East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[2];	
+						 else
+							 Texture =  InkyTexture[3];	
+					 }
+					 //Inky South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[4];	
+						 else
+							 Texture =  InkyTexture[5];	
+					 }
+					 //Inky West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[6];	
+						 else
+							 Texture =  InkyTexture[7];	
+					 }
+				 }
+				 //Clyde
+				 else if(data.GhostList[x].type == "Clyde"){
+					 //Clyde North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[0];	
+						 else
+							 Texture =  ClydeTexture[1];	
+					 }
+					 //Clyde East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[2];	
+						 else
+							 Texture =  ClydeTexture[3];	
+					 }
+					 //Clyde South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[4];	
+						 else
+							 Texture =  ClydeTexture[5];	
+					 }
+					 //Clyde West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[6];	
+						 else
+							 Texture =  ClydeTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Courage")
+					 ghost8.material.color = new THREE.Color( "rgb(200,200,50)");
+			 
+				 ghost8.material =  Texture;
 				 ghost8.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost8.position.y = data.GhostList[x].y*yMultiplier+yShifter;
-			}
-			else  if(x == 8){
-				 if(scene.getObjectByName('Ghost9') == null)
-					 scene.add(ghost9);
+			 }
+			 else if(x == 8){
+				 if(scene.getObjectByName('Ghost9') == null){
+					 ghost9 =  new THREE.Sprite(BlinkyTexture[0]);		
+					 ghost9.scale.set(1.75,1.75,1);
+					 ghost9.position.z = -2; //reset to the z-axis of -2
+					 ghost9.name = 'Ghost9';
+					 scene.add(ghost9);		
+				 }
+				 //Blinky
+				 if(data.GhostList[x].type == "Blinky"){
+					 //Blinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[0];	
+						 else
+							 Texture =  BlinkyTexture[1];	
+					 }
+					 //Blinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[2];	
+						 else
+							 Texture =  BlinkyTexture[3];	
+					 }
+					 //Blinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[4];	
+						 else
+							 Texture =  BlinkyTexture[5];	
+					 }
+					 //Blinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  BlinkyTexture[6];	
+						 else
+							 Texture =  BlinkyTexture[7];	
+					 }
+				 }
+				 //Pinky
+				 else if(data.GhostList[x].type == "Pinky"){
+					 //Pinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[0];	
+						 else
+							 Texture =  PinkyTexture[1];	
+					 }
+					 //Pinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[2];	
+						 else
+							 Texture =  PinkyTexture[3];	
+					 }
+					 //Pinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[4];	
+						 else
+							 Texture =  PinkyTexture[5];	
+					 }
+					 //Pinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  PinkyTexture[6];	
+						 else
+							 Texture =  PinkyTexture[7];	
+					 }
+				 }
+				 //Inky
+				 else if(data.GhostList[x].type == "Inky"){
+					 //Inky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[0];	
+						 else
+							 Texture =  InkyTexture[1];	
+					 }
+					 //Inky East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[2];	
+						 else
+							 Texture =  InkyTexture[3];	
+					 }
+					 //Inky South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[4];	
+						 else
+							 Texture =  InkyTexture[5];	
+					 }
+					 //Inky West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  InkyTexture[6];	
+						 else
+							 Texture =  InkyTexture[7];	
+					 }
+				 }
+				 //Clyde
+				 else if(data.GhostList[x].type == "Clyde"){
+					 //Clyde North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[0];	
+						 else
+							 Texture =  ClydeTexture[1];	
+					 }
+					 //Clyde East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[2];	
+						 else
+							 Texture =  ClydeTexture[3];	
+					 }
+					 //Clyde South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[4];	
+						 else
+							 Texture =  ClydeTexture[5];	
+					 }
+					 //Clyde West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 Texture =  ClydeTexture[6];	
+						 else
+							 Texture =  ClydeTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Courage")
+					 ghost9.material.color = new THREE.Color( "rgb(200,200,50)");
+			 
+				 ghost9.material =  Texture;
 				 ghost9.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost9.position.y = data.GhostList[x].y*yMultiplier+yShifter;
-			}
-			
+			 }
 		 }
 		 
+		 
+		 //Update the Pac Sprites
+		 for(var x=0; x<data.PacList.length; x++){
+			 if(x == 0){
+				 if(scene.getObjectByName('Pac') == null){
+					 pac.name = 'Pac';
+					 scene.add(pac);		
+				 }
+				 pac.position.x = data.PacList[x].x*xMultiplier;
+				 pac.position.y = data.PacList[x].y*yMultiplier+yShifter;
+			 }
+		 }
 		 //console.log("Pac Mania")
 		 //console.log(data)
 	 });
@@ -309,15 +1341,23 @@ function init() {
 	 //var onKeyDown = function(event) {
 	 function onKeyDown(event) {
 		 //Space Bar Changes Background
-		 if (event.keyCode == 38 || event.keyCode ==104) { // Up Arrow
-			 var data = { direction: "up"  };
-			 PacMania.emit('move',data);
+		 if (event.keyCode == 38 || event.keyCode ==104) { // Up Arrow - North
+			 var data = { direction: "North"  };
+			 PacMania.emit('Move',data);
 		 }
-		 else if (event.keyCode == 40  || event.keyCode ==98) { // Down Arrow
-			 var data = { direction: "down"  };
-			 PacMania.emit('move',data);
+		 else if (event.keyCode == 39  || event.keyCode ==102) { // Right Arrow - East
+			 var data = { direction: "East"  };
+			 PacMania.emit('Move',data);
 		 }
-		 //else console.log("Key: "+event.keyCode);
+		 else if (event.keyCode == 40  || event.keyCode ==98) { // Down Arrow - South
+			 var data = { direction: "South"  };
+			 PacMania.emit('Move',data);
+		 }
+		 else if (event.keyCode == 37  || event.keyCode ==100) { // Left Arrow - West
+			 var data = { direction: "West"  };
+			 PacMania.emit('Move',data);
+		 }
+		 else console.log("Key: "+event.keyCode);
 	 }; 
 	 document.addEventListener('keydown', onKeyDown, false);
 		
@@ -361,6 +1401,7 @@ function init() {
 	 load_Buttons();
 	 drag_objects();
 	 loadGhosts();
+	 loadPac();
 	 load_Game_Maze_1();
 	
 	 function renderScene(){
@@ -618,7 +1659,16 @@ function init() {
 		 
 		 
 	 }
-	 	
+	
+	 function loadPac(){
+		 var pacGeometry = new THREE.PlaneGeometry(1.5,1.5,0);
+		 var Material = new THREE.MeshBasicMaterial({color: 0xffff55}); //RGB
+		 pac = new THREE.Mesh(pacGeometry, Material);
+		 scene.add(pac);
+		 pac.position.set(-10,-4,-2); //xyz
+		 pac.name = 'Pac';
+	 }
+		
 	 function load_Board(){
 		 
 		 //Load Board
