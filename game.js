@@ -10,11 +10,13 @@ var clickable = [];
 //PacMania
 var ghost,ghost2,ghost3,ghost4,ghost5,ghost6,ghost7,ghost8,ghost9;
 var pac;
-var Outline, Board, gameMaze = [];
+var Outline, Board, gameMaze = [], pellets=[];
 var Width = 0, Height = 0;
-var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -1,ySpriteShifter= 0.21;
-var backgroundButton, ghostButton; //Background functions
+var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
+var backgroundButton, startButton, backgroundState = 'Original'; //Background functions
 var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [];
+var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture = [];
+var P1Text, P2Text, P3Text, P4Text, P1Score, P2Score, P3Score, P4Score; //Score board
 
 function init() {
 	 // create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -22,7 +24,7 @@ function init() {
 	
 	 // create a camera, which defines where we're looking at.
 	 camera = new THREE.PerspectiveCamera(50, 500/ 500, 0.1, 1000);
-	 camera.position.set(0,0,50);
+	 camera.position.set(0,0,53);
 	 scene.add(camera);
 	 
 	 // create a render and set the size
@@ -35,8 +37,8 @@ function init() {
 			 Height = 850-x*95;	
 		 }	
 		 else if( x >= 8){
-			 Width = window.innerWidth*0.5;
-			 Height = window.innerHeight*0.6;
+			 Width = window.innerWidth*0.50;
+			 Height = window.innerHeight*0.75;
 		 }
 	 }
 	 
@@ -1317,8 +1319,7 @@ function init() {
 				 ghost9.position.x = data.GhostList[x].x*xMultiplier;
 				 ghost9.position.y = data.GhostList[x].y*yMultiplier+yShifter;
 			 }
-		 }
-		 
+		 }		 
 		 
 		 //Update the Pac Sprites
 		 for(var x=0; x<data.PacList.length; x++){
@@ -1329,10 +1330,37 @@ function init() {
 				 }
 				 pac.position.x = data.PacList[x].x*xMultiplier;
 				 pac.position.y = data.PacList[x].y*yMultiplier+yShifter;
+				 P1Score = data.PacList[x].score;
+				 P1Text.parameters.text= "P1: "+P1Score;
+				 P1Text.update();
 			 }
 		 }
+		
+
+		 //Pellets
+		 for(var x=0; x<data.Pellet.length; x++){
+			 
+			 if(pellets.length <= x){
+				 pellets.push(createDot());
+				 scene.add(pellets[x]);
+				 //pellets[x].position.set(data.Pellet[x].x*xMultiplier,data.Pellet[x].y*yMultiplier+yShifter,-2);
+				 pellets[x].scale.set(0.75,0.75,1);
+			 }
+			 pellets[x].position.set(data.Pellet[x].x*xMultiplier,data.Pellet[x].y*yMultiplier+yShifter,-2);
+		 }
+		 
+		 //Removing the extra pellets
+		 while(data.Pellet.length < pellets.length){
+			 scene.remove(pellets[pellets.length-1]);
+			 pellets.splice(pellets.length-1,1);
+		 }
+		
 		 //console.log("Pac Mania")
 		 //console.log(data)
+		 
+		 //Update the Players Score
+		 
+		 
 	 });
 	 	
 	 //EVENT LISTENERS!!!!
@@ -1366,11 +1394,11 @@ function init() {
 		 Width = Height = 0;	
 		 for ( var x=0; Width+Height == 0; x++){
 			 if(window.innerWidth > 1000-x*100 && window.innerHeight > 1000-x*100){
-				 Width = 850-x*100;		
+				 Width = 950-x*80;		
 				 Height = 850-x*95;	
 			 }	
 			 else if( x >= 8){
-				 Width = window.innerWidth*0.5;
+				 Width = window.innerWidth*0.65;
 				 Height = window.innerHeight*0.75;
 			 }
 		 }
@@ -1427,20 +1455,57 @@ function init() {
 		 var dragControls  = new THREE.DragControls( objects, camera, renderer.domElement );
 				
 			 dragControls.addEventListener( 'dragstart', function(event) {
-																		 if (event.object == backgroundButton){
-																			 console.log("Start the Game");			
-																			 PacMania.emit('Initiate Game Render');
-																		 }
-																		 else if (event.object == ghostButton){
-																			 console.log("Add a Ghost");			
-																			 PacMania.emit('Add Ghost');
-																			 
-																		 }
-																		 //console.log("lol start of drag: ");
+																			 if (event.object == startButton){
+																				 console.log("Start the Game");			
+																				 PacMania.emit('Initiate Game Render');
+																				 startButton.position.set(12,-22.75,5);
+																			 }
+																			 else if (event.object == backgroundButton){
+																				 if(backgroundState == "Original"){
+																					 //Becomes Style 1
+																					 BlinkyTexture = Style1Texture.slice(0, 8);
+																					 PinkyTexture = Style1Texture.slice(8, 16);
+																					 InkyTexture = Style1Texture.slice(16, 24);
+																					 ClydeTexture = Style1Texture.slice(24, 32);
+																					 
+																					 backgroundState ="Style 1";
+																				 }
+																				 else if(backgroundState == "Style 1"){
+																					 BlinkyTexture = Style2Texture.slice(0, 8);
+																					 PinkyTexture = Style2Texture.slice(8, 16);
+																					 InkyTexture = Style2Texture.slice(16, 24);
+																					 ClydeTexture = Style2Texture.slice(24, 32);
+																					 
+																					 backgroundState ="Style 2";
+																				 }
+																				 else if(backgroundState == "Style 2"){
+																					 BlinkyTexture = Style3Texture.slice(0, 8);
+																					 PinkyTexture = Style3Texture.slice(8, 16);
+																					 InkyTexture = Style3Texture.slice(16, 24);
+																					 ClydeTexture = Style3Texture.slice(24, 32);
+																					 
+																					 backgroundState ="Style 3";
+																				 }
+																				 else if(backgroundState == "Style 3"){
+																					 BlinkyTexture = OriginalTexture.slice(0, 8);
+																					 PinkyTexture = OriginalTexture.slice(8, 16);
+																					 InkyTexture = OriginalTexture.slice(16, 24);
+																					 ClydeTexture = OriginalTexture.slice(24, 32);
+																					 
+																					 backgroundState ="Original";
+																				 }
+																				  backgroundButton.position.set(-12,-22.5,5);
+																			 }
+																			 //console.log("lol start of drag: ");
 																		 
 																		 });
 																		 
-			 dragControls.addEventListener( 'drag', function(event)   {});
+			 dragControls.addEventListener( 'drag', function(event)   {
+																			 if (event.object == startButton)
+																				 startButton.position.set(12,-22.75,5);
+																			 else if (event.object == backgroundButton)
+																				 backgroundButton.position.set(-12,-22.5,5);
+																		 });
 																		
 			 dragControls.addEventListener( 'dragend', function(event)   {});
 																		 
@@ -1503,158 +1568,627 @@ function init() {
 		 //Sprites
 		 var loader = new THREE.TextureLoader();
 		 loader.crossOrigin = true;
+		 //---------- Original Sprites --------------------------
 		 
 		 //Blinky Sprites
 		 //Blinky North
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyU1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 BlinkyTexture.push(BlinkyText);
+		 OriginalTexture.push(BlinkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyU2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 BlinkyTexture.push(BlinkyText);
+		 OriginalTexture.push(BlinkyText);
 		 //Blinky East
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyR1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 BlinkyTexture.push(BlinkyText);
+		 OriginalTexture.push(BlinkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyR2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 BlinkyTexture.push(BlinkyText);
+		 OriginalTexture.push(BlinkyText);
 		 //Blinky South
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyD1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 BlinkyTexture.push(BlinkyText);
+		 OriginalTexture.push(BlinkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyD2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 BlinkyTexture.push(BlinkyText);
+		 OriginalTexture.push(BlinkyText);
 		 //Blinky West
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyL1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 BlinkyTexture.push(BlinkyText);
+		 OriginalTexture.push(BlinkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Blinky/BlinkyL2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 BlinkyTexture.push(BlinkyText);
+		 OriginalTexture.push(BlinkyText);
+		 
+		 BlinkyTexture = OriginalTexture.slice(0, 8);
 		 
 		 //Pinky Sprites
 		 //Pinky North
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyU1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 PinkyTexture.push(PinkyText);
+		 OriginalTexture.push(PinkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyU2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 PinkyTexture.push(PinkyText);
+		 OriginalTexture.push(PinkyText);
 		 //Pinky East
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyR1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 PinkyTexture.push(PinkyText);
+		 OriginalTexture.push(PinkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyR2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 PinkyTexture.push(PinkyText);
+		 OriginalTexture.push(PinkyText);
 		 //Pinky South
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyD1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 PinkyTexture.push(PinkyText);
+		 OriginalTexture.push(PinkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyD2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 PinkyTexture.push(PinkyText);
+		 OriginalTexture.push(PinkyText);
 		 //Pinky West
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyL1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 PinkyTexture.push(PinkyText);
+		 OriginalTexture.push(PinkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Pinky/PinkyL2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 PinkyTexture.push(PinkyText);
+		 OriginalTexture.push(PinkyText);
+		 
+		 PinkyTexture = OriginalTexture.slice(8, 16);
 		 
 		 //Inky Sprites
 		 //Inky North
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyU1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 InkyTexture.push(InkyText);
+		 OriginalTexture.push(InkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyU2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 InkyTexture.push(InkyText);
+		 OriginalTexture.push(InkyText);
 		 //Inky East
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyR1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 InkyTexture.push(InkyText);
+		 OriginalTexture.push(InkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyR2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 InkyTexture.push(InkyText);
+		 OriginalTexture.push(InkyText);
 		 //Inky South
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyD1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 InkyTexture.push(InkyText);
+		 OriginalTexture.push(InkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyD2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 InkyTexture.push(InkyText);
+		 OriginalTexture.push(InkyText);
 		 //Inky West
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyL1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 InkyTexture.push(InkyText);
+		 OriginalTexture.push(InkyText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Inky/InkyL2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 InkyTexture.push(InkyText);
+		 OriginalTexture.push(InkyText);
+		 
+		 InkyTexture = OriginalTexture.slice(16, 24);
 		 
 		 //Clyde Sprites
 		 //Clyde North
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeU1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 ClydeTexture.push(ClydeText);
+		 OriginalTexture.push(ClydeText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeU2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 ClydeTexture.push(ClydeText);
+		 OriginalTexture.push(ClydeText);
 		 //Clyde East
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeR1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 ClydeTexture.push(ClydeText);
+		 OriginalTexture.push(ClydeText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeR2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 ClydeTexture.push(ClydeText);
+		 OriginalTexture.push(ClydeText);
 		 //Clyde South
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeD1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 ClydeTexture.push(ClydeText);
+		 OriginalTexture.push(ClydeText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeD2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 ClydeTexture.push(ClydeText);
+		 OriginalTexture.push(ClydeText);
 		 //Clyde West
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeL1.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 ClydeTexture.push(ClydeText);
+		 OriginalTexture.push(ClydeText);
 		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/Clyde/ClydeL2.png' );
 		 Texture.minFilter = THREE.LinearFilter;
 		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
-		 ClydeTexture.push(ClydeText);
+		 OriginalTexture.push(ClydeText);	 
+		 
+		 ClydeTexture = OriginalTexture.slice(24, 32);
+		 
+		 //---------------------Style 1 Sprites Shiny!!!!---------------------
+		 
+		 //Blinky North
+		 Texture = loader.load( 'Images/Style1/Ghosts/Blinky/BlinkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Blinky/BlinkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(BlinkyText);
+		 //Blinky East
+		 Texture = loader.load( 'Images/Style1/Ghosts/Blinky/BlinkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Blinky/BlinkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(BlinkyText);
+		 //Blinky South
+		 Texture = loader.load( 'Images/Style1/Ghosts/Blinky/BlinkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Blinky/BlinkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(BlinkyText);
+		 //Blinky West
+		 Texture = loader.load( 'Images/Style1/Ghosts/Blinky/BlinkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Blinky/BlinkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(BlinkyText);
+		 
+		 //Pinky Sprites
+		 //Pinky North
+		 Texture = loader.load( 'Images/Style1/Ghosts/Pinky/PinkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Pinky/PinkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(PinkyText);
+		 //Pinky East
+		 Texture = loader.load( 'Images/Style1/Ghosts/Pinky/PinkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Pinky/PinkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(PinkyText);
+		 //Pinky South
+		 Texture = loader.load( 'Images/Style1/Ghosts/Pinky/PinkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Pinky/PinkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(PinkyText);
+		 //Pinky West
+		 Texture = loader.load( 'Images/Style1/Ghosts/Pinky/PinkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Pinky/PinkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(PinkyText);
+		 
+		 //Inky Sprites
+		 //Inky North
+		 Texture = loader.load( 'Images/Style1/Ghosts/Inky/InkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Inky/InkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(InkyText);
+		 //Inky East
+		 Texture = loader.load( 'Images/Style1/Ghosts/Inky/InkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Inky/InkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(InkyText);
+		 //Inky South
+		 Texture = loader.load( 'Images/Style1/Ghosts/Inky/InkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Inky/InkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(InkyText);
+		 //Inky West
+		 Texture = loader.load( 'Images/Style1/Ghosts/Inky/InkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Inky/InkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(InkyText);
+		 
+		 //Clyde Sprites
+		 //Clyde North
+		 Texture = loader.load( 'Images/Style1/Ghosts/Clyde/ClydeU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Clyde/ClydeU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(ClydeText);
+		 //Clyde East
+		 Texture = loader.load( 'Images/Style1/Ghosts/Clyde/ClydeR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Clyde/ClydeR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(ClydeText);
+		 //Clyde South
+		 Texture = loader.load( 'Images/Style1/Ghosts/Clyde/ClydeD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Clyde/ClydeD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(ClydeText);
+		 //Clyde West
+		 Texture = loader.load( 'Images/Style1/Ghosts/Clyde/ClydeL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style1/Ghosts/Clyde/ClydeL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style1Texture.push(ClydeText);
+		 
+		 
+		 //---------------------Style 2 3D Shiny!!!!---------------------
+		 
+		 //Blinky North
+		 Texture = loader.load( 'Images/Style2/Ghosts/Blinky/BlinkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Blinky/BlinkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(BlinkyText);
+		 //Blinky East
+		 Texture = loader.load( 'Images/Style2/Ghosts/Blinky/BlinkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Blinky/BlinkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(BlinkyText);
+		 //Blinky South
+		 Texture = loader.load( 'Images/Style2/Ghosts/Blinky/BlinkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Blinky/BlinkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(BlinkyText);
+		 //Blinky West
+		 Texture = loader.load( 'Images/Style2/Ghosts/Blinky/BlinkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Blinky/BlinkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(BlinkyText);
+		 
+		 //Pinky Sprites
+		 //Pinky North
+		 Texture = loader.load( 'Images/Style2/Ghosts/Pinky/PinkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Pinky/PinkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(PinkyText);
+		 //Pinky East
+		 Texture = loader.load( 'Images/Style2/Ghosts/Pinky/PinkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Pinky/PinkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(PinkyText);
+		 //Pinky South
+		 Texture = loader.load( 'Images/Style2/Ghosts/Pinky/PinkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Pinky/PinkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(PinkyText);
+		 //Pinky West
+		 Texture = loader.load( 'Images/Style2/Ghosts/Pinky/PinkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Pinky/PinkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(PinkyText);
+		 
+		 //Inky Sprites
+		 //Inky North
+		 Texture = loader.load( 'Images/Style2/Ghosts/Inky/InkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Inky/InkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(InkyText);
+		 //Inky East
+		 Texture = loader.load( 'Images/Style2/Ghosts/Inky/InkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Inky/InkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(InkyText);
+		 //Inky South
+		 Texture = loader.load( 'Images/Style2/Ghosts/Inky/InkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Inky/InkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(InkyText);
+		 //Inky West
+		 Texture = loader.load( 'Images/Style2/Ghosts/Inky/InkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Inky/InkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(InkyText);
+		 
+		 //Clyde Sprites
+		 //Clyde North
+		 Texture = loader.load( 'Images/Style2/Ghosts/Clyde/ClydeU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Clyde/ClydeU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(ClydeText);
+		 //Clyde East
+		 Texture = loader.load( 'Images/Style2/Ghosts/Clyde/ClydeR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Clyde/ClydeR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(ClydeText);
+		 //Clyde South
+		 Texture = loader.load( 'Images/Style2/Ghosts/Clyde/ClydeD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Clyde/ClydeD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(ClydeText);
+		 //Clyde West
+		 Texture = loader.load( 'Images/Style2/Ghosts/Clyde/ClydeL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style2/Ghosts/Clyde/ClydeL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style2Texture.push(ClydeText);
+		 
+		 //---------------------Style 3 Ghost Human!!!---------------------
+		 
+		 //Blinky North
+		 Texture = loader.load( 'Images/Style3/Ghosts/Blinky/BlinkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Blinky/BlinkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(BlinkyText);
+		 //Blinky East
+		 Texture = loader.load( 'Images/Style3/Ghosts/Blinky/BlinkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Blinky/BlinkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(BlinkyText);
+		 //Blinky South
+		 Texture = loader.load( 'Images/Style3/Ghosts/Blinky/BlinkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Blinky/BlinkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(BlinkyText);
+		 //Blinky West
+		 Texture = loader.load( 'Images/Style3/Ghosts/Blinky/BlinkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(BlinkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Blinky/BlinkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 BlinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(BlinkyText);
+		 
+		 //Pinky Sprites
+		 //Pinky North
+		 Texture = loader.load( 'Images/Style3/Ghosts/Pinky/PinkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Pinky/PinkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(PinkyText);
+		 //Pinky East
+		 Texture = loader.load( 'Images/Style3/Ghosts/Pinky/PinkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Pinky/PinkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(PinkyText);
+		 //Pinky South
+		 Texture = loader.load( 'Images/Style3/Ghosts/Pinky/PinkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Pinky/PinkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(PinkyText);
+		 //Pinky West
+		 Texture = loader.load( 'Images/Style3/Ghosts/Pinky/PinkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(PinkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Pinky/PinkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 PinkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(PinkyText);
+		 
+		 //Inky Sprites
+		 //Inky North
+		 Texture = loader.load( 'Images/Style3/Ghosts/Inky/InkyU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Inky/InkyU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(InkyText);
+		 //Inky East
+		 Texture = loader.load( 'Images/Style3/Ghosts/Inky/InkyR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Inky/InkyR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(InkyText);
+		 //Inky South
+		 Texture = loader.load( 'Images/Style3/Ghosts/Inky/InkyD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Inky/InkyD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(InkyText);
+		 //Inky West
+		 Texture = loader.load( 'Images/Style3/Ghosts/Inky/InkyL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(InkyText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Inky/InkyL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 InkyText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(InkyText);
+		 
+		 //Clyde Sprites
+		 //Clyde North
+		 Texture = loader.load( 'Images/Style3/Ghosts/Clyde/ClydeU1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Clyde/ClydeU2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(ClydeText);
+		 //Clyde East
+		 Texture = loader.load( 'Images/Style3/Ghosts/Clyde/ClydeR1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Clyde/ClydeR2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(ClydeText);
+		 //Clyde South
+		 Texture = loader.load( 'Images/Style3/Ghosts/Clyde/ClydeD1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Clyde/ClydeD2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(ClydeText);
+		 //Clyde West
+		 Texture = loader.load( 'Images/Style3/Ghosts/Clyde/ClydeL1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(ClydeText);
+		 Texture = loader.load( 'Images/Style3/Ghosts/Clyde/ClydeL2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 Style3Texture.push(ClydeText);
 		 
 		 
 		 
@@ -1696,38 +2230,94 @@ function init() {
 		 Title1 = new THREE.Sprite(T1);				
 		
 		 scene.add(Title1);
-		 Title1.position.set(0,21.75,-2); 
-		 Title1.scale.set(24,4,1);
+		 Title1.position.set(0,22.95,-2); 
+		 Title1.scale.set(24.5,4.5,1);
+		 
+		 //Players Score
+		 P1Score = P2Score = P3Score = P4Score = 0;
+		 
+		 //P1Text
+		 P1Text = new THREEx.DynamicText2DObject();
+		 P1Text.parameters.text= "P1: "+P1Score;
+		 P1Text.parameters.font= "55px Arial";
+		 P1Text.parameters.fillStyle= "Red";
+		 P1Text.parameters.align = "center";
+		 P1Text.dynamicTexture.canvas.width = 256;
+		 P1Text.dynamicTexture.canvas.height = 256;
+		 P1Text.position.set(-18,18,-3);
+		 P1Text.scale.set(7.5,7.25,1);
+		 P1Text.update();
+		 scene.add(P1Text);
+		 console.log(P1Text);
+		 
+		 //P2Text
+		 P2Text = new THREEx.DynamicText2DObject();
+		 P2Text.parameters.text= "P2: "+P2Score;
+		 P2Text.parameters.font= "55px Arial";
+		 P2Text.parameters.fillStyle= "DodgerBlue";
+		 P2Text.parameters.align = "center";
+		 P2Text.dynamicTexture.canvas.width = 256;
+		 P2Text.dynamicTexture.canvas.height = 256;
+		 P2Text.position.set(-6,18,-3);
+		 P2Text.scale.set(7.5,7.25,1);
+		 P2Text.update();
+		 scene.add(P2Text);
+		 
+		 //P3Text
+		 P3Text = new THREEx.DynamicText2DObject();
+		 P3Text.parameters.text= "P3: "+P3Score;
+		 P3Text.parameters.font= "55px Arial";
+		 P3Text.parameters.fillStyle= "Green";
+		 P3Text.parameters.align = "center";
+		 P3Text.dynamicTexture.canvas.width = 256;
+		 P3Text.dynamicTexture.canvas.height = 256;
+		 P3Text.position.set(6,18,-3);
+		 P3Text.scale.set(7.5,7.25,1);
+		 P3Text.update();
+		 scene.add(P3Text);
+		 
+		 //P4Text
+		 P4Text = new THREEx.DynamicText2DObject();
+		 P4Text.parameters.text= "P4: "+P4Score;
+		 P4Text.parameters.font= "55px Arial";
+		 P4Text.parameters.fillStyle= "DarkOrchid ";
+		 P4Text.parameters.align = "center";
+		 P4Text.dynamicTexture.canvas.width = 256;
+		 P4Text.dynamicTexture.canvas.height = 256;
+		 P4Text.position.set(18,18,-3);
+		 P4Text.scale.set(7.5,7.25,1);
+		 P4Text.update();
+		 scene.add(P4Text);
 	 }
 
 	 function load_Buttons(){
+		 //Start Button
+		 startButton = new THREEx.DynamicText2DObject()
+		 startButton.parameters.text= "Start Game Status";
+		 startButton.parameters.font= "85px Arial";
+		 startButton.parameters.fillStyle= "Yellow";
+		 startButton.parameters.align = "center";
+		 startButton.dynamicTexture.canvas.width = 1024;
+		 startButton.dynamicTexture.canvas.height = 256;
+		 startButton.position.set(12,-22.75,5);
+		 startButton.scale.set(15,5,1);
+		 startButton.update();
+		 scene.add(startButton);
+		 objects.push(startButton);
+		 
 		 //Change Background Button
 		 backgroundButton = new THREEx.DynamicText2DObject()
-		 backgroundButton.parameters.text= "Start Game Status";
+		 backgroundButton.parameters.text= "Change Sprites";
 		 backgroundButton.parameters.font= "85px Arial";
-		 backgroundButton.parameters.fillStyle= "Yellow";
+		 backgroundButton.parameters.fillStyle= "Lime";
 		 backgroundButton.parameters.align = "center";
 		 backgroundButton.dynamicTexture.canvas.width = 1024;
 		 backgroundButton.dynamicTexture.canvas.height = 256;
-		 backgroundButton.position.set(12,-21.5,5);
+		 backgroundButton.position.set(-12,-22.5,5);
 		 backgroundButton.scale.set(15,5,1);
 		 backgroundButton.update();
 		 scene.add(backgroundButton);
 		 objects.push(backgroundButton);
-		 
-		 //Add Ghost
-		 ghostButton = new THREEx.DynamicText2DObject()
-		 ghostButton.parameters.text= "Add Ghost";
-		 ghostButton.parameters.font= "85px Arial";
-		 ghostButton.parameters.fillStyle= "Lime";
-		 ghostButton.parameters.align = "center";
-		 ghostButton.dynamicTexture.canvas.width = 1024;
-		 ghostButton.dynamicTexture.canvas.height = 256;
-		 ghostButton.position.set(-12,-22,5);
-		 ghostButton.scale.set(15,5,1);
-		 ghostButton.update();
-		 //scene.add(ghostButton);
-		 //objects.push(ghostButton);
 	 }
 
 	 function load_Game_Maze_1(){
@@ -2441,6 +3031,22 @@ function init() {
 		 }
 		 
 	 }
+	  
+	  //From Pacman 3D- Creates/Returns the Pellets
+	 var createDot = function () {
+		 return function () {
+			 //Pellets lol I made this one too!!! :D
+			 //Loader for Sprites
+			 var loader = new THREE.TextureLoader();
+			 loader.crossOrigin = true;
+			 var Texture00 = loader.load( 'Images/Fruits/pellets.png' );
+			 Texture00.minFilter = THREE.LinearFilter;
+			 var Pells = new THREE.SpriteMaterial( { map: Texture00, color: 0xffffff } );
+		 	 Pellets =  new THREE.Sprite(Pells);	
+		 	 Pellets.scale.set(0.5,0.25,1);
+			 return Pellets;
+		 };
+	 }();
 	 
 }
 

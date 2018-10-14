@@ -89,9 +89,10 @@ PacMania.on('connection',function(socket){
 	  
 	 var mapNodes = [], gameRender = null, step=0;
 	 var nodesList; // For the aStar Algorithm
-	 var ghostsArray = [], pacArray = []; 
+	 var ghostsArray = [], pacArray = [], pellets = [];
 	 var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumber =11; //ghostRandomModeGeneratorNumber gets low and make the ghost more aggressive (default is 21)
-	  
+	 
+	 //Load Nodes for Maze 1
 	 function loadNodesMaze1(){
 		 //Node Zero
 		 var connection = [1,24];
@@ -131,7 +132,7 @@ PacMania.on('connection',function(socket){
 		 //Node Seven
 		 connection = [8,25];
 		 node = {x:-8, y:8, Connectednodes:connection,
-							North:-1, East:-1,South:25,West:8};
+							North:-1, East:8,South:25,West:-1};
 		 mapNodes.push(node); 
 		 //Node Eight
 		 connection = [1, 7, 9];
@@ -774,7 +775,14 @@ PacMania.on('connection',function(socket){
 			 }
 			 
 			 if(pacArray.length <= 1){
-				 addPac(socket.id);		
+				 addPac(socket.id);
+
+				 for(var pelletAdditions = 0; pelletAdditions <7; pelletAdditions++){
+					 var first = Math.floor(Math.random()*115);
+					 var second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
+					 
+					 addPellets(first,second);
+				 }
 			 }
 			
 			 
@@ -810,6 +818,7 @@ PacMania.on('connection',function(socket){
 		 if(!found) console.log("Error occured");
 	 });
 	 
+	 //Update the Game State
 	 function UpdateGameState(){
 		 //step++;
 		  var pacmanDistanceTravelDivsor = 20;
@@ -951,29 +960,33 @@ PacMania.on('connection',function(socket){
 			 }
 			 
 			 
-			 
 			 //Difference in X Axis
 			 if(pacArray[pacCount].x < mapNodes[ pacArray[pacCount].nextNode ].x){
 				 pacArray[pacCount].x = (pacArray[pacCount].x*pacmanDistanceTravelDivsor + 1)/pacmanDistanceTravelDivsor;
 				 pacArray[pacCount].directionPhase +=1;
+				 didPacEncounterPellet(pacArray[pacCount]);
 			 }
 			 else if(pacArray[pacCount].x > mapNodes[ pacArray[pacCount].nextNode ].x){
 				 pacArray[pacCount].x = (pacArray[pacCount].x*pacmanDistanceTravelDivsor - 1)/pacmanDistanceTravelDivsor;
 				 pacArray[pacCount].directionPhase +=1;
+				 didPacEncounterPellet(pacArray[pacCount]);
 			 }
 			 //Difference in Y Axis
 			 else if(pacArray[pacCount].y < mapNodes[ pacArray[pacCount].nextNode ].y){
 				 pacArray[pacCount].y = (pacArray[pacCount].y*pacmanDistanceTravelDivsor + 1)/pacmanDistanceTravelDivsor;
 				 pacArray[pacCount].directionPhase +=1;
+				 didPacEncounterPellet(pacArray[pacCount]);
 			 }
 			 else if(pacArray[pacCount].y > mapNodes[ pacArray[pacCount].nextNode ].y){
 				 pacArray[pacCount].y = (pacArray[pacCount].y*pacmanDistanceTravelDivsor - 1)/pacmanDistanceTravelDivsor;
 				 pacArray[pacCount].directionPhase +=1;
+				 didPacEncounterPellet(pacArray[pacCount]);
 			 }
 			 //If it arrives at the next Node
 			 else if(pacArray[pacCount].x == mapNodes[ pacArray[pacCount].nextNode ].x && pacArray[pacCount].y == mapNodes[ pacArray[pacCount].nextNode ].y ){ 
-				 // When the ghosts arrives at the nextNode location
-				 //For the portals
+				 //When the ghosts arrives at the nextNode location
+				  
+				 //For the portals teleportation
 				 //A117 -> A118
 				 if(pacArray[pacCount].nextNode == 117){
 					 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
@@ -1063,7 +1076,7 @@ PacMania.on('connection',function(socket){
 			 }
 		 }
 		 
-		 PacMania.emit('Update Game State', data={	 GhostList : ghostsArray, PacList : pacArray	 });
+		 PacMania.emit('Update Game State', data={	 GhostList : ghostsArray, PacList : pacArray, Pellet: pellets	 });
 	 }
 	 
 	 //Add a Ghost
@@ -1109,7 +1122,7 @@ PacMania.on('connection',function(socket){
 		 ghostsArray.push (	g	); 
 	 }
 	 
-	  //Add a PAC-MAN
+	 //Add a PAC-MAN
 	 function addPac (socket) {
 		  
 		 var p = {
@@ -1117,6 +1130,7 @@ PacMania.on('connection',function(socket){
 			 id:socket,
 			 x : -8,
 			 y : -6,
+			 score: 300,
 			 lastNode : 89,
 			 nextNode : 90,
 			 oldNode : -1,
@@ -1129,7 +1143,70 @@ PacMania.on('connection',function(socket){
 			 
 		 pacArray.push (	p	); 
 	 }
-	  
+
+	 //Add Pellets(){
+	 function addPellets(firstNode, secondNode){
+		 //Spacing Value for the Pellets
+		 //How much space between each pellet
+		 pelletSpacing = 0.5;
+		 
+		 
+		 //Different Y Values
+		 if(mapNodes[firstNode ].x == mapNodes[secondNode ].x){
+			 
+			 if(mapNodes[firstNode ].y > mapNodes[secondNode ].y)
+				 pelletSpacing = -pelletSpacing;
+			 
+			 for(var pNo = 0; pNo <= Math.abs(mapNodes[firstNode ].y-mapNodes[secondNode ].y)/Math.abs(pelletSpacing); pNo++){
+			 
+				 var p = {
+					 //Pellet Object
+					 x : mapNodes[firstNode ].x,
+					 y : mapNodes[firstNode ].y + pNo*pelletSpacing,
+					 worth: 10,
+					 type : "Pellet"
+				 };
+				 
+				 pellets.push(p);
+			 }
+		 }
+		 //Different X Values
+		 else if(mapNodes[firstNode ].y == mapNodes[secondNode ].y){
+			 
+			 if(mapNodes[firstNode ].x > mapNodes[secondNode ].x)
+				 pelletSpacing = -pelletSpacing;
+			 
+			 for(var pNo = 0; pNo <= Math.abs(mapNodes[firstNode ].x-mapNodes[secondNode ].x)/Math.abs(pelletSpacing); pNo++){
+			 
+				 var p = {
+					 //Pellet Object
+					 x : mapNodes[firstNode ].x + pNo*pelletSpacing,
+					 y : mapNodes[firstNode ].y,
+					 worth: 10,
+					 type : "Pellet"
+				 };
+				 
+				 pellets.push(p);
+			 }
+		 }
+		 
+		 console.log("Pellets Size:"+pellets.length);
+	 }
+	 
+	 //Pacman Encounters/Eats Pellets
+	 function didPacEncounterPellet(Pac){
+		 //When the Pacman are in the same location as pellet, near a pellet
+		 for(var pel = 0; pel < pellets.length; pel++){
+			 var pelletRadius =0.35;
+			 if( Math.abs(Pac.x - pellets[pel].x)<=pelletRadius && Math.abs(Pac.y - pellets[pel].y)<=pelletRadius){
+				
+				 Pac.score += pellets[pel].worth;						
+				 pellets.splice(pel,1);
+				 
+			 }
+		 }		 
+	 }
+	 
 	 //Ghost Status/Updates
 	 function ghostStatusUpdate(){
 		 ghostsCountDown--;
@@ -1186,7 +1263,7 @@ PacMania.on('connection',function(socket){
 	 }
 	
 	 //A* Search Function for the Ghost
-	function loadAstarNode(prevNode,currNode,goalNode){
+	 function loadAstarNode(prevNode,currNode,goalNode){
 		//Path is first empty
 		var path=[];
 		resetAstarList();
@@ -1308,8 +1385,6 @@ PacMania.on('connection',function(socket){
 		 //https://briangrinstead.com/blog/astar-search-algorithm-in-javascript/
 	 }
 	
-	
-	 
 	 //Leaving the PacMania Game
      socket.on('disconnect', function() {
 		 console.log(socket.id+" has Disconnected!");
