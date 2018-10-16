@@ -9,14 +9,16 @@ var clickable = [];
 
 //PacMania
 var ghost,ghost2,ghost3,ghost4,ghost5,ghost6,ghost7,ghost8,ghost9;
-var pac;
+var pac,pac2;
 var Outline, Board, gameMaze = [], pellets=[];
 var Width = 0, Height = 0;
 var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
-var backgroundButton, startButton, backgroundState = 'Original'; //Background functions
+var backgroundButton, startButton, backgroundState = 'Original', joinButton; //Background functions
 var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [];
 var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture = [];
 var P1Text, P2Text, P3Text, P4Text, P1Score, P2Score, P3Score, P4Score; //Score board
+//For the touch screens controls The four buttons
+var NorthButton, SouthButton, EastButton, WestButton;
 
 function init() {
 	 // create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -58,9 +60,15 @@ function init() {
 			
 	 //Sockets
 	 socket = io.connect('http://localhost:9000');
+	 console.log(socket);
+	 console.log("-");
+	 console.log(PacMania.id);
 	 //socket = io.connect('ec2-34-205-146-82.compute-1.amazonaws.com:9000');
 	
 	 PacMania.on('Update Game State', function(data){
+		 if(scene.getObjectByName('startButton') != null)
+			 scene.remove(startButton);
+		 
 		 //Update the Ghost Sprites
 		 for(var x=0; x<data.GhostList.length; x++){
 			 if(x == 0){
@@ -1322,6 +1330,7 @@ function init() {
 		 }		 
 		 
 		 //Update the Pac Sprites
+		 var showJoinButton = true;
 		 for(var x=0; x<data.PacList.length; x++){
 			 if(x == 0){
 				 if(scene.getObjectByName('Pac') == null){
@@ -1333,9 +1342,36 @@ function init() {
 				 P1Score = data.PacList[x].score;
 				 P1Text.parameters.text= "P1: "+P1Score;
 				 P1Text.update();
+				 
+				 if(data.PacList[x].id == PacMania.id)
+					 showJoinButton = false;
+				 
 			 }
+			 else if(x == 1){
+				 if(scene.getObjectByName('Pac2') == null){
+					 pac2.name = 'Pac2';
+					 scene.add(pac2);		
+				 }
+					 
+				 
+				 pac2.position.x = data.PacList[x].x*xMultiplier;
+				 pac2.position.y = data.PacList[x].y*yMultiplier+yShifter;
+				 P2Score = data.PacList[x].score;
+				 P2Text.parameters.text= "P2: "+P2Score;
+				 P2Text.update();
+			 }
+			 
+			 if(data.PacList[x].id == PacMania.id)
+					 showJoinButton = false;
 		 }
-		
+		 if(showJoinButton)
+				 scene.add(joinButton);
+		 else try{
+					 scene.remove(joinButton);
+				 } catch(e){
+					 console.log("Not there");
+				 }
+				 
 
 		 //Pellets
 		 for(var x=0; x<data.Pellet.length; x++){
@@ -1431,6 +1467,7 @@ function init() {
 	 loadGhosts();
 	 loadPac();
 	 load_Game_Maze_1();
+	 load_Touch_Screen_Controls();
 	
 	 function renderScene(){
 		 try{
@@ -1455,10 +1492,12 @@ function init() {
 		 var dragControls  = new THREE.DragControls( objects, camera, renderer.domElement );
 				
 			 dragControls.addEventListener( 'dragstart', function(event) {
-																			 if (event.object == startButton){
+																			 if (event.object == startButton && startButton.visble == true){
 																				 console.log("Start the Game");			
 																				 PacMania.emit('Initiate Game Render');
 																				 startButton.position.set(12,-22.75,5);
+																				 startButton.visble = false;
+																				 joinButton.visble = false;
 																			 }
 																			 else if (event.object == backgroundButton){
 																				 if(backgroundState == "Original"){
@@ -1496,6 +1535,28 @@ function init() {
 																				 }
 																				  backgroundButton.position.set(-12,-22.5,5);
 																			 }
+																			 else  if (event.object == joinButton && joinButton.visble == true){
+																				 PacMania.emit('Add Player');
+																				 joinButton.position.set(12,-22.75,5);
+																				 scene.remove(joinButton);
+																				 joinButton.visble = false;
+																			 }
+																			 else if (event.object == NorthButton){
+																				 var data = { direction: "North"  };
+																				 PacMania.emit('Move',data);
+																			 }
+																			 else if (event.object == SouthButton){
+																				 var data = { direction: "South"  };
+																				 PacMania.emit('Move',data);
+																			 }
+																			 else if (event.object == EastButton){
+																				 var data = { direction: "East"  };
+																				 PacMania.emit('Move',data);
+																			 }
+																			 else if (event.object == WestButton){
+																				 var data = { direction: "West"  };
+																				 PacMania.emit('Move',data);
+																			 }
 																			 //console.log("lol start of drag: ");
 																		 
 																		 });
@@ -1505,6 +1566,18 @@ function init() {
 																				 startButton.position.set(12,-22.75,5);
 																			 else if (event.object == backgroundButton)
 																				 backgroundButton.position.set(-12,-22.5,5);
+																			 else if (event.object == joinButton){
+																				 joinButton.position.set(12,-22.75,5);
+																				 scene.remove(joinButton);
+																			 }
+																			 else if (event.object == NorthButton)
+																				 NorthButton.position.set(0,yShifter+2, -3);
+																			 else if (event.object == SouthButton)
+																				 SouthButton.position.set(0,yShifter+2, -3);		 
+																			 else if (event.object == EastButton)
+																				 EastButton.position.set(6,yShifter-2, -3); //xyz
+																			 else if (event.object == WestButton)
+																				 WestButton.position.set(-6,yShifter-2, -3); //xyz
 																		 });
 																		
 			 dragControls.addEventListener( 'dragend', function(event)   {});
@@ -2195,12 +2268,19 @@ function init() {
 	 }
 	
 	 function loadPac(){
-		 var pacGeometry = new THREE.PlaneGeometry(1.5,1.5,0);
+		 //var pacGeometry = new THREE.PlaneGeometry(1.5,1.5,0);
+		 var pacGeometry = new THREE.CircleGeometry(0.8, 32 );
 		 var Material = new THREE.MeshBasicMaterial({color: 0xffff55}); //RGB
 		 pac = new THREE.Mesh(pacGeometry, Material);
-		 scene.add(pac);
+		 //scene.add(pac);
 		 pac.position.set(-10,-4,-2); //xyz
 		 pac.name = 'Pac';
+		 
+		 var Material2 = new THREE.MeshBasicMaterial({color: 0xaaaaff}); //RGB
+		 pac2 = new THREE.Mesh(pacGeometry, Material2);
+		 //scene.add(pac2);
+		 pac2.position.set(-10,-4,-2); //xyz
+		 pac2.name = 'Pac2';
 	 }
 		
 	 function load_Board(){
@@ -2302,6 +2382,9 @@ function init() {
 		 startButton.position.set(12,-22.75,5);
 		 startButton.scale.set(15,5,1);
 		 startButton.update();
+		 startButton.name = "startButton";
+		 startButton.visble = true;
+		 console.log(startButton);
 		 scene.add(startButton);
 		 objects.push(startButton);
 		 
@@ -2318,6 +2401,21 @@ function init() {
 		 backgroundButton.update();
 		 scene.add(backgroundButton);
 		 objects.push(backgroundButton);
+		 
+		 //Join Button
+		 joinButton = new THREEx.DynamicText2DObject()
+		 joinButton.parameters.text= "Join the Game";
+		 joinButton.parameters.font= "85px Arial";
+		 joinButton.parameters.fillStyle= "Magenta";
+		 joinButton.parameters.align = "center";
+		 joinButton.dynamicTexture.canvas.width = 1024;
+		 joinButton.dynamicTexture.canvas.height = 256;
+		 joinButton.position.set(12,-22.75,5);
+		 joinButton.scale.set(15,5,1);
+		 joinButton.update();
+		 joinButton.visble = true;
+		 joinButton.name = "joinButton";
+		 objects.push(joinButton);
 	 }
 
 	 function load_Game_Maze_1(){
@@ -3031,6 +3129,75 @@ function init() {
 		 }
 		 
 	 }
+	  
+	 function load_Touch_Screen_Controls(){
+		 var rectShape;
+		 var material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+		 
+		 //North Touch Screen Button
+		 rectShape = new THREE.Shape();
+		 //rectShape.moveTo( X, Y );
+		 rectShape.moveTo( -20, 15-yShifter );
+		 rectShape.lineTo( -5, 2-yShifter );
+		 rectShape.lineTo( 5, 2-yShifter  );
+		 rectShape.lineTo( 20, 15-yShifter );
+		 rectShape.lineTo( -20, 15-yShifter );
+		
+		 var topGeometry = new THREE.ShapeGeometry( rectShape );
+		 
+		 NorthButton = new THREE.Mesh(topGeometry, material);
+		 //NorthButton.material.transparent  = true;
+		 NorthButton.material.opacity = 0.2;
+		 NorthButton.position.set(0,yShifter+2, -3);
+		 scene.add(NorthButton);
+		 objects.push(NorthButton);
+		 
+		 
+		 //South Touch Screen Button
+		 rectShape = new THREE.Shape();
+		 //rectShape.moveTo( X, Y );
+		 rectShape.moveTo( -20, -23-yShifter );
+		 rectShape.lineTo( -5, -11-yShifter );
+		 rectShape.lineTo( 5, -11-yShifter  );
+		 rectShape.lineTo( 20, -23-yShifter );
+		 rectShape.lineTo( -20, -23-yShifter );
+		 var bottomGeometry = new THREE.ShapeGeometry( rectShape );
+		 SouthButton = new THREE.Mesh(bottomGeometry, material);
+		 //SouthButton.material.opacity = 0.2;
+		 SouthButton.material.transparent  = true;
+		 SouthButton.position.set(0,yShifter+2, -3);		 
+		 scene.add(SouthButton);
+		 objects.push(SouthButton);
+		 
+		 //West Touch Screen Button
+		 rectShape = new THREE.Shape();
+		 //rectShape.moveTo( X, Y );
+		 rectShape.moveTo( -13, 17-yShifter );
+		 rectShape.lineTo( 0, 6-yShifter );
+		 rectShape.lineTo( 0, -6-yShifter  );
+		 rectShape.lineTo( -13, -17-yShifter );
+		 rectShape.lineTo( -13, 17-yShifter );
+		 var leftGeometry = new THREE.ShapeGeometry( rectShape );
+		 WestButton = new THREE.Mesh(leftGeometry, material);
+		 WestButton.position.set(-6,yShifter-2, -3); //xyz
+		 scene.add(WestButton);
+		 objects.push(WestButton);
+		 
+		 //East Touch Screen Button
+		 rectShape = new THREE.Shape();
+		 //rectShape.moveTo( X, Y );
+		 rectShape.moveTo( 13, 17-yShifter );
+		 rectShape.lineTo( 0, 6-yShifter );
+		 rectShape.lineTo( 0, -6-yShifter  );
+		 rectShape.lineTo( 13, -17-yShifter );
+		 rectShape.lineTo( 13, 17-yShifter );
+		 var leftGeometry = new THREE.ShapeGeometry( rectShape );
+		 EastButton = new THREE.Mesh(leftGeometry, material);
+		 EastButton.position.set(6,yShifter-2, -3); //xyz
+		 scene.add(EastButton);
+		 objects.push(EastButton);
+	 }
+	  
 	  
 	  //From Pacman 3D- Creates/Returns the Pellets
 	 var createDot = function () {

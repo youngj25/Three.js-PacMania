@@ -80,6 +80,9 @@ io.sockets.on('connection',
 
 //New Pac-man Server
 var PacMania = io.of('/pacMania'), PacSocketList=[];
+var ghostsArray = [], pacArray = [], pellets = [];
+var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumber =11; //ghostRandomModeGeneratorNumber gets low and make the ghost more aggressive (default is 21)
+var mapNodes = [],nodesList, gameRender = null, step=0;
 
 PacMania.on('connection',function(socket){
 	 console.log("Pac-Mania Served has been accessed");
@@ -87,10 +90,10 @@ PacMania.on('connection',function(socket){
 	 
 	 PacSocketList.push(socket);
 	  
-	 var mapNodes = [], gameRender = null, step=0;
-	 var nodesList; // For the aStar Algorithm
-	 var ghostsArray = [], pacArray = [], pellets = [];
-	 var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumber =11; //ghostRandomModeGeneratorNumber gets low and make the ghost more aggressive (default is 21)
+	 //var mapNodes = [], gameRender = null, step=0;
+	 //var nodesList; // For the aStar Algorithm
+	 //var ghostsArray = [], pacArray = [], pellets = [];
+	 //var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumber =11; //ghostRandomModeGeneratorNumber gets low and make the ghost more aggressive (default is 21)
 	 
 	 //Load Nodes for Maze 1
 	 function loadNodesMaze1(){
@@ -774,15 +777,14 @@ PacMania.on('connection',function(socket){
 				 //addGhost("Random");			 
 			 }
 			 
-			 if(pacArray.length <= 1){
-				 addPac(socket.id);
-
-				 for(var pelletAdditions = 0; pelletAdditions <7; pelletAdditions++){
-					 var first = Math.floor(Math.random()*115);
-					 var second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
-					 
-					 addPellets(first,second);
-				 }
+			 addPac(socket.id);
+			
+			 //Add Pellets to the gameboard
+			 for(var pelletAdditions = 0; pelletAdditions <15; pelletAdditions++){
+				 var first = Math.floor(Math.random()*115);
+				 var second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
+				 
+				 addPellets(first,second);
 			 }
 			
 			 
@@ -805,6 +807,13 @@ PacMania.on('connection',function(socket){
 		 //PacMania.emit('Add Ghost');
 	 });
 	 
+	 socket.on('Add Player', function(data) {
+		 //Add Player;
+		 addPac(socket.id);
+		 console.log("Player added with the id: "+ socket.id);
+		 console.log("PacArray Length: "+pacArray.length);
+	 });
+	 
 	 socket.on('Move', function(data){
 		 var found = false;
 		 
@@ -823,10 +832,7 @@ PacMania.on('connection',function(socket){
 		 //step++;
 		  var pacmanDistanceTravelDivsor = 20;
 		 
-		 
-		 
 		 //Ghost
-		 ghostStatusUpdate();
 		 //Loops for Ghosts
 		 for(var ghostCount =0; ghostCount<ghostsArray.length;ghostCount++){
 			 //Difference in X Axis
@@ -935,6 +941,12 @@ PacMania.on('connection',function(socket){
 					 console.log("Last Node: "+ghostsArray[ghostCount].lastNode);
 					 console.log("Next Node: "+ghostsArray[ghostCount].nextNode);
 					 console.log(mapNodes[ ghostsArray[ghostCount].nextNode ]);
+					 console.log("------------------------------------------");
+					  console.log(ghostsArray[ghostCount].returnPath);
+					 console.log("------------------------------------------"); 
+					 console.log(ghostsArray[ghostCount]);
+					 console.log("------------------------------------------");
+					 console.log("------------------------------------------");
 				 }
 			 }
 			 
@@ -1070,13 +1082,23 @@ PacMania.on('connection',function(socket){
 					 }
 					 
 				 }catch(e){
-					 
+					 console.log("error");
 				 }
 					
 			 }
 		 }
 		 
 		 PacMania.emit('Update Game State', data={	 GhostList : ghostsArray, PacList : pacArray, Pellet: pellets	 });
+		 
+		 ghostStatusUpdate();
+		 
+		 if(pellets.length < 3)
+			 for(var pelletAdditions = 0; pelletAdditions < (Math.floor( Math.random()*15)+6); pelletAdditions++){
+				 var first = Math.floor(Math.random()*115);
+				 var second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
+				 
+				 addPellets(first,second);
+			}
 	 }
 	 
 	 //Add a Ghost
@@ -1387,10 +1409,19 @@ PacMania.on('connection',function(socket){
 	
 	 //Leaving the PacMania Game
      socket.on('disconnect', function() {
-		 console.log(socket.id+" has Disconnected!");
-		 console.log("Ended the Game State");
-		 clearInterval(gameRender);
-		 gameRender = null;
+		 for(var x = 0; x<pacArray.length; x++)
+			 if(pacArray[x].id == socket.id){
+				 console.log("Player "+(x+1)+" - "+socket.id+" has Disconnected!");
+				 pacArray.splice(x,1);
+			 }
+		
+		 if(pacArray.length == 0){
+			 console.log("Pacmania Server just became Idle");
+			 if(gameRender != null){
+				 clearInterval(gameRender);
+				 gameRender = null;
+			 }
+		}
     });
  
 });
