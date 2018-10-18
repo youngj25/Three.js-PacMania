@@ -80,7 +80,7 @@ io.sockets.on('connection',
 
 //New Pac-man Server
 var PacMania = io.of('/pacMania'), PacSocketList=[];
-var ghostsArray = [], pacArray = [], pellets = [];
+var ghostsArray = [], pacArray = [], pacItems = [];
 var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumber =11; //ghostRandomModeGeneratorNumber gets low and make the ghost more aggressive (default is 21)
 var mapNodes = [],nodesList, gameRender = null, step=0;
 
@@ -784,12 +784,8 @@ PacMania.on('connection',function(socket){
 				 var first = Math.floor(Math.random()*115);
 				 var second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
 				 
-				 addPellets(first,second);
+				 addPacItems(first,second);
 			 }
-			
-			 
-			 //console.log(ghostsArray);
-			 //console.log("Nodes: "+mapNodes.length);
 			  
 			 gameRender = setInterval( UpdateGameState, 25);
 		 }
@@ -830,31 +826,44 @@ PacMania.on('connection',function(socket){
 	 //Update the Game State
 	 function UpdateGameState(){
 		 //step++;
-		  var pacmanDistanceTravelDivsor = 20;
+		 var pacmanDistanceTravelDivsor = 20;
+		 var baseSpeed = 1.5;
 		 
 		 //Ghost
 		 //Loops for Ghosts
 		 for(var ghostCount =0; ghostCount<ghostsArray.length;ghostCount++){
 			 //Difference in X Axis
 			 if(ghostsArray[ghostCount].x < mapNodes[ ghostsArray[ghostCount].nextNode ].x){
-				 ghostsArray[ghostCount].x = (ghostsArray[ghostCount].x*pacmanDistanceTravelDivsor + 1)/pacmanDistanceTravelDivsor;
+				 if(Math.abs(ghostsArray[ghostCount].x - mapNodes[ ghostsArray[ghostCount].nextNode].x)>=(baseSpeed/pacmanDistanceTravelDivsor))
+					 ghostsArray[ghostCount].x = (ghostsArray[ghostCount].x*pacmanDistanceTravelDivsor + baseSpeed)/pacmanDistanceTravelDivsor;
+				 else
+					 ghostsArray[ghostCount].x = mapNodes[ ghostsArray[ghostCount].nextNode].x;
 				 ghostsArray[ghostCount].directionPhase += 1;
 			 }
 			 else if(ghostsArray[ghostCount].x > mapNodes[ ghostsArray[ghostCount].nextNode ].x){
-				 ghostsArray[ghostCount].x = (ghostsArray[ghostCount].x*pacmanDistanceTravelDivsor - 1)/pacmanDistanceTravelDivsor;
+				 if(Math.abs(ghostsArray[ghostCount].x - mapNodes[ ghostsArray[ghostCount].nextNode].x)>=(baseSpeed/pacmanDistanceTravelDivsor))	
+					 ghostsArray[ghostCount].x = (ghostsArray[ghostCount].x*pacmanDistanceTravelDivsor - baseSpeed)/pacmanDistanceTravelDivsor;
+				 else
+					 ghostsArray[ghostCount].x = mapNodes[ ghostsArray[ghostCount].nextNode ].x;
 				 ghostsArray[ghostCount].directionPhase += 1;
 			 }
 			 //Difference in Y Axis
 			 else if(ghostsArray[ghostCount].y < mapNodes[ ghostsArray[ghostCount].nextNode ].y){
-				 ghostsArray[ghostCount].y = (ghostsArray[ghostCount].y*pacmanDistanceTravelDivsor + 1)/pacmanDistanceTravelDivsor;
+				  if(Math.abs(ghostsArray[ghostCount].y - mapNodes[ ghostsArray[ghostCount].nextNode].y)>=(baseSpeed/pacmanDistanceTravelDivsor))	
+					 ghostsArray[ghostCount].y = (ghostsArray[ghostCount].y*pacmanDistanceTravelDivsor + baseSpeed)/pacmanDistanceTravelDivsor;
+				 else
+					 ghostsArray[ghostCount].y = mapNodes[ ghostsArray[ghostCount].nextNode ].y;
 				 ghostsArray[ghostCount].directionPhase += 1;
 			 }
 			 else if(ghostsArray[ghostCount].y > mapNodes[ ghostsArray[ghostCount].nextNode ].y){
-				 ghostsArray[ghostCount].y = (ghostsArray[ghostCount].y*pacmanDistanceTravelDivsor - 1)/pacmanDistanceTravelDivsor;
+				 if(Math.abs(ghostsArray[ghostCount].y - mapNodes[ ghostsArray[ghostCount].nextNode].y)>=(baseSpeed/pacmanDistanceTravelDivsor))	
+					ghostsArray[ghostCount].y = (ghostsArray[ghostCount].y*pacmanDistanceTravelDivsor - baseSpeed)/pacmanDistanceTravelDivsor;
+				 else
+					 ghostsArray[ghostCount].y = mapNodes[ ghostsArray[ghostCount].nextNode ].y;
 				 ghostsArray[ghostCount].directionPhase += 1;
 			 }
 			 //If it arrives at the next Node
-			else if(ghostsArray[ghostCount].x == mapNodes[ ghostsArray[ghostCount].nextNode ].x && ghostsArray[ghostCount].y == mapNodes[ ghostsArray[ghostCount].nextNode ].y ){ 
+			 else if(ghostsArray[ghostCount].x == mapNodes[ ghostsArray[ghostCount].nextNode ].x && ghostsArray[ghostCount].y == mapNodes[ ghostsArray[ghostCount].nextNode ].y ){ 
 				 // When the ghosts arrives at the nextNode location
 				 //For the portals
 				 //A117 -> A118
@@ -902,19 +911,34 @@ PacMania.on('connection',function(socket){
 						 ghostsArray[ghostCount].nextNode = loadRandomNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode );
 					 }
 					 else if(ghostsStatus == "Home"){
-						 if(ghostsArray[ghostCount].returnPath.length <= 0 )
+						 
+						 //To solve the issue of the going home error that get stucks at the portal
+						 if(ghostsArray[ghostCount].oldNode == 92 && ghostsArray[ghostCount].lastNode == 91 ){
+							 ghostsArray[ghostCount].direction = 'South';
+							 ghostsArray[ghostCount].directionPhase = 0;
+							 ghostsArray[ghostCount].nextNode =  118;
+							 console.log("Caught the Error!!!!!");
+						 }
+						 
+						 
+						 
+						 //Now finding the path
+						 else if(ghostsArray[ghostCount].returnPath.length <= 0 )
 							 ghostsArray[ghostCount].returnPath = loadAstarNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode ,ghostsArray[ghostCount].home)
 						
 						 // if the Array is still empty then that means we are at our goal location so go to a random next location 
 						 if(ghostsArray[ghostCount].returnPath.length <= 0 )
 							 ghostsArray[ghostCount].nextNode = loadRandomNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode );
-						else // if the Array is not empty then follow the path
-							ghostsArray[ghostCount].nextNode = ghostsArray[ghostCount].returnPath.shift();
+						 else // if the Array is not empty then follow the path
+							 ghostsArray[ghostCount].nextNode = ghostsArray[ghostCount].returnPath.shift();
 						 //ghostsArray[ghostCount].returnPath.shift();						 
 					 }
 					 
 					 //console.log("next node: "+ghostsArray[ghostCount].nextNode+ " x:" +mapNodes[ ghostsArray[ghostCount].nextNode ].x + "  y:"+mapNodes[ ghostsArray[ghostCount].nextNode ].y);
-				 
+					 
+					 
+					 
+					 
 					 //If the direction had change reset the Direction and DirectionPhase
 					 if(mapNodes[ ghostsArray[ghostCount].lastNode ].North == ghostsArray[ghostCount].nextNode && ghostsArray[ghostCount].direction != 'North'){
 							 ghostsArray[ghostCount].direction = 'North';
@@ -936,7 +960,7 @@ PacMania.on('connection',function(socket){
 					
 				 }
 				 catch(e){
-					 console.log("Ghost "+ ghostCount);
+					 console.log("Ghost "+ ghostCount+" Status:"+ghostsStatus);
 					 console.log("Old Node: "+ghostsArray[ghostCount].oldNode);
 					 console.log("Last Node: "+ghostsArray[ghostCount].lastNode);
 					 console.log("Next Node: "+ghostsArray[ghostCount].nextNode);
@@ -948,12 +972,12 @@ PacMania.on('connection',function(socket){
 					 console.log("------------------------------------------");
 					 console.log("------------------------------------------");
 				 }
-			 }
+			 } 
 			 
 				 if(ghostsArray[ghostCount].directionPhase % 10 == 0)
 					 ghostsArray[ghostCount].directionSprite=  (ghostsArray[ghostCount].directionSprite+1)%2; 
 					
-		}
+		 }
 		
 		 //PAC-MAN
 		 //Loops for PAC-MANS
@@ -969,30 +993,42 @@ PacMania.on('connection',function(socket){
 				 pacArray[pacCount].lastNode = pacArray[pacCount].nextNode;
 				 pacArray[pacCount].nextNode = pacArray[pacCount].oldNode;
 				 pacArray[pacCount].direction = pacArray[pacCount].intendedDirection;
-			 }
-			 
+			 }			 
 			 
 			 //Difference in X Axis
 			 if(pacArray[pacCount].x < mapNodes[ pacArray[pacCount].nextNode ].x){
-				 pacArray[pacCount].x = (pacArray[pacCount].x*pacmanDistanceTravelDivsor + 1)/pacmanDistanceTravelDivsor;
+				 if(Math.abs(pacArray[pacCount].x - mapNodes[ pacArray[pacCount].nextNode].x)>(baseSpeed*pacArray[pacCount].speed/pacmanDistanceTravelDivsor))
+					 pacArray[pacCount].x = (pacArray[pacCount].x*pacmanDistanceTravelDivsor + baseSpeed*pacArray[pacCount].speed)/pacmanDistanceTravelDivsor;
+				  else
+					 pacArray[pacCount].x = mapNodes[ pacArray[pacCount].nextNode].x;
+				 
 				 pacArray[pacCount].directionPhase +=1;
-				 didPacEncounterPellet(pacArray[pacCount]);
+				 
 			 }
 			 else if(pacArray[pacCount].x > mapNodes[ pacArray[pacCount].nextNode ].x){
-				 pacArray[pacCount].x = (pacArray[pacCount].x*pacmanDistanceTravelDivsor - 1)/pacmanDistanceTravelDivsor;
+				 if(Math.abs(pacArray[pacCount].x - mapNodes[ pacArray[pacCount].nextNode].x)>(baseSpeed*pacArray[pacCount].speed/pacmanDistanceTravelDivsor))
+					 pacArray[pacCount].x = (pacArray[pacCount].x*pacmanDistanceTravelDivsor - baseSpeed*pacArray[pacCount].speed)/pacmanDistanceTravelDivsor;
+				  else
+					 pacArray[pacCount].x = mapNodes[ pacArray[pacCount].nextNode].x;
+				 
 				 pacArray[pacCount].directionPhase +=1;
-				 didPacEncounterPellet(pacArray[pacCount]);
 			 }
 			 //Difference in Y Axis
 			 else if(pacArray[pacCount].y < mapNodes[ pacArray[pacCount].nextNode ].y){
-				 pacArray[pacCount].y = (pacArray[pacCount].y*pacmanDistanceTravelDivsor + 1)/pacmanDistanceTravelDivsor;
+				 if(Math.abs(pacArray[pacCount].y - mapNodes[ pacArray[pacCount].nextNode].y)>(baseSpeed*pacArray[pacCount].speed/pacmanDistanceTravelDivsor))
+					 pacArray[pacCount].y = (pacArray[pacCount].y*pacmanDistanceTravelDivsor + baseSpeed*pacArray[pacCount].speed)/pacmanDistanceTravelDivsor;
+				  else
+					 pacArray[pacCount].y = mapNodes[ pacArray[pacCount].nextNode].y;
+				 
 				 pacArray[pacCount].directionPhase +=1;
-				 didPacEncounterPellet(pacArray[pacCount]);
 			 }
 			 else if(pacArray[pacCount].y > mapNodes[ pacArray[pacCount].nextNode ].y){
-				 pacArray[pacCount].y = (pacArray[pacCount].y*pacmanDistanceTravelDivsor - 1)/pacmanDistanceTravelDivsor;
+				 if(Math.abs(pacArray[pacCount].y - mapNodes[ pacArray[pacCount].nextNode].y)>(baseSpeed*pacArray[pacCount].speed/pacmanDistanceTravelDivsor))
+					 pacArray[pacCount].y = (pacArray[pacCount].y*pacmanDistanceTravelDivsor - baseSpeed*pacArray[pacCount].speed)/pacmanDistanceTravelDivsor;
+				  else
+					 pacArray[pacCount].y = mapNodes[ pacArray[pacCount].nextNode].y;
+				 
 				 pacArray[pacCount].directionPhase +=1;
-				 didPacEncounterPellet(pacArray[pacCount]);
 			 }
 			 //If it arrives at the next Node
 			 else if(pacArray[pacCount].x == mapNodes[ pacArray[pacCount].nextNode ].x && pacArray[pacCount].y == mapNodes[ pacArray[pacCount].nextNode ].y ){ 
@@ -1086,18 +1122,20 @@ PacMania.on('connection',function(socket){
 				 }
 					
 			 }
+			 //Check for Pellets
+			 didPacEncounterItem(pacArray[pacCount]);
 		 }
 		 
-		 PacMania.emit('Update Game State', data={	 GhostList : ghostsArray, PacList : pacArray, Pellet: pellets	 });
+		 PacMania.emit('Update Game State', data={	 GhostList : ghostsArray, PacList : pacArray, Pellet: pacItems	 });
 		 
 		 ghostStatusUpdate();
 		 
-		 if(pellets.length < 3)
+		 if(pacItems.length < 3)
 			 for(var pelletAdditions = 0; pelletAdditions < (Math.floor( Math.random()*15)+6); pelletAdditions++){
 				 var first = Math.floor(Math.random()*115);
 				 var second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
 				 
-				 addPellets(first,second);
+				 addPacItems(first,second);
 			}
 	 }
 	 
@@ -1152,6 +1190,7 @@ PacMania.on('connection',function(socket){
 			 id:socket,
 			 x : -8,
 			 y : -6,
+			 speed: 1,
 			 score: 300,
 			 lastNode : 89,
 			 nextNode : 90,
@@ -1167,7 +1206,7 @@ PacMania.on('connection',function(socket){
 	 }
 
 	 //Add Pellets(){
-	 function addPellets(firstNode, secondNode){
+	 function addPacItems(firstNode, secondNode){
 		 //Spacing Value for the Pellets
 		 //How much space between each pellet
 		 pelletSpacing = 0.5;
@@ -1189,9 +1228,10 @@ PacMania.on('connection',function(socket){
 					 type : "Pellet"
 				 };
 				 
-				 pellets.push(p);
+				 pacItems.push(p);
 			 }
 		 }
+		 
 		 //Different X Values
 		 else if(mapNodes[firstNode ].y == mapNodes[secondNode ].y){
 			 
@@ -1208,22 +1248,22 @@ PacMania.on('connection',function(socket){
 					 type : "Pellet"
 				 };
 				 
-				 pellets.push(p);
+				 pacItems.push(p);
 			 }
 		 }
 		 
-		 console.log("Pellets Size:"+pellets.length);
+		 //console.log("Pellets Size:"+pellets.length);
 	 }
 	 
 	 //Pacman Encounters/Eats Pellets
-	 function didPacEncounterPellet(Pac){
+	 function didPacEncounterItem(Pac){
 		 //When the Pacman are in the same location as pellet, near a pellet
-		 for(var pel = 0; pel < pellets.length; pel++){
+		 for(var pel = 0; pel < pacItems.length; pel++){
 			 var pelletRadius =0.35;
-			 if( Math.abs(Pac.x - pellets[pel].x)<=pelletRadius && Math.abs(Pac.y - pellets[pel].y)<=pelletRadius){
+			 if( Math.abs(Pac.x - pacItems[pel].x)<=pelletRadius && Math.abs(Pac.y - pacItems[pel].y)<=pelletRadius){
 				
-				 Pac.score += pellets[pel].worth;						
-				 pellets.splice(pel,1);
+				 Pac.score += pacItems[pel].worth;						
+				 pacItems.splice(pel,1);
 				 
 			 }
 		 }		 
@@ -1246,16 +1286,16 @@ PacMania.on('connection',function(socket){
 			if(randomGhostMode <= 4){
 				 ghostsStatus = "Home";
 				 ghostsCountDown = 800;
-				 console.log("Mode: Home");
+				 //console.log("Mode: Home");
 			}
 				
 			else{
 				 ghostsStatus = "Scatter";
 				 ghostsCountDown = 500;
-				 console.log("Mode: Scatter");
+				 //console.log("Mode: Scatter");
 			}
 			
-			 ghostRandomModeGeneratorNumber -= 0.05
+			 //ghostRandomModeGeneratorNumber -= 0.05
 			 
 			 
 		 }

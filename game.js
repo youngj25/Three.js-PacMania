@@ -16,8 +16,8 @@ var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
 var backgroundButton, startButton, backgroundState = 'Original', joinButton; //Background functions
 var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [];
 var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture = [];
-var P1Text, P2Text, P3Text, P4Text, P1Score, P2Score, P3Score, P4Score; //Score board
-//For the touch screens controls The four buttons
+var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE BOARD
+//FOR THE TOUCH SCREENS CONtrols The four buttons
 var NorthButton, SouthButton, EastButton, WestButton;
 
 function init() {
@@ -66,8 +66,16 @@ function init() {
 	 //socket = io.connect('ec2-34-205-146-82.compute-1.amazonaws.com:9000');
 	
 	 PacMania.on('Update Game State', function(data){
-		 if(scene.getObjectByName('startButton') != null)
+		 
+		 if(scene.getObjectByName('startButton') != null){
+			 startButton.position.set(18,-25.75,5);
+			 startButton.visble = false;
 			 scene.remove(startButton);
+		 }
+		 else if(startButton.position.x != 18){
+			 startButton.position.set(18,-25.75,5);
+		 }
+			
 		 
 		 //Update the Ghost Sprites
 		 for(var x=0; x<data.GhostList.length; x++){
@@ -1430,11 +1438,11 @@ function init() {
 		 Width = Height = 0;	
 		 for ( var x=0; Width+Height == 0; x++){
 			 if(window.innerWidth > 1000-x*100 && window.innerHeight > 1000-x*100){
-				 Width = 950-x*80;		
+				 Width = 850-x*100;			
 				 Height = 850-x*95;	
 			 }	
 			 else if( x >= 8){
-				 Width = window.innerWidth*0.65;
+				 Width = window.innerWidth*0.5;
 				 Height = window.innerHeight*0.75;
 			 }
 		 }
@@ -1466,8 +1474,9 @@ function init() {
 	 drag_objects();
 	 loadGhosts();
 	 loadPac();
-	 load_Game_Maze_1();
-	 load_Touch_Screen_Controls();
+	 //load_Text();
+	 //load_Game_Maze_1();
+	 //load_Touch_Screen_Controls();
 	
 	 function renderScene(){
 		 try{
@@ -1495,7 +1504,9 @@ function init() {
 																			 if (event.object == startButton && startButton.visble == true){
 																				 console.log("Start the Game");			
 																				 PacMania.emit('Initiate Game Render');
-																				 startButton.position.set(12,-22.75,5);
+																				 startButton.position.set(18,-25.75,5);
+																				 joinButton.position.set(18,-25.75,5);
+																				 scene.remove(startButton);
 																				 startButton.visble = false;
 																				 joinButton.visble = false;
 																			 }
@@ -1537,6 +1548,7 @@ function init() {
 																			 }
 																			 else  if (event.object == joinButton && joinButton.visble == true){
 																				 PacMania.emit('Add Player');
+																				 console.log("Join the Game!!!!");	
 																				 joinButton.position.set(12,-22.75,5);
 																				 scene.remove(joinButton);
 																				 joinButton.visble = false;
@@ -1548,6 +1560,7 @@ function init() {
 																			 else if (event.object == SouthButton){
 																				 var data = { direction: "South"  };
 																				 PacMania.emit('Move',data);
+																				 console.log("Down Direction");	
 																			 }
 																			 else if (event.object == EastButton){
 																				 var data = { direction: "East"  };
@@ -1557,8 +1570,15 @@ function init() {
 																				 var data = { direction: "West"  };
 																				 PacMania.emit('Move',data);
 																			 }
-																			 //console.log("lol start of drag: ");
-																		 
+																			 else if (event.object == startButton && startButton.visble == false && joinButton.visble == true){
+																				 //This will catch the error with the startButton
+																				 PacMania.emit('Add Player');
+																				 console.log("Join the Game!!!!");	
+																				 joinButton.position.set(12,-22.75,5);
+																				 scene.remove(joinButton);
+																				 joinButton.visble = false;
+																			 }
+																			//console.log("lol start of drag: ");
 																		 });
 																		 
 			 dragControls.addEventListener( 'drag', function(event)   {
@@ -2283,8 +2303,7 @@ function init() {
 		 pac2.name = 'Pac2';
 	 }
 		
-	 function load_Board(){
-		 
+	 function load_Board(){		 
 		 //Load Board
 		 var planeGeometry = new THREE.PlaneBufferGeometry (40.5, 40,0);
 		 var planeMaterial = new THREE.MeshBasicMaterial({color: 0x000000}); //RGB
@@ -2312,7 +2331,9 @@ function init() {
 		 scene.add(Title1);
 		 Title1.position.set(0,22.95,-2); 
 		 Title1.scale.set(24.5,4.5,1);
-		 
+	 }
+	 
+	 function load_Text(){
 		 //Players Score
 		 P1Score = P2Score = P3Score = P4Score = 0;
 		 
@@ -3198,8 +3219,7 @@ function init() {
 		 objects.push(EastButton);
 	 }
 	  
-	  
-	  //From Pacman 3D- Creates/Returns the Pellets
+	 //From Pacman 3D- Creates/Returns the Pellets
 	 var createDot = function () {
 		 return function () {
 			 //Pellets lol I made this one too!!! :D
@@ -3214,6 +3234,8 @@ function init() {
 			 return Pellets;
 		 };
 	 }();
+	 
+	 
 	 
 }
 
