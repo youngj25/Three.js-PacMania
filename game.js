@@ -14,6 +14,7 @@ var Outline, Board, gameMaze = [], pellets=[];
 var Width = 0, Height = 0;
 var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
 var backgroundButton, startButton, backgroundState = 'Original', joinButton; //Background functions
+var aboutButton, howToPlayButton, creditButton, closeButton, titleSectionText;
 var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [];
 var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture = [];
 var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE BOARD
@@ -1468,9 +1469,10 @@ function init() {
 	 
 	 //call the render function
 	 var step = 0;
-	 load_Board();
+	 //load_Board();
+	 load_Start_Screen();
 	 renderScene();
-	 load_Buttons();
+	 //load_Buttons();
 	 drag_objects();
 	 loadGhosts();
 	 loadPac();
@@ -1502,13 +1504,21 @@ function init() {
 				
 			 dragControls.addEventListener( 'dragstart', function(event) {
 																			 if (event.object == startButton && startButton.visble == true){
-																				 console.log("Start the Game");			
+																				 console.log("Start the Game");
+																				 load_Text();
+																				 load_Board();
+																				 load_Game_Maze_1();
 																				 PacMania.emit('Initiate Game Render');
 																				 startButton.position.set(18,-25.75,5);
-																				 joinButton.position.set(18,-25.75,5);
+																				 //joinButton.position.set(18,-25.75,5);
 																				 scene.remove(startButton);
+																				 scene.remove(howToPlayButton);
+																				 console.log("")
+																				 scene.remove(creditButton);
+																				 scene.remove(aboutButton);
 																				 startButton.visble = false;
-																				 joinButton.visble = false;
+																				 //joinButton.visble = false;
+																				 
 																			 }
 																			 else if (event.object == backgroundButton){
 																				 if(backgroundState == "Original"){
@@ -1569,6 +1579,15 @@ function init() {
 																			 else if (event.object == WestButton){
 																				 var data = { direction: "West"  };
 																				 PacMania.emit('Move',data);
+																			 }
+																			 else if (event.object == aboutButton){
+																				 alert("About!");
+																			 }
+																			 else if (event.object == howToPlayButton){
+																				 alert("How To Play!");
+																			 }
+																			 else if (event.object == creditButton){
+																				 alert("Credit!");
 																			 }
 																			 else if (event.object == startButton && startButton.visble == false && joinButton.visble == true){
 																				 //This will catch the error with the startButton
@@ -2317,20 +2336,6 @@ function init() {
 		 Outline = new THREE.Mesh(OutlineGeometry, OutlineMaterial);
 		 Outline.position.set(0,yShifter,-3); //xyz
 		 scene.add(Outline);
-		 
-		 //Title
-		 var loader = new THREE.TextureLoader();
-		 loader.crossOrigin = true;
-		 
-		 //Source for the Title Image: https://fontmeme.com/pac-man-font/
-		 var T = loader.load( 'Images/Title.png' );
-		 T.minFilter = THREE.LinearFilter;
-		 var T1 =  new THREE.SpriteMaterial( { map: T, color: 0xffffff } );
-		 Title1 = new THREE.Sprite(T1);				
-		
-		 scene.add(Title1);
-		 Title1.position.set(0,22.95,-2); 
-		 Title1.scale.set(24.5,4.5,1);
 	 }
 	 
 	 function load_Text(){
@@ -2392,23 +2397,6 @@ function init() {
 	 }
 
 	 function load_Buttons(){
-		 //Start Button
-		 startButton = new THREEx.DynamicText2DObject()
-		 startButton.parameters.text= "Start Game Status";
-		 startButton.parameters.font= "85px Arial";
-		 startButton.parameters.fillStyle= "Yellow";
-		 startButton.parameters.align = "center";
-		 startButton.dynamicTexture.canvas.width = 1024;
-		 startButton.dynamicTexture.canvas.height = 256;
-		 startButton.position.set(12,-22.75,5);
-		 startButton.scale.set(15,5,1);
-		 startButton.update();
-		 startButton.name = "startButton";
-		 startButton.visble = true;
-		 console.log(startButton);
-		 scene.add(startButton);
-		 objects.push(startButton);
-		 
 		 //Change Background Button
 		 backgroundButton = new THREEx.DynamicText2DObject()
 		 backgroundButton.parameters.text= "Change Sprites";
@@ -3235,6 +3223,98 @@ function init() {
 		 };
 	 }();
 	 
+	 function load_Start_Screen(){
+		 //Load Title
+		 var loader = new THREE.TextureLoader();
+		 loader.crossOrigin = true;
+		 
+		 //Source for the Title Image: https://fontmeme.com/pac-man-font/
+		 var T = loader.load( 'Images/Title.png' );
+		 T.minFilter = THREE.LinearFilter;
+		 var T1 =  new THREE.SpriteMaterial( { map: T, color: 0xffffff } );
+		 Title1 = new THREE.Sprite(T1);				
+		
+		 scene.add(Title1);
+		 //Title1.position.set(0,22.95,-2); 
+		 //Title1.scale.set(24.5,4.5,1);
+		 
+		 Title1.position.set(0,15.95,-2); 
+		 Title1.scale.set(32,7,1);
+		 
+		 
+		 //Menu Buttons
+		 //Start Button
+		 startButton = new THREEx.DynamicText2DObject()
+		 startButton.parameters.text= "Start Game";
+		 //startButton.parameters.font= "95px Arial";
+		 startButton.parameters.font= "135px Arial";
+		 startButton.parameters.fillStyle= "#FF0000";
+		 startButton.parameters.align = "center";
+		 startButton.dynamicTexture.canvas.width = 1024;
+		 startButton.dynamicTexture.canvas.height = 256;
+		 startButton.position.set(0,-3,5);
+		 startButton.scale.set(16,4,1);
+		 startButton.parameters.lineHeight=0.6;
+		 startButton.update();
+		 startButton.name = "startButton";
+		 startButton.visble = true;
+		 console.log(startButton);
+		 scene.add(startButton);
+		 objects.push(startButton);
+		 
+		 //About Button
+		 aboutButton = new THREEx.DynamicText2DObject()
+		 aboutButton.parameters.text= "About";
+		 aboutButton.parameters.font= "135px Arial";
+		 aboutButton.parameters.fillStyle= "#FF1493"; //Pinky
+		 aboutButton.parameters.align = "center";
+		 aboutButton.dynamicTexture.canvas.width = 1024;
+		 aboutButton.dynamicTexture.canvas.height = 256;
+		 aboutButton.position.set(-15,-9,5);
+		 aboutButton.scale.set(16,4,1);
+		 aboutButton.parameters.lineHeight=0.6;
+		 aboutButton.update();
+		 aboutButton.name = "aboutButton";
+		 aboutButton.visble = true;
+		 scene.add(aboutButton);
+		 objects.push(aboutButton);		 
+		 
+		 //Credit Button
+		 creditButton = new THREEx.DynamicText2DObject()
+		 creditButton.parameters.text= "Credits";
+		 creditButton.parameters.font= "135px Arial";
+		 creditButton.parameters.fillStyle= "#FF8C00";
+		 creditButton.parameters.align = "center";
+		 creditButton.dynamicTexture.canvas.width = 1024;
+		 creditButton.dynamicTexture.canvas.height = 256;
+		 creditButton.position.set(0,-15,5);
+		 creditButton.scale.set(16,4,1);
+		 creditButton.parameters.lineHeight=0.6;
+		 creditButton.update();
+		 creditButton.name = "creditButton";
+		 creditButton.visble = true;
+		 scene.add(creditButton);
+		 objects.push(creditButton);
+		 
+		 //How To Play Button
+		 howToPlayButton = new THREEx.DynamicText2DObject()
+		 howToPlayButton.parameters.text= "How To Play";
+		 howToPlayButton.parameters.font= "135px Arial";
+		 howToPlayButton.parameters.fillStyle= "#1E90FF";
+		 howToPlayButton.parameters.align = "center";
+		 howToPlayButton.dynamicTexture.canvas.width = 1024;
+		 howToPlayButton.dynamicTexture.canvas.height = 256;
+		 howToPlayButton.position.set(13.75,-9,5);
+		 howToPlayButton.scale.set(16,4,1);
+		 howToPlayButton.parameters.lineHeight=0.6;
+		 howToPlayButton.update();
+		 howToPlayButton.name = "creditButton";
+		 howToPlayButton.visble = true;
+		 scene.add(howToPlayButton);
+		 objects.push(howToPlayButton);
+		 
+		 
+	 }
 	 
 	 
 }
