@@ -13,8 +13,8 @@ var pac,pac2;
 var Outline, Board, gameMaze = [], pellets=[];
 var Width = 0, Height = 0;
 var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
-var backgroundButton, startButton, backgroundState = 'Original', joinButton; //Background functions
-var aboutButton, howToPlayButton, creditButton, closeButton, titleSectionText, returnButton;
+var bgButton, startButton, backgroundState = 'Original', joinButton; //Background functions
+var aboutButton, howToPlayButton, creditButton, closeButton, titleSectionText, returnButton, textBox;
 var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [];
 var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture = [];
 var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE BOARD
@@ -66,7 +66,6 @@ function init() {
 	 PacMania.on('Update Game State', function(data){
 		 
 		 if(Game_Status == "Active"){
-			
 			 
 			 //Update the Ghost Sprites
 			 for(var x=0; x<data.GhostList.length; x++){
@@ -1334,10 +1333,6 @@ function init() {
 					 if(scene.getObjectByName('Pac') == null){
 						 pac.name = 'Pac';
 						 scene.add(pac);
-						 console.log("pac:"+x);	
-						 console.log("pac X:"+data.PacList[x].x);	
-						 console.log("pac Y:"+data.PacList[x].y);	
-						 console.log("pac Score:"+data.PacList[x].score);
 					 }
 					 pac.position.x = data.PacList[x].x*xMultiplier;
 					 pac.position.y = data.PacList[x].y*yMultiplier+yShifter;
@@ -1434,6 +1429,8 @@ function init() {
 	 //add the output of the renderer to the html element
 	 var displayCanvas = document.getElementById("WebGL-output").appendChild(renderer.domElement);
 	 var context = renderer.getContext('2d');
+	 context.font = "30px Arial";
+	 //context.fillText("Hello World",10,50);
 	 
 	 //call the render function
 	 renderer.render(scene, camera);
@@ -1471,26 +1468,25 @@ function init() {
 																				 load_Text();
 																				 load_Board();
 																				 load_Game_Maze_1();
-																				 load_Buttons();
 																				 //Rescale and Reposition the Title
-																				 Title1.position.set(0,22.95,-2); 
-																				 Title1.scale.set(24.5,4.5,1);
+																				 Title1.position.set(0,22.95,-2);
+																				 Title1.scale.set(24.5,4.5,1);																				 
 																				 
-																				 PacMania.emit('Initiate Game Render');
-																				 Game_Status = "Active";
-																				 //startButton.position.set(18,-25.75,5);
-																				 
-																				 //To Deactivate the buttons we'll remove them from objects[] and the scene
-																				 //Removal of the startButton
+																				 //Removal of the start Screen Buttons
 																				 removeButton(startButton);
 																				 removeButton(howToPlayButton);
 																				 removeButton(creditButton);
 																				 removeButton(aboutButton);
+																				 
+																				 //Emit the Server 
+																				 PacMania.emit('Initiate Game Render');
+																				 Game_Status = "Active";
+																				 
 																				 //Addition of the Screen Bottoms and Background Button
 																				 load_Touch_Screen_Controls();
-																				 addButton(backgroundButton);
+																				 addButton(bgButton);
 																			 }
-																			 else if (event.object == backgroundButton){
+																			 else if (event.object == bgButton){
 																				 if(backgroundState == "Original"){
 																					 //Becomes Style 1
 																					 BlinkyTexture = Style1Texture.slice(0, 8);
@@ -1524,7 +1520,7 @@ function init() {
 																					 
 																					 backgroundState ="Original";
 																				 }
-																				  backgroundButton.position.set(-12,-22.5,5);
+																				  bgButton.position.set(19,22.95,-2); 
 																			 }
 																			 else  if (event.object == joinButton && joinButton.visble == true){
 																				 PacMania.emit('Add Player');
@@ -1562,22 +1558,15 @@ function init() {
 																			 else if (event.object == returnButton){
 																				 return_to_Start_Screen();
 																			 }
-																			 else if (event.object == startButton && startButton.visble == false && joinButton.visble == true){
-																				 //This will catch the error with the startButton
-																				 PacMania.emit('Add Player');
-																				 console.log("Join the Game!!!!");	
-																				 joinButton.position.set(12,-22.75,5);
-																				 scene.remove(joinButton);
-																				 joinButton.visble = false;
-																			 }
+																			 
 																			//console.log("lol start of drag: ");
 																		 });
 																		 
 			 dragControls.addEventListener( 'drag', function(event)   {
 																			 if (event.object == startButton)
 																				 startButton.position.set(12,-22.75,5);
-																			 else if (event.object == backgroundButton)
-																				 backgroundButton.position.set(-12,-22.5,5);
+																			 else if (event.object == bgButton)
+																				 bgButton.position.set(19,22.95,-2); 
 																			 else if (event.object == joinButton){
 																				 joinButton.position.set(12,-22.75,5);
 																				 scene.remove(joinButton);
@@ -2293,6 +2282,13 @@ function init() {
 		 //console.log("Created!");
 	 }
 		
+	 function loadItems(){
+		 //Sprites
+		 var loader = new THREE.TextureLoader();
+		 loader.crossOrigin = true;
+		 //---------- Original Sprites --------------------------
+	 }
+		
 	 function load_Board(){		 
 		 //Load Board
 		 var planeGeometry = new THREE.PlaneBufferGeometry (40.5, 40,0);
@@ -2305,7 +2301,7 @@ function init() {
 		 var OutlineGeometry = new THREE.PlaneBufferGeometry (49, 42,0);
 		 var OutlineMaterial = new THREE.MeshBasicMaterial({color: 0x050538}); //RGB
 		 Outline = new THREE.Mesh(OutlineGeometry, OutlineMaterial);
-		 Outline.position.set(0,yShifter,-3); //xyz
+		 Outline.position.set(0,yShifter,-2.5); //xyz
 		 scene.add(Outline);
 	 }
 	 
@@ -2368,17 +2364,17 @@ function init() {
 	 }
 
 	 function load_Buttons(){
+		 var loader = new THREE.TextureLoader();
+		 loader.crossOrigin = true;
+		 
 		 //Change Background Button
-		 backgroundButton = new THREEx.DynamicText2DObject()
-		 backgroundButton.parameters.text= "Change Sprites";
-		 backgroundButton.parameters.font= "85px Arial";
-		 backgroundButton.parameters.fillStyle= "Lime";
-		 backgroundButton.parameters.align = "center";
-		 backgroundButton.dynamicTexture.canvas.width = 1024;
-		 backgroundButton.dynamicTexture.canvas.height = 256;
-		 backgroundButton.position.set(-12,-22.5,5);
-		 backgroundButton.scale.set(15,5,1);
-		 backgroundButton.update();
+		 //bgButton.parameters.text= "Change Sprites";
+		 T = loader.load( 'Images/bgButton.png' );
+		 T.minFilter = THREE.LinearFilter;
+		 var T1 =  new THREE.SpriteMaterial( { map: T, color: 0xffffff } );
+		 bgButton = new THREE.Sprite(T1);	
+		 bgButton.position.set(19,22.95,-2); 
+		 bgButton.scale.set(14,5,1);		  
 		 
 		 //Join Button
 		 joinButton = new THREEx.DynamicText2DObject()
@@ -2408,7 +2404,6 @@ function init() {
 		 startButton.update();
 		 startButton.name = "startButton";
 		 startButton.visble = true;
-		 addButton(startButton);
 		 
 		 //About Button
 		 aboutButton = new THREEx.DynamicText2DObject()
@@ -2424,7 +2419,6 @@ function init() {
 		 aboutButton.update();
 		 aboutButton.name = "aboutButton";
 		 aboutButton.visble = true;
-		 addButton(aboutButton);	 
 		 
 		 //Credit Button
 		 creditButton = new THREEx.DynamicText2DObject()
@@ -2440,7 +2434,6 @@ function init() {
 		 creditButton.update();
 		 creditButton.name = "creditButton";
 		 creditButton.visble = true;
-		 addButton(creditButton);
 		 
 		 //How To Play Button
 		 howToPlayButton = new THREEx.DynamicText2DObject()
@@ -2456,7 +2449,6 @@ function init() {
 		 howToPlayButton.update();
 		 howToPlayButton.name = "creditButton";
 		 howToPlayButton.visble = true;
-		 addButton(howToPlayButton);	
 		 
 		 //Return Button
 		 returnButton = new THREEx.DynamicText2DObject()
@@ -2486,6 +2478,19 @@ function init() {
 		 titleSectionText.visble = true;
 		 titleSectionText.name = "titleSectionText";
 		 
+		 //textBox
+		 textBox = new THREEx.DynamicText2DObject()
+		 textBox.parameters.text= "";
+		 textBox.parameters.font= "45px Arial";
+		 textBox.parameters.fillStyle= "#FF24b3";
+		 textBox.parameters.align = "center";
+		 textBox.dynamicTexture.canvas.width = 1024;
+		 textBox.dynamicTexture.canvas.height = 256;
+		 textBox.position.set(0,-22,5);
+		 textBox.scale.set(6,5,1);
+		 textBox.update();
+		 textBox.visble = true;
+		 textBox.name = "textBox";		 
 	 }
 
 	 function load_Game_Maze_1(){
@@ -3199,7 +3204,8 @@ function init() {
 		 }
 		 
 	 }
-	  
+	 
+	 //Creates four hidden buttons that allow for the touch screen controls to operate normally
 	 function load_Touch_Screen_Controls(){
 		 var rectShape;
 		 var material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
@@ -3249,7 +3255,7 @@ function init() {
 		 rectShape.lineTo( -13, 17-yShifter );
 		 var leftGeometry = new THREE.ShapeGeometry( rectShape );
 		 WestButton = new THREE.Mesh(leftGeometry, material);
-		 WestButton.position.set(-6,yShifter-2, -3); //xyz
+		 WestButton.position.set(-9,yShifter-2, -3); //xyz
 		 scene.add(WestButton);
 		 objects.push(WestButton);
 		 
@@ -3263,7 +3269,7 @@ function init() {
 		 rectShape.lineTo( 13, 17-yShifter );
 		 var leftGeometry = new THREE.ShapeGeometry( rectShape );
 		 EastButton = new THREE.Mesh(leftGeometry, material);
-		 EastButton.position.set(6,yShifter-2, -3); //xyz
+		 EastButton.position.set(9,yShifter-2, -3); //xyz
 		 scene.add(EastButton);
 		 objects.push(EastButton);
 	 }
@@ -3305,7 +3311,8 @@ function init() {
 			 Console.log("Failed  to remove button '"+ button.name+"'");
 		 }
 	 }
-	 	 
+	 
+	 //Loads the Start Screen of the Game
 	 function load_Start_Screen(){
 		 //Load Title
 		 var loader = new THREE.TextureLoader();
@@ -3320,8 +3327,9 @@ function init() {
 		 Title1.position.set(0,15.95,-2); 
 		 Title1.scale.set(32,7,1);		 
 		 
-		 load_Buttons();
-		 
+		 //Loads the Buttons
+		 load_Buttons();  
+		 		 
 		 //Menu Buttons
 		 //Start Button
 		 addButton(startButton);
@@ -3336,6 +3344,7 @@ function init() {
 		 addButton(howToPlayButton);	
 	 }
 	 
+	 //Loads the About Page of the Game
 	 function load_About_Screen(){
 		 //Temporarily remove the Start, Credit, About and How to Play Buttons
 		 removeButton(startButton);
@@ -3352,12 +3361,21 @@ function init() {
 		 titleSectionText.update();
 		 scene.add(titleSectionText);
 		 
+		 textBox.parameters.text= "This is where I'll write the game is about:";
+		 textBox.parameters.font= "50px Arial";
+		 textBox.parameters.fillStyle= "#FF44c3";
+		 textBox.position.set(0,6,5);
+		 textBox.parameters.lineHeight=1;
+		 textBox.update();
+		 scene.add(textBox);
+		 
 		 //Add the Return Button
 		 addButton(returnButton);
 		 //Adjust the Title
 		 Title1.position.set(0,20.95,-2); 
 	 }
 	 
+	 //The Return function to go back to the Start Screen
 	 function return_to_Start_Screen(){
 		 //Remove the Return Button
 		 removeButton(returnButton);

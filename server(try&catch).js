@@ -83,6 +83,7 @@ var PacMania = io.of('/pacMania'), PacSocketList=[];
 var ghostsArray = [], pacArray = [], pacItems = [];
 var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumber =11; //ghostRandomModeGeneratorNumber gets low and make the ghost more aggressive (default is 21)
 var mapNodes = [],nodesList, gameRender = null, step=0;
+var ghostCreationCountDown = 4;
 
 PacMania.on('connection',function(socket){
 	 console.log("Pac-Mania Served has been accessed");
@@ -771,10 +772,7 @@ PacMania.on('connection',function(socket){
 				 addGhost("Pinky");			 
 				 addGhost("Inky");			 
 				 addGhost("Clyde");			 
-				 //addGhost("Random");			 
-				 //addGhost("Random");			 
-				 //addGhost("Random");			 
-				 //addGhost("Random");			 
+				 //addGhost("Random"); 
 			 }
 			 
 			 addPac(socket.id);
@@ -790,9 +788,11 @@ PacMania.on('connection',function(socket){
 			 gameRender = setInterval( UpdateGameState, 25);
 		 }
 		 else{
-			 console.log("Ended the Game State");
-			 clearInterval(gameRender);
-			 gameRender = null;
+			 //console.log("Ended the Game State");
+			 //clearInterval(gameRender);
+			 //gameRender = null;
+			 
+			 addPac(socket.id);
 		 } 
      });
 	 
@@ -1131,7 +1131,7 @@ PacMania.on('connection',function(socket){
 		 ghostStatusUpdate();
 		 
 		 if(pacItems.length < 3)
-			 for(var pelletAdditions = 0; pelletAdditions < (Math.floor( Math.random()*15)+6); pelletAdditions++){
+			 for(var pelletAdditions = 0; pelletAdditions < (Math.floor( Math.random()*10)+12); pelletAdditions++){
 				 var first = Math.floor(Math.random()*115);
 				 var second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
 				 
@@ -1255,7 +1255,7 @@ PacMania.on('connection',function(socket){
 		 //console.log("Pellets Size:"+pellets.length);
 	 }
 	 
-	 //Pacman Encounters/Eats Pellets
+	 //Pac-man Encounters/Eats Pellets
 	 function didPacEncounterItem(Pac){
 		 //When the Pacman are in the same location as pellet, near a pellet
 		 for(var pel = 0; pel < pacItems.length; pel++){
@@ -1292,6 +1292,16 @@ PacMania.on('connection',function(socket){
 			else{
 				 ghostsStatus = "Scatter";
 				 ghostsCountDown = 500;
+				 if(ghostsArray.length <= 8)
+					 ghostCreationCountDown--;
+				 
+				 
+				 if(ghostCreationCountDown <= 0){
+					 addGhost("Random");
+					 ghostCreationCountDown = Math.floor(Math.random()*20)+5;
+					 console.log("A Ghost Appeared!!! ("+ghostsArray[ghostsArray.length-1].type+")");
+				 }
+				 
 				 //console.log("Mode: Scatter");
 			}
 			
@@ -1457,6 +1467,7 @@ PacMania.on('connection',function(socket){
 		
 		 if(pacArray.length == 0){
 			 console.log("Pacmania Server just became Idle");
+			 ghostsArray = [];
 			 if(gameRender != null){
 				 clearInterval(gameRender);
 				 gameRender = null;
