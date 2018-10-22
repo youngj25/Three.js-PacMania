@@ -81,9 +81,9 @@ io.sockets.on('connection',
 //New Pac-man Server
 var PacMania = io.of('/pacMania'), PacSocketList=[];
 var ghostsArray = [], pacArray = [], pacItems = [];
-var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumber =11; //ghostRandomModeGeneratorNumber gets low and make the ghost more aggressive (default is 21)
+var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumber =21; //ghostRandomModeGeneratorNumber gets low and make the ghost more aggressive (default is 21)
 var mapNodes = [],nodesList, gameRender = null, step=0;
-var ghostCreationCountDown = 4;
+var ghostCreationCountDown = 4, ghostCreationList=[];
 
 PacMania.on('connection',function(socket){
 	 console.log("Pac-Mania Served has been accessed");
@@ -773,6 +773,15 @@ PacMania.on('connection',function(socket){
 				 addGhost("Inky");			 
 				 addGhost("Clyde");			 
 				 //addGhost("Random"); 
+				 ghostCreationList=[];
+				 ghostCreationList.push("Blinky");
+				 ghostCreationList.push("Blinky");
+				 ghostCreationList.push("Pinky");
+				 ghostCreationList.push("Pinky");
+				 ghostCreationList.push("Inky");
+				 ghostCreationList.push("Inky");
+				 ghostCreationList.push("Clyde");
+				 ghostCreationList.push("Clyde");
 			 }
 			 
 			 addPac(socket.id);
@@ -912,12 +921,32 @@ PacMania.on('connection',function(socket){
 					 }
 					 else if(ghostsStatus == "Home"){
 						 
-						 //To solve the issue of the going home error that get stucks at the portal
+						  //To solve the issue of the going home error that get stucks at the portal
 						 if(ghostsArray[ghostCount].oldNode == 92 && ghostsArray[ghostCount].lastNode == 91 ){
 							 ghostsArray[ghostCount].direction = 'South';
 							 ghostsArray[ghostCount].directionPhase = 0;
 							 ghostsArray[ghostCount].nextNode =  118;
-							 console.log("Caught the Error!!!!!");
+							 console.log("Caught the Error!!!!! Portal A: 118 -> 117");
+						 }
+						 if(ghostsArray[ghostCount].oldNode == 118 && ghostsArray[ghostCount].lastNode == 117 ){
+							 ghostsArray[ghostCount].direction = 'North';
+							 ghostsArray[ghostCount].directionPhase = 0;
+							 ghostsArray[ghostCount].x = 4;
+							 ghostsArray[ghostCount].y = 7;
+							 ghostsArray[ghostCount].nextNode =  31;
+							 console.log("Caught the Error!!!!! Portal A: 117 -> 118");
+						 }
+						 else if(ghostsArray[ghostCount].oldNode == 119 && ghostsArray[ghostCount].lastNode == 120 ){
+							 ghostsArray[ghostCount].direction = 'West';
+							 ghostsArray[ghostCount].directionPhase = 0;
+							 ghostsArray[ghostCount].nextNode =  84;
+							 console.log("Caught the Error!!!!! Portal B: 119 -> 120");
+						 }
+						 else if(ghostsArray[ghostCount].oldNode == 120 && ghostsArray[ghostCount].lastNode == 119 ){
+							 ghostsArray[ghostCount].direction = 'East';
+							 ghostsArray[ghostCount].directionPhase = 0;
+							 ghostsArray[ghostCount].nextNode =  35;
+							 console.log("Caught the Error!!!!! Portal B: 120 -> 119");
 						 }
 						 
 						 
@@ -933,6 +962,51 @@ PacMania.on('connection',function(socket){
 							 ghostsArray[ghostCount].nextNode = ghostsArray[ghostCount].returnPath.shift();
 						 //ghostsArray[ghostCount].returnPath.shift();						 
 					 }
+					 else if(ghostsStatus == "Chase"){
+						 
+						 //To solve the issue of the going home error that get stucks at the portal
+						 if(ghostsArray[ghostCount].oldNode == 92 && ghostsArray[ghostCount].lastNode == 91 ){
+							 ghostsArray[ghostCount].direction = 'South';
+							 ghostsArray[ghostCount].directionPhase = 0;
+							 ghostsArray[ghostCount].nextNode =  118;
+							 console.log("Caught the Error!!!!! Portal A: 118 -> 117");
+						 }
+						 if(ghostsArray[ghostCount].oldNode == 118 && ghostsArray[ghostCount].lastNode == 117 ){
+							 ghostsArray[ghostCount].direction = 'North';
+							 ghostsArray[ghostCount].directionPhase = 0;
+							 ghostsArray[ghostCount].x = 4;
+							 ghostsArray[ghostCount].y = 7;
+							 ghostsArray[ghostCount].nextNode =  31;
+							 console.log("Caught the Error!!!!! Portal A: 117 -> 118");
+						 }
+						 else if(ghostsArray[ghostCount].oldNode == 119 && ghostsArray[ghostCount].lastNode == 120 ){
+							 ghostsArray[ghostCount].direction = 'West';
+							 ghostsArray[ghostCount].directionPhase = 0;
+							 ghostsArray[ghostCount].nextNode =  84;
+							 console.log("Caught the Error!!!!! Portal B: 119 -> 120");
+						 }
+						 else if(ghostsArray[ghostCount].oldNode == 120 && ghostsArray[ghostCount].lastNode == 119 ){
+							 ghostsArray[ghostCount].direction = 'East';
+							 ghostsArray[ghostCount].directionPhase = 0;
+							 ghostsArray[ghostCount].nextNode =  35;
+							 console.log("Caught the Error!!!!! Portal B: 120 -> 119");
+						 }
+						 
+						 
+						 //Now finding the path
+						 else if(ghostsArray[ghostCount].returnPath.length <= 0 )
+							 ghostsArray[ghostCount].returnPath = loadAstarNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode , pacArray[ghostsArray[ghostCount].targetPlayer].nextNode )
+						
+						 // if the Array is still empty then that means we are at our goal location so go to a random next location 
+						 if(ghostsArray[ghostCount].returnPath.length <= 0 )
+							 ghostsArray[ghostCount].nextNode = loadRandomNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode );
+						 else // if the Array is not empty then follow the path
+							 ghostsArray[ghostCount].nextNode = ghostsArray[ghostCount].returnPath.shift();
+						 //ghostsArray[ghostCount].returnPath.shift();						 
+					 }
+					 
+					 
+					 
 					 
 					 //console.log("next node: "+ghostsArray[ghostCount].nextNode+ " x:" +mapNodes[ ghostsArray[ghostCount].nextNode ].x + "  y:"+mapNodes[ ghostsArray[ghostCount].nextNode ].y);
 					 
@@ -983,11 +1057,25 @@ PacMania.on('connection',function(socket){
 		 //Loops for PAC-MANS
 		 for(var pacCount = 0; pacCount < pacArray.length; pacCount++){
 			 
+			 //To stop the effects of fruits
+			 if(pacArray[pacCount].effectTime != 0){
+				 pacArray[pacCount].effectTime--;
+				 if(pacArray[pacCount].effectTime <= 0){
+					 pacArray[pacCount].effectTime  = 0;
+					 pacArray[pacCount].effectTime  = 0;
+					 pacArray[pacCount].speed = 1;
+					 pacArray[pacCount].density = 1;
+					 pacArray[pacCount].fruitEffect = null;
+					 pacArray[pacCount].status = null;
+					 
+				 }
+			 }
+			 
 			 //If the intendedDirection is opposite of the current Direction then go back
-			 if((pacArray[pacCount].intendedDirection == 'North' && pacArray[pacCount].direction == 'South')||
-				(pacArray[pacCount].intendedDirection == 'South' && pacArray[pacCount].direction == 'North')||
-				(pacArray[pacCount].intendedDirection == 'East' && pacArray[pacCount].direction == 'West')||
-				(pacArray[pacCount].intendedDirection == 'West' && pacArray[pacCount].direction == 'East')
+			 if((pacArray[pacCount].intendedDirection == 'North' && pacArray[pacCount].direction == 'South' && pacArray[pacCount].fruitEffect != "Drunk")||
+				(pacArray[pacCount].intendedDirection == 'South' && pacArray[pacCount].direction == 'North' && pacArray[pacCount].fruitEffect != "Drunk")||
+				(pacArray[pacCount].intendedDirection == 'East' && pacArray[pacCount].direction == 'West' && pacArray[pacCount].fruitEffect != "Drunk")||
+				(pacArray[pacCount].intendedDirection == 'West' && pacArray[pacCount].direction == 'East' && pacArray[pacCount].fruitEffect != "Drunk")
 			 ){
 				 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
 				 pacArray[pacCount].lastNode = pacArray[pacCount].nextNode;
@@ -1031,7 +1119,7 @@ PacMania.on('connection',function(socket){
 				 pacArray[pacCount].directionPhase +=1;
 			 }
 			 //If it arrives at the next Node
-			 else if(pacArray[pacCount].x == mapNodes[ pacArray[pacCount].nextNode ].x && pacArray[pacCount].y == mapNodes[ pacArray[pacCount].nextNode ].y ){ 
+			 else if(pacArray[pacCount].x == mapNodes[ pacArray[pacCount].nextNode ].x && pacArray[pacCount].y == mapNodes[ pacArray[pacCount].nextNode ].y && pacArray[pacCount].fruitEffect != "Drunk"){ 
 				 //When the ghosts arrives at the nextNode location
 				  
 				 //For the portals teleportation
@@ -1120,35 +1208,94 @@ PacMania.on('connection',function(socket){
 				 }catch(e){
 					 console.log("error");
 				 }
-					
+				 
 			 }
+			 else{
+				 //Since your Drunk!!!
+				 
+				 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
+				 pacArray[pacCount].lastNode = pacArray[pacCount].nextNode;
+				 pacArray[pacCount].nextNode = loadRandomNode(pacArray[pacCount].oldNode, pacArray[pacCount].lastNode );
+			 
+			 
+			 /**
+				  //To solve the issue of the going home error that get stucks at the portal
+				 if(ghostsArray[ghostCount].oldNode == 92 && ghostsArray[ghostCount].lastNode == 91 ){
+					 ghostsArray[ghostCount].direction = 'South';
+					 ghostsArray[ghostCount].directionPhase = 0;
+					 ghostsArray[ghostCount].nextNode =  118;
+					 console.log("Caught the Error!!!!! Portal A: 118 -> 117");
+				 }
+				 if(ghostsArray[ghostCount].oldNode == 31 && ghostsArray[ghostCount].lastNode == 117 ){
+					 ghostsArray[ghostCount].direction = 'North';
+					 ghostsArray[ghostCount].directionPhase = 0;
+					 ghostsArray[ghostCount].nextNode =  118;
+					 console.log("Caught the Error!!!!! Portal A: 117 -> 118");
+				 }
+				 else if(ghostsArray[ghostCount].oldNode == 119 && ghostsArray[ghostCount].lastNode == 120 ){
+					 ghostsArray[ghostCount].direction = 'West';
+					 ghostsArray[ghostCount].directionPhase = 0;
+					 ghostsArray[ghostCount].nextNode =  84;
+					 console.log("Caught the Error!!!!! Portal B: 119 -> 120");
+				 }
+				 else if(ghostsArray[ghostCount].oldNode == 120 && ghostsArray[ghostCount].lastNode == 119 ){
+					 ghostsArray[ghostCount].direction = 'East';
+					 ghostsArray[ghostCount].directionPhase = 0;
+					 ghostsArray[ghostCount].nextNode =  35;
+					 console.log("Caught the Error!!!!! Portal B: 120 -> 119");
+				 }
+				 **/
+			 
+			 }
+			 
 			 //Check for Pellets
 			 didPacEncounterItem(pacArray[pacCount]);
+			 //Check for Ghosts
+			 didPacEncounterGhost(pacArray[pacCount]);
+			 
 		 }
 		 
 		 PacMania.emit('Update Game State', data={	 GhostList : ghostsArray, PacList : pacArray, Pellet: pacItems	 });
 		 
 		 ghostStatusUpdate();
 		 
-		 if(pacItems.length < 3)
-			 for(var pelletAdditions = 0; pelletAdditions < (Math.floor( Math.random()*10)+12); pelletAdditions++){
+		 if(pacItems.length < 3){
+		
+			 var creationList = [ ];
+		 
+			 for(var pelletAdditions = 0; pelletAdditions < (Math.floor( Math.random()*12)+14); pelletAdditions++){
+				 var addPellets = true;
 				 var first = Math.floor(Math.random()*115);
-				 var second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
+				 var second = -1;
 				 
-				 addPacItems(first,second);
+				 while(second == -1 ||second == 117 || second == 118 || second == 119 || second == 120)
+					 second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
+				 
+				 var pel = {first:first, second:second};
+				 creationList.push (pel);
+				 // ghostsArray.push (	g	); 
+				 
+				 for(var x = 0; creationList != undefined && x < creationList.length-1 && addPellets; x++)
+					 if((creationList[x].first == first && creationList[x].second == second) || (creationList[x].first == second && creationList[x].second == first)){
+						 addPellets = false;
+						 creationList.splice(creationList.length-1,1);
+					 }
+					
+				 if(addPellets)
+					 addPacItems(first,second);
+				 else
+					 pelletAdditions--;
 			}
+		 }
 	 }
 	 
 	 //Add a Ghost
 	 function addGhost (ghost) {
 		 
 		 if(ghost == "Random"){
-			 var random = Math.floor(Math.random()*4);
-			 
-			 if(random == 0) ghost = "Blinky";
-			 else if(random == 1) ghost = "Pinky";
-			 else if(random == 2) ghost = "Inky";
-			 else if(random == 3) ghost = "Clyde";
+			 var random = Math.floor(Math.random()*ghostCreationList.length);
+			 ghost = ghostCreationList[random];
+			 ghostCreationList.splice(random,1);
 		 }
 			 
 		 
@@ -1160,6 +1307,7 @@ PacMania.on('connection',function(socket){
 			 lastNode : 122,
 			 nextNode : 50,
 			 oldNode: -1,
+			 targetPlayer: -1,
 			 type: ghost,
 			 home: 6,
 			 returnPath: [],
@@ -1191,6 +1339,7 @@ PacMania.on('connection',function(socket){
 			 x : -8,
 			 y : -6,
 			 speed: 1,
+			 density:1,
 			 score: 300,
 			 lastNode : 89,
 			 nextNode : 90,
@@ -1199,7 +1348,9 @@ PacMania.on('connection',function(socket){
 			 intendedDirection : 'North',
 			 directionShiftCount : 0,
 			 directionSprite : 0,
-			 status : null
+			 status : null,
+			 fruitEffect: null,
+			 effectTime:0
 		 };
 			 
 		 pacArray.push (	p	); 
@@ -1210,6 +1361,8 @@ PacMania.on('connection',function(socket){
 		 //Spacing Value for the Pellets
 		 //How much space between each pellet
 		 pelletSpacing = 0.5;
+		 var fruitLocation = Math.floor(((mapNodes[firstNode ].y-mapNodes[secondNode ].y)/pelletSpacing)/2);
+		 var fruitsOdds = 50; // meant to be used like this 1/fruitsOdds // Should be greater than 50
 		 
 		 
 		 //Different Y Values
@@ -1228,6 +1381,58 @@ PacMania.on('connection',function(socket){
 					 type : "Pellet"
 				 };
 				 
+				 //Fruit Insertion
+				 if(fruitLocation == pNo && fruitLocation>=2){
+					 var fruitNo = Math.floor(Math.random()*fruitsOdds);
+					 //Apple, Banana, Cherry, Orange, Pear, Pretzel, Strawberry,Grapes
+					 //Pellets and Super Pellets
+					 
+					 if(fruitNo == 0 || fruitNo == 25){
+						 p.type = "Super Pellet";
+						 p.worth = 0;	 
+					 }
+					 else if(fruitNo >= 1 && fruitNo <= 3){
+						 p.type = "Apple";
+						 p.worth = 50;	 
+					 }
+					 else if(fruitNo >= 4 && fruitNo <= 6){
+						 p.type = "Banana";
+						 p.worth = 10;	 
+					 }
+					 else if(fruitNo >= 7 && fruitNo <= 9){
+						 p.type = "Cherry";
+						 p.worth = 100;	 
+					 }
+					 else if(fruitNo >= 10 && fruitNo <= 12){
+						 p.type = "Orange";
+						 p.worth = 250;	 
+					 }
+					 else if(fruitNo >= 13 && fruitNo <= 15){
+						 p.type = "Pear";
+						 p.worth = 50;	 
+					 }
+					 else if(fruitNo >= 16 && fruitNo <= 18){
+						 p.type = "Pretzel";
+						 p.worth = 50;	 
+					 }
+					 else if(fruitNo >= 19 && fruitNo <= 21){
+						 p.type = "Strawberry";
+						 p.worth = 150;	 
+					 }
+					 else if(fruitNo >= 21 && fruitNo <= 24){
+						 p.type = "Grape";
+						 p.worth = 200;	 
+					 }
+					 
+					 //To make room for the fruit we remove the previous and next nodes
+					 if(fruitNo <= 25){
+						 pNo++; // Skip next pellet insertion
+						 pacItems.splice(pacItems.length-1,1); //Remove Previous Pellet
+					 }
+					 
+				 }
+					 
+					 
 				 pacItems.push(p);
 			 }
 		 }
@@ -1248,6 +1453,59 @@ PacMania.on('connection',function(socket){
 					 type : "Pellet"
 				 };
 				 
+				 //Fruit Insertion
+				 if(fruitLocation == pNo && fruitLocation>=2){
+					 var fruitNo = Math.floor(Math.random()*fruitsOdds);
+					 //Apple, Banana, Cherry, Orange, Pear, Pretzel, Strawberry,Grapes
+					 //Pellets and Super Pellets
+					 
+					 if(fruitNo == 0 || fruitNo == 25){
+						 p.type = "Super Pellet";
+						 p.worth = 0;	 
+					 }
+					 else if(fruitNo >= 1 && fruitNo <= 3){
+						 p.type = "Apple";
+						 p.worth = 50;	 
+					 }
+					 else if(fruitNo >= 4 && fruitNo <= 6){
+						 p.type = "Banana";
+						 p.worth = 10;	 
+					 }
+					 else if(fruitNo >= 7 && fruitNo <= 9){
+						 p.type = "Cherry";
+						 p.worth = 100;	 
+					 }
+					 else if(fruitNo >= 10 && fruitNo <= 12){
+						 p.type = "Orange";
+						 p.worth = 250;	 
+					 }
+					 else if(fruitNo >= 13 && fruitNo <= 15){
+						 p.type = "Pear";
+						 p.worth = 50;	 
+					 }
+					 else if(fruitNo >= 16 && fruitNo <= 18){
+						 p.type = "Pretzel";
+						 p.worth = 50;	 
+					 }
+					 else if(fruitNo >= 19 && fruitNo <= 21){
+						 p.type = "Strawberry";
+						 p.worth = 150;	 
+					 }
+					 else if(fruitNo >= 21 && fruitNo <= 24){
+						 p.type = "Grape";
+						 p.worth = 200;	 
+					 }
+					 
+					 //To make room for the fruit we remove the previous and next nodes
+					 if(fruitNo <= 25){
+						 pNo++; // Skip next pellet insertion
+						 pacItems.splice(pacItems.length-1,1); //Remove Previous Pellet
+					 }
+					 
+				 }
+					 
+				 
+				 
 				 pacItems.push(p);
 			 }
 		 }
@@ -1261,12 +1519,58 @@ PacMania.on('connection',function(socket){
 		 for(var pel = 0; pel < pacItems.length; pel++){
 			 var pelletRadius =0.35;
 			 if( Math.abs(Pac.x - pacItems[pel].x)<=pelletRadius && Math.abs(Pac.y - pacItems[pel].y)<=pelletRadius){
+				 
+				 
+				 if(pacItems[pel].type == "Banana"){
+					 Pac.speed = 2;
+					 Pac.density = 0.5;
+					 Pac.effectTime = 500;
+					 Pac.fruitEffect = "Speed 200%";
+				 }
+				 else if(pacItems[pel].type == "Orange"){
+					 Pac.speed = 0.6;
+					 Pac.density = 1.5;
+					 Pac.effectTime = 500;
+					 Pac.fruitEffect = "Speed 60%";
+				 }
+				 else if(pacItems[pel].type == "Grape"){
+					 Pac.speed = 1.5;
+					 Pac.effectTime = 375;
+					 Pac.fruitEffect = "Drunk";
+				 }
+				 else if(pacItems[pel].type == "Super Pellet"){
+					 Pac.speed = 1.25;
+					 Pac.fruitEffect = "Super PAC-MAN";
+					 Pac.effectTime = 600;
+				 }
+				
 				
 				 Pac.score += pacItems[pel].worth;						
 				 pacItems.splice(pel,1);
-				 
 			 }
 		 }		 
+	 }
+	 
+	 function didPacEncounterGhost(Pac){
+		 
+		 if(Pac.fruitEffect == "Super PAC-MAN"){
+			 for(var ghostNo = 0; ghostNo < ghostsArray.length; ghostNo++)
+				 //Check x values first
+				 if(Math.abs(ghostsArray[ghostNo].x - Pac.x)<=0.25)
+					 if(Math.abs(ghostsArray[ghostNo].y - Pac.y)<=0.25){
+						 ghostsArray.splice(ghostNo,1);
+						 ghostNo--;
+					 }
+		 }
+		 else{
+			 for(var ghostNo = 0; ghostNo < ghostsArray.length; ghostNo++)
+				 //Check x values first
+				 if(Math.abs(ghostsArray[ghostNo].x - Pac.x)<=0.25)
+					 if(Math.abs(ghostsArray[ghostNo].y - Pac.y)<=0.25){
+						 console.log(ghostsArray[ghostNo].type+" Killed Pac!!!");
+					 }
+			 
+		 }
 	 }
 	 
 	 //Ghost Status/Updates
@@ -1283,22 +1587,44 @@ PacMania.on('connection',function(socket){
 			 **/
 			 
 			 
-			if(randomGhostMode <= 4){
+			if(randomGhostMode <= 4 && ghostsStatus != "Home"){
 				 ghostsStatus = "Home";
-				 ghostsCountDown = 800;
-				 //console.log("Mode: Home");
+				 ghostsCountDown = 550+Math.floor(Math.random()*300);
+				 console.log("Mode: Home");
 			}
-				
 			else{
-				 ghostsStatus = "Scatter";
-				 ghostsCountDown = 500;
-				 if(ghostsArray.length <= 8)
-					 ghostCreationCountDown--;
+				
+				 if(randomGhostMode <= 4)
+					  randomGhostMode = Math.floor(Math.random()*Math.floor(ghostRandomModeGeneratorNumber-5))+5;
+				 
+				 
+				 if(randomGhostMode < 10){
+					 ghostsStatus = "Chase";
+					 ghostsCountDown = 500+Math.floor(Math.random()*400);
+					 console.log("Mode: Chase");
+					 
+					 //Assigning Targets
+					 for(var ghostCount =0; ghostCount<ghostsArray.length;ghostCount++)
+								ghostsArray[ghostCount].targetPlayer = Math.floor(Math.random()*pacArray.length);
+					 
+				 }
+				 else if(randomGhostMode > 10){
+					 ghostsStatus = "Scatter";
+					 ghostsCountDown = 700+Math.floor(Math.random()*300);
+					 console.log("Mode: Scatter");
+					 
+					 //Count Down to Ghost Creation
+					 if(ghostsArray.length <= 8)
+					     ghostCreationCountDown--;
+				 }
+				 
+				 
+				 
 				 
 				 
 				 if(ghostCreationCountDown <= 0){
 					 addGhost("Random");
-					 ghostCreationCountDown = Math.floor(Math.random()*20)+5;
+					 ghostCreationCountDown = Math.floor(Math.random()*12)+5;
 					 console.log("A Ghost Appeared!!! ("+ghostsArray[ghostsArray.length-1].type+")");
 				 }
 				 
@@ -1309,6 +1635,7 @@ PacMania.on('connection',function(socket){
 			 
 			 
 		 }
+		 
 	 }
 	 	 
 	 //Loads a random node	

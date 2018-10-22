@@ -20,6 +20,7 @@ var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture 
 var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE BOARD
 //FOR THE TOUCH SCREENS CONtrols The four buttons
 var NorthButton, SouthButton, EastButton, WestButton;
+var pelletTexture, appleTexture, bananaTexture, cherryTexture, orangeTexture, pearTexture, pretzelTexture, strawberryTexture, grapeTexture;
 
 function init() {
 	 // create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -1327,6 +1328,40 @@ function init() {
 				 }
 			 }		 
 			 
+			 //Ensuring the Ghost are removed
+			 if(data.GhostList.length <= 8){
+				 if(scene.getObjectByName('Ghost9') != null)
+						 scene.remove(ghost8);	
+			 }
+			 if(data.GhostList.length <= 7){
+				 if(scene.getObjectByName('Ghost8') != null)
+						 scene.remove(ghost8);	
+			 }
+			 if(data.GhostList.length <= 6){
+				 if(scene.getObjectByName('Ghost7') != null)
+						 scene.remove(ghost7);	
+			 }
+			 if(data.GhostList.length <= 5){
+				 if(scene.getObjectByName('Ghost6') != null)
+						 scene.remove(ghost6);	
+			 }
+			 if(data.GhostList.length <= 4){
+				 if(scene.getObjectByName('Ghost5') != null)
+						 scene.remove(ghost5);	
+			 }
+			 if(data.GhostList.length <= 3){
+				 if(scene.getObjectByName('Ghost4') != null)
+						 scene.remove(ghost4);	
+			 }
+			 if(data.GhostList.length <= 2){
+				 if(scene.getObjectByName('Ghost3') != null)
+						 scene.remove(ghost3);	
+			 }
+			 if(data.GhostList.length <= 1){
+				 if(scene.getObjectByName('Ghost2') != null)
+						 scene.remove(ghost2);	
+			 }
+			  
 			 //Update the Pac Sprites
 			 for(var x=0; x<data.PacList.length; x++){
 				 if(x == 0){
@@ -1359,11 +1394,19 @@ function init() {
 			 for(var x=0; x<data.Pellet.length; x++){
 				 
 				 if(pellets.length <= x){
-					 pellets.push(createDot());
+					 pellets.push(addItem());
 					 scene.add(pellets[x]);
-					 //pellets[x].position.set(data.Pellet[x].x*xMultiplier,data.Pellet[x].y*yMultiplier+yShifter,-2);
-					 pellets[x].scale.set(0.75,0.75,1);
+					 //pellets[x].scale.set(0.75,0.75,1);
 				 }
+				
+				 
+				 if(data.Pellet[x].type == "Pellet")
+					 pellets[x].scale.set(0.75,0.75,1);
+				 else pellets[x].scale.set(1.75, 1.75,1);
+				 
+				 pellets[x].material = setItem(data.Pellet[x].type);
+				 //pellets[x].material = appleTexture;
+				 
 				 pellets[x].position.set(data.Pellet[x].x*xMultiplier,data.Pellet[x].y*yMultiplier+yShifter,-2);
 			 }
 			 
@@ -1377,7 +1420,6 @@ function init() {
 			 //console.log(data)
 			 
 			 //Update the Players Score
-			 
 		 }
 	 });
 	 	
@@ -1389,6 +1431,7 @@ function init() {
 		 //Space Bar Changes Background
 		 if (event.keyCode == 38 || event.keyCode ==104) { // Up Arrow - North
 			 var data = { direction: "North"  };
+			 //window.open('https://www.codexworld.com', '_blank');
 			 PacMania.emit('Move',data);
 		 }
 		 else if (event.keyCode == 39  || event.keyCode ==102) { // Right Arrow - East
@@ -1448,6 +1491,7 @@ function init() {
 	 drag_objects();
 	 loadPac();
 	 loadGhosts();
+	 loadItems();
 	
 	 function renderScene(){
 		 try{
@@ -1548,6 +1592,7 @@ function init() {
 																			 }
 																			 else if (event.object == aboutButton){
 																				 load_About_Screen();
+																				 aboutButton.position.set(-15,-9,5);
 																			 }
 																			 else if (event.object == howToPlayButton){
 																				 alert("How To Play!");
@@ -1567,10 +1612,6 @@ function init() {
 																				 startButton.position.set(12,-22.75,5);
 																			 else if (event.object == bgButton)
 																				 bgButton.position.set(19,22.95,-2); 
-																			 else if (event.object == joinButton){
-																				 joinButton.position.set(12,-22.75,5);
-																				 scene.remove(joinButton);
-																			 }
 																			 else if (event.object == NorthButton)
 																				 NorthButton.position.set(0,yShifter+2, -3);
 																			 else if (event.object == SouthButton)
@@ -1579,6 +1620,14 @@ function init() {
 																				 EastButton.position.set(6,yShifter-2, -3); //xyz
 																			 else if (event.object == WestButton)
 																				 WestButton.position.set(-6,yShifter-2, -3); //xyz
+																			 else if (event.object == aboutButton)
+																				 aboutButton.position.set(-15,-9,5);
+																			 else if (event.object == howToPlayButton)
+																				 howToPlayButton.position.set(13.75,-9,5);
+																			 else if (event.object == creditButton)
+																				 creditButton.position.set(0,-15,5);
+																			 else if (event.object == returnButton)
+																				 returnButton.position.set(0,-22,5);
 																		 });
 																		
 			 dragControls.addEventListener( 'dragend', function(event)   {});
@@ -2287,6 +2336,49 @@ function init() {
 		 var loader = new THREE.TextureLoader();
 		 loader.crossOrigin = true;
 		 //---------- Original Sprites --------------------------
+		 
+		 //Flappy Up Flight Sprite
+		 //var FlappyUpTexture = loader.load( 'FlapPyBird-master/assets/sprites/yellowbird-upflap.png' );
+		 //FlappyUpTexture.minFilter = THREE.LinearFilter;
+		 //var FlappyUpSprite= new THREE.SpriteMaterial( { map: FlappyUpTexture, color: 0xffffff } );
+		 
+		 
+		 //Pellets
+		 var texture = loader.load( 'Images/Fruits/pellets.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pelletTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 //Apple
+		 texture = loader.load( 'Images/Fruits/Apple.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 appleTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 //Banana
+		 texture = loader.load( 'Images/Fruits/Banana.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 bananaTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 //Cherry
+		 texture = loader.load( 'Images/Fruits/Cherry.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 cherryTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 //Orange
+		 texture = loader.load( 'Images/Fruits/Orange.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 orangeTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 //Pear
+		 texture = loader.load( 'Images/Fruits/Pear.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pearTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 //Pretzel
+		 texture = loader.load( 'Images/Fruits/Pretzel.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pretzelTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 //Strawberry
+		 texture = loader.load( 'Images/Fruits/Strawberry.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 strawberryTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 //Grape
+		 texture = loader.load( 'Images/Fruits/Grape.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 grapeTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
 	 }
 		
 	 function load_Board(){		 
@@ -2483,11 +2575,11 @@ function init() {
 		 textBox.parameters.text= "";
 		 textBox.parameters.font= "45px Arial";
 		 textBox.parameters.fillStyle= "#FF24b3";
-		 textBox.parameters.align = "center";
+		 //textBox.parameters.align = "center";
 		 textBox.dynamicTexture.canvas.width = 1024;
-		 textBox.dynamicTexture.canvas.height = 256;
+		 textBox.dynamicTexture.canvas.height = 1024;
 		 textBox.position.set(0,-22,5);
-		 textBox.scale.set(6,5,1);
+		 //textBox.scale.set(6,5,1);
 		 textBox.update();
 		 textBox.visble = true;
 		 textBox.name = "textBox";		 
@@ -3290,6 +3382,42 @@ function init() {
 		 };
 	 }();
 	 
+	 //
+	 function addItem(){
+		 var item;
+		 var text = new THREE.SpriteMaterial( { map: pelletTexture, color: 0xffffff } );
+		 item =  new THREE.Sprite(text);	
+		 item.scale.set(0.75,0.75,1);
+		 return item;
+	 }
+	 
+	 //
+	 function setItem(pacItem){
+		 
+		 if(pacItem == "Pellet")
+			 return pelletTexture;
+		 else if(pacItem == "Super Pellet")
+			 return pelletTexture;
+		 else if(pacItem == "Apple")
+			 return appleTexture;
+		 else if(pacItem == "Banana")
+			 return bananaTexture;
+		 else if(pacItem == "Cherry")
+			 return cherryTexture;
+		 else if(pacItem == "Orange")
+			 return orangeTexture;
+		 else if(pacItem == "Pear")
+			 return pearTexture;
+		 else if(pacItem == "Pretzel")
+			 return pretzelTexture;
+		 else if(pacItem == "Strawberry")
+			 return strawberryTexture;
+		 else if(pacItem == "Grape")
+			 return grapeTexture;
+		 else
+			 return pelletTexture;	
+	 }
+	 
 	 //A Function to remove my buttons a lot more easily
 	 function addButton(button){
 		 //Removal of the startButton
@@ -3361,13 +3489,23 @@ function init() {
 		 titleSectionText.update();
 		 scene.add(titleSectionText);
 		 
-		 textBox.parameters.text= "This is where I'll write the game is about:";
-		 textBox.parameters.font= "50px Arial";
+		 
+		 textBox.parameters.text= "This is where I'll write about the game 12345678901234567890123456789012345678901234567890";
+		 textBox.parameters.font= "150px Arial";
 		 textBox.parameters.fillStyle= "#FF44c3";
-		 textBox.position.set(0,6,5);
-		 textBox.parameters.lineHeight=1;
+		 textBox.position.set(0,0,5);
+		 
+		 
+		 textBox.material.shininess=10;
+		 textBox.parameters.lineHeight=0.15;
+		 textBox.dynamicTexture.context.lineWidth=2.5;
+		 textBox.dynamicTexture.canvas.width = 4096;
+		 textBox.dynamicTexture.context.miterLimit=25;
+		 textBox.parameters.margin=0.05;
+		 textBox.scale.set(45,15,1);
 		 textBox.update();
 		 scene.add(textBox);
+		 console.log(textBox);
 		 
 		 //Add the Return Button
 		 addButton(returnButton);
