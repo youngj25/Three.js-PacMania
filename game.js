@@ -14,7 +14,8 @@ var Outline, Board, gameMaze = [], pellets=[];
 var Width = 0, Height = 0;
 var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
 var bgButton, startButton, backgroundState = 'Original', joinButton; //Background functions
-var aboutButton, howToPlayButton, creditButton, closeButton, titleSectionText, returnButton, textBox;
+var aboutButton, howToPlayButton, creditButton, closeButton, titleSectionText, returnButton, textBox, displayBox, displayArray=[];
+var creditDisplayArray = [], sourceLinkButton, rightArrowButton, leftArrowButton, sceneNumber=0, htpTextArray =[];
 var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [];
 var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture = [];
 var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE BOARD
@@ -36,13 +37,13 @@ function init() {
 	 renderer.setClearColor(new THREE.Color(0x000000, 0.0));
 	
 	 for ( var x=0; Width+Height == 0; x++){
-		 if(window.innerWidth > 1000-x*100 && window.innerHeight > 1000-x*100){
-			 Width = 850-x*100;			
-			 Height = 850-x*95;	
+		 if(window.innerWidth > 900-x*100 && window.innerHeight > 900-x*95){
+			 Width = 900-x*125;			
+			 Height = 900-x*140;	
 		 }	
 		 else if( x >= 8){
-			 Width = window.innerWidth*0.50;
-			 Height = window.innerHeight*0.75;
+			 Width = window.innerWidth*0.55;
+			 Height = window.innerHeight*0.55;
 		 }
 	 }
 	 
@@ -67,6 +68,18 @@ function init() {
 	 PacMania.on('Update Game State', function(data){
 		 
 		 if(Game_Status == "Active"){
+			 
+			 //Player Text
+			 if(data.PacList.length >= 1)
+				 scene.add(P1Text);
+			 if(data.PacList.length >= 2)
+				 scene.add(P2Text);
+			 if(data.PacList.length >= 3)
+				 scene.add(P3Text);
+			 if(data.PacList.length >= 4)
+				 scene.add(P4Text);
+			 
+			 
 			 
 			 //Update the Ghost Sprites
 			 for(var x=0; x<data.GhostList.length; x++){
@@ -1369,8 +1382,17 @@ function init() {
 						 pac.name = 'Pac';
 						 scene.add(pac);
 					 }
+					 
+					 
 					 pac.position.x = data.PacList[x].x*xMultiplier;
 					 pac.position.y = data.PacList[x].y*yMultiplier+yShifter;
+					 
+					 //if(data.PacList[x].fruitEffect == "Super PAC-MAN")
+						 //pac.scale.set = (1.5,1.5,1); 
+					 //else
+						 //pac.scale.set = (1,1,1); 
+					 
+					 //P1 Score
 					 P1Score = data.PacList[x].score;
 					 P1Text.parameters.text= "P1: "+P1Score;
 					 P1Text.update();					 
@@ -1405,9 +1427,7 @@ function init() {
 				 else pellets[x].scale.set(1.75, 1.75,1);
 				 
 				 pellets[x].material = setItem(data.Pellet[x].type);
-				 //pellets[x].material = appleTexture;
-				 
-				 pellets[x].position.set(data.Pellet[x].x*xMultiplier,data.Pellet[x].y*yMultiplier+yShifter,-2);
+				 pellets[x].position.set(data.Pellet[x].x*xMultiplier,data.Pellet[x].y*yMultiplier+yShifter,-2.3);
 			 }
 			 
 			 //Removing the extra pellets
@@ -1429,24 +1449,27 @@ function init() {
 	 //var onKeyDown = function(event) {
 	 function onKeyDown(event) {
 		 //Space Bar Changes Background
-		 if (event.keyCode == 38 || event.keyCode ==104) { // Up Arrow - North
+		 if (event.keyCode == 38 || event.keyCode == 104 || event.keyCode ==87) { // Up Arrow - North
 			 var data = { direction: "North"  };
-			 //window.open('https://www.codexworld.com', '_blank');
 			 PacMania.emit('Move',data);
 		 }
-		 else if (event.keyCode == 39  || event.keyCode ==102) { // Right Arrow - East
+		 else if (event.keyCode == 39  || event.keyCode == 102 || event.keyCode == 68) { // Right Arrow - East
 			 var data = { direction: "East"  };
 			 PacMania.emit('Move',data);
 		 }
-		 else if (event.keyCode == 40  || event.keyCode ==98) { // Down Arrow - South
+		 else if (event.keyCode == 40  || event.keyCode == 98 || event.keyCode == 83) { // Down Arrow - South
 			 var data = { direction: "South"  };
 			 PacMania.emit('Move',data);
 		 }
-		 else if (event.keyCode == 37  || event.keyCode ==100) { // Left Arrow - West
+		 else if (event.keyCode == 37  || event.keyCode == 100 || event.keyCode == 65) { // Left Arrow - West
 			 var data = { direction: "West"  };
 			 PacMania.emit('Move',data);
 		 }
-		 else console.log("Key: "+event.keyCode);
+		// else if (event.keyCode == 13)
+			// PacMania.emit('Grapes');
+		 //else if (event.keyCode == 32)
+			// PacMania.emit('Node108');
+		 //else console.log("Key: "+event.keyCode);
 	 }; 
 	 document.addEventListener('keydown', onKeyDown, false);
 		
@@ -1454,13 +1477,13 @@ function init() {
 	 function onWindowResize(){
 		 Width = Height = 0;	
 		 for ( var x=0; Width+Height == 0; x++){
-			 if(window.innerWidth > 1000-x*100 && window.innerHeight > 1000-x*100){
-				 Width = 850-x*100;			
-				 Height = 850-x*95;	
+			 if(window.innerWidth > 900-x*100 && window.innerHeight > 900-x*95){
+				 Width = 900-x*100;			
+				 Height = 900-x*95;	
 			 }	
 			 else if( x >= 8){
-				 Width = window.innerWidth*0.5;
-				 Height = window.innerHeight*0.75;
+				 Width = window.innerWidth*0.55;
+				 Height = window.innerHeight*0.55;
 			 }
 		 }
 		 renderer.setSize(Width, Height);
@@ -1492,6 +1515,7 @@ function init() {
 	 loadPac();
 	 loadGhosts();
 	 loadItems();
+	 load_Display_Pictures();
 	
 	 function renderScene(){
 		 try{
@@ -1566,7 +1590,7 @@ function init() {
 																				 }
 																				  bgButton.position.set(19,22.95,-2); 
 																			 }
-																			 else  if (event.object == joinButton && joinButton.visble == true){
+																			 else if (event.object == joinButton && joinButton.visble == true){
 																				 PacMania.emit('Add Player');
 																				 console.log("Join the Game!!!!");	
 																				 joinButton.position.set(12,-22.75,5);
@@ -1592,26 +1616,127 @@ function init() {
 																			 }
 																			 else if (event.object == aboutButton){
 																				 load_About_Screen();
-																				 aboutButton.position.set(-15,-9,5);
 																			 }
 																			 else if (event.object == howToPlayButton){
-																				 alert("How To Play!");
+																				 load_How_to_Play_Screen();
 																			 }
 																			 else if (event.object == creditButton){
-																				 alert("Credit!");
+																				 load_Credit_Screen();
 																			 }
 																			 else if (event.object == returnButton){
 																				 return_to_Start_Screen();
+																			 }// sourceLinkButton.position.set(15,-18.5,5);
+																			 else if (event.object == sourceLinkButton){
+																				 //Opens the Url to the Source
+																				 window.open(sourceLinkButton.url, '_blank');
 																			 }
-																			 
+																			 else if (event.object == rightArrowButton){
+																				 if( Game_Status == "About"){
+																					 
+																					 
+																				 }
+																				 else  if( Game_Status == "Credit" && sceneNumber < creditDisplayArray.length-1){
+																					 sceneNumber++;
+																					 textBox.parameters.text=  creditDisplayArray[sceneNumber].text;
+																					 textBox.update();																					 
+																					 
+																					 //Display Box Updates and Scaling
+																					 displayBox.material =  creditDisplayArray[sceneNumber];
+																					 displayBox.scale.x  = creditDisplayArray[sceneNumber].scalingX;
+																					 displayBox.scale.y  = creditDisplayArray[sceneNumber].scalingY;
+																					  
+																					 if(sceneNumber == creditDisplayArray.length-1)
+																						 rightArrowButton.material.color  = new THREE.Color("rgb( 50, 50,50)");
+																					 else
+																						 rightArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+																					 
+																					 //Automatically you can now move to the left
+																					 leftArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+																					 
+																					 //Update Source :Link
+																					 sourceLinkButton.url = creditDisplayArray[sceneNumber].url;
+																				 }
+																				 else  if( Game_Status == "How to Play" && sceneNumber < htpTextArray.length-1){
+																					 sceneNumber++;																					 	
+																					 textBox.parameters.text=  htpTextArray[sceneNumber].text;
+																					 textBox.update();
+																					 
+																					 //Display Box Updates and Scaling
+																					 displayBox.material =  htpTextArray[sceneNumber];
+																					 displayBox.scale.x  = htpTextArray[sceneNumber].scalingX;
+																					 displayBox.scale.y  = htpTextArray[sceneNumber].scalingY;
+																					 
+																					 
+																					 
+																					 //Arrow Updates
+																					 if(sceneNumber == htpTextArray.length-1)
+																						 rightArrowButton.material.color  = new THREE.Color("rgb( 50, 50,50)");
+																					 else
+																						 rightArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+																					 
+																					 //Automatically you can now move to the left
+																					 leftArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+																					 
+																					 //Update Source :Link
+																					 //sourceLinkButton.url = htpTextArray[sceneNumber].url;
+																				 }
+																			 }
+																			 else if (event.object == leftArrowButton){
+																				 if( Game_Status == "About"){
+																					 
+																					 
+																				 }
+																				 else  if( Game_Status == "Credit" && sceneNumber > 0){
+																					 sceneNumber--;
+																					 textBox.parameters.text=  creditDisplayArray[sceneNumber].text;
+																					 textBox.update();
+																					 
+																					  //Display Box Updates and Scaling
+																					 displayBox.material =  creditDisplayArray[sceneNumber];
+																					 displayBox.scale.x  = creditDisplayArray[sceneNumber].scalingX;
+																					 displayBox.scale.y  = creditDisplayArray[sceneNumber].scalingY;																					 
+																					 
+																					 if(sceneNumber == 0)
+																						 leftArrowButton.material.color  = new THREE.Color("rgb( 50, 50,50)");
+																					 else
+																						 leftArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+																					 
+																					 //Automatically you can now move to the right
+																					 rightArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+																					 
+																					 //Update Source :Link
+																					 sourceLinkButton.url = creditDisplayArray[sceneNumber].url;
+																				 }
+																				 else  if( Game_Status == "How to Play" && sceneNumber > 0){
+																					 sceneNumber--;
+																					 textBox.parameters.text=  htpTextArray[sceneNumber].text;
+																					 textBox.update();
+																					 
+																					 //Display Box Updates and Scaling
+																					 displayBox.material =  htpTextArray[sceneNumber];
+																					 displayBox.scale.x  = htpTextArray[sceneNumber].scalingX;
+																					 displayBox.scale.y  = htpTextArray[sceneNumber].scalingY;
+																					 
+																					 if(sceneNumber == 0)
+																						 leftArrowButton.material.color  = new THREE.Color("rgb( 50, 50,50)");
+																					 else
+																						 leftArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+																					 
+																					 //Automatically you can now move to the right
+																					 rightArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+																					 
+																					 //Update Source :Link
+																					 //sourceLinkButton.url = creditDisplayArray[sceneNumber].url;
+																				 }
+																			 }
 																			//console.log("lol start of drag: ");
 																		 });
 																		 
 			 dragControls.addEventListener( 'drag', function(event)   {
 																			 if (event.object == startButton)
-																				 startButton.position.set(12,-22.75,5);
+																				 startButton.position.set(startButton.posX, startButton.posY, startButton.posZ);
 																			 else if (event.object == bgButton)
-																				 bgButton.position.set(19,22.95,-2); 
+																				 bgButton.position.set(bgButton.posX, bgButton.posY, bgButton.posZ);
 																			 else if (event.object == NorthButton)
 																				 NorthButton.position.set(0,yShifter+2, -3);
 																			 else if (event.object == SouthButton)
@@ -1621,13 +1746,19 @@ function init() {
 																			 else if (event.object == WestButton)
 																				 WestButton.position.set(-6,yShifter-2, -3); //xyz
 																			 else if (event.object == aboutButton)
-																				 aboutButton.position.set(-15,-9,5);
+																				 aboutButton.position.set(aboutButton.posX, aboutButton.posY, aboutButton.posZ);
 																			 else if (event.object == howToPlayButton)
-																				 howToPlayButton.position.set(13.75,-9,5);
+																				 howToPlayButton.position.set(howToPlayButton.posX, howToPlayButton.posY, howToPlayButton.posZ);
 																			 else if (event.object == creditButton)
-																				 creditButton.position.set(0,-15,5);
+																				 creditButton.position.set(creditButton.posX, creditButton.posY, creditButton.posZ);
 																			 else if (event.object == returnButton)
-																				 returnButton.position.set(0,-22,5);
+																				 returnButton.position.set(returnButton.posX, returnButton.posY, returnButton.posZ);
+																			 else if (event.object == sourceLinkButton)
+																				  sourceLinkButton.position.set(sourceLinkButton.posX, sourceLinkButton.posY, sourceLinkButton.posZ);
+																			 else if (event.object == rightArrowButton)
+																				 rightArrowButton.position.set(rightArrowButton.posX, rightArrowButton.posY, rightArrowButton.posZ);
+																			 else if (event.object == leftArrowButton)
+																				 leftArrowButton.position.set(leftArrowButton.posX, leftArrowButton.posY, leftArrowButton.posZ);
 																		 });
 																		
 			 dragControls.addEventListener( 'dragend', function(event)   {});
@@ -2320,7 +2451,7 @@ function init() {
 		 var Material = new THREE.MeshBasicMaterial({color: 0xffff55}); //RGB
 		 pac = new THREE.Mesh(pacGeometry, Material);
 		 //scene.add(pac);
-		 pac.position.set(-10,-4,-1.9); //xyz
+		 pac.position.set(-10,-4,-2); //xyz
 		 pac.name = 'Pac';
 		 
 		 var Material2 = new THREE.MeshBasicMaterial({color: 0xaaaaff}); //RGB
@@ -2386,7 +2517,7 @@ function init() {
 		 var planeGeometry = new THREE.PlaneBufferGeometry (40.5, 40,0);
 		 var planeMaterial = new THREE.MeshBasicMaterial({color: 0x000000}); //RGB
 		 Board = new THREE.Mesh(planeGeometry, planeMaterial);
-		 Board.position.set(0,yShifter,-2); //xyz
+		 Board.position.set(0,yShifter,-2.4); //xyz
 		 scene.add(Board);
 
 		 //Outline
@@ -2412,8 +2543,8 @@ function init() {
 		 P1Text.position.set(-18,18,-3);
 		 P1Text.scale.set(7.5,7.25,1);
 		 P1Text.update();
-		 scene.add(P1Text);
-		 console.log(P1Text);
+		 //scene.add(P1Text);
+		 //console.log(P1Text);
 		 
 		 //P2Text
 		 P2Text = new THREEx.DynamicText2DObject();
@@ -2426,7 +2557,7 @@ function init() {
 		 P2Text.position.set(-6,18,-3);
 		 P2Text.scale.set(7.5,7.25,1);
 		 P2Text.update();
-		 scene.add(P2Text);
+		 //scene.add(P2Text);
 		 
 		 //P3Text
 		 P3Text = new THREEx.DynamicText2DObject();
@@ -2439,7 +2570,7 @@ function init() {
 		 P3Text.position.set(6,18,-3);
 		 P3Text.scale.set(7.5,7.25,1);
 		 P3Text.update();
-		 scene.add(P3Text);
+		 //scene.add(P3Text);
 		 
 		 //P4Text
 		 P4Text = new THREEx.DynamicText2DObject();
@@ -2452,7 +2583,7 @@ function init() {
 		 P4Text.position.set(18,18,-3);
 		 P4Text.scale.set(7.5,7.25,1);
 		 P4Text.update();
-		 scene.add(P4Text);
+		 //scene.add(P4Text);
 	 }
 
 	 function load_Buttons(){
@@ -2465,22 +2596,12 @@ function init() {
 		 T.minFilter = THREE.LinearFilter;
 		 var T1 =  new THREE.SpriteMaterial( { map: T, color: 0xffffff } );
 		 bgButton = new THREE.Sprite(T1);	
+		 bgButton.posX = 19;
+		 bgButton.posY =  22.95;
+		 bgButton.posZ = -2;
+		 bgButton.position.set(bgButton.posX, bgButton.posY, bgButton.posZ);
 		 bgButton.position.set(19,22.95,-2); 
 		 bgButton.scale.set(14,5,1);		  
-		 
-		 //Join Button
-		 joinButton = new THREEx.DynamicText2DObject()
-		 joinButton.parameters.text= "Join the Game";
-		 joinButton.parameters.font= "85px Arial";
-		 joinButton.parameters.fillStyle= "Magenta";
-		 joinButton.parameters.align = "center";
-		 joinButton.dynamicTexture.canvas.width = 1024;
-		 joinButton.dynamicTexture.canvas.height = 256;
-		 joinButton.position.set(12,-22.75,5);
-		 joinButton.scale.set(15,5,1);
-		 joinButton.update();
-		 joinButton.visble = true;
-		 joinButton.name = "joinButton";
 		 
 		 //Start Button
 		 startButton = new THREEx.DynamicText2DObject()
@@ -2490,7 +2611,10 @@ function init() {
 		 startButton.parameters.align = "center";
 		 startButton.dynamicTexture.canvas.width = 1024;
 		 startButton.dynamicTexture.canvas.height = 256;
-		 startButton.position.set(0,-3,5);
+		 startButton.posX = 0;
+		 startButton.posY = -3;
+		 startButton.posZ = 5;
+		 startButton.position.set(startButton.posX, startButton.posY, startButton.posZ);
 		 startButton.scale.set(16,4,1);
 		 startButton.parameters.lineHeight=0.6;
 		 startButton.update();
@@ -2505,7 +2629,10 @@ function init() {
 		 aboutButton.parameters.align = "center";
 		 aboutButton.dynamicTexture.canvas.width = 1024;
 		 aboutButton.dynamicTexture.canvas.height = 256;
-		 aboutButton.position.set(-15,-9,5);
+		 aboutButton.posX = -15;
+		 aboutButton.posY = -9;
+		 aboutButton.posZ = 5;
+		 aboutButton.position.set(aboutButton.posX, aboutButton.posY, aboutButton.posZ);
 		 aboutButton.scale.set(16,4,1);
 		 aboutButton.parameters.lineHeight=0.6;
 		 aboutButton.update();
@@ -2520,7 +2647,10 @@ function init() {
 		 creditButton.parameters.align = "center";
 		 creditButton.dynamicTexture.canvas.width = 1024;
 		 creditButton.dynamicTexture.canvas.height = 256;
-		 creditButton.position.set(0,-15,5);
+		 creditButton.posX = 0;
+		 creditButton.posY = -15;
+		 creditButton.posZ = 5;
+		 creditButton.position.set(creditButton.posX, creditButton.posY, creditButton.posZ);
 		 creditButton.scale.set(16,4,1);
 		 creditButton.parameters.lineHeight=0.6;
 		 creditButton.update();
@@ -2535,7 +2665,10 @@ function init() {
 		 howToPlayButton.parameters.align = "center";
 		 howToPlayButton.dynamicTexture.canvas.width = 1024;
 		 howToPlayButton.dynamicTexture.canvas.height = 256;
-		 howToPlayButton.position.set(13.75,-9,5);
+		 howToPlayButton.posX = 13.75;
+		 howToPlayButton.posY = -9;
+		 howToPlayButton.posZ = 5;
+		 howToPlayButton.position.set(howToPlayButton.posX, howToPlayButton.posY, howToPlayButton.posZ);
 		 howToPlayButton.scale.set(16,4,1);
 		 howToPlayButton.parameters.lineHeight=0.6;
 		 howToPlayButton.update();
@@ -2545,13 +2678,16 @@ function init() {
 		 //Return Button
 		 returnButton = new THREEx.DynamicText2DObject()
 		 returnButton.parameters.text= "Return to Start Screen";
-		 returnButton.parameters.font= "85px Arial";
+		 returnButton.parameters.font= "86px Arial";
 		 returnButton.parameters.fillStyle= "#F0FEF0";
 		 returnButton.parameters.align = "center";
 		 returnButton.dynamicTexture.canvas.width = 1024;
 		 returnButton.dynamicTexture.canvas.height = 256;
-		 returnButton.position.set(0,-22,5);
-		 returnButton.scale.set(15,5,1);
+		 returnButton.posX = 0;
+		 returnButton.posY = -23;
+		 returnButton.posZ = 5;
+		 returnButton.position.set(returnButton.posX, returnButton.posY, returnButton.posZ);
+		 returnButton.scale.set(16,6,1);
 		 returnButton.update();
 		 returnButton.visble = true;
 		 returnButton.name = "returnButton";
@@ -2582,7 +2718,25 @@ function init() {
 		 //textBox.scale.set(6,5,1);
 		 textBox.update();
 		 textBox.visble = true;
-		 textBox.name = "textBox";		 
+		 textBox.name = "textBox";
+		 
+		 //Source Link Button
+		 sourceLinkButton = new THREEx.DynamicText2DObject()
+		 sourceLinkButton.parameters.text= "Link to the Source";
+		 sourceLinkButton.parameters.font= "85px Arial";
+		 sourceLinkButton.parameters.fillStyle= "#FBFF9F";
+		 sourceLinkButton.parameters.align = "center";
+		 sourceLinkButton.dynamicTexture.canvas.width = 1024;
+		 sourceLinkButton.dynamicTexture.canvas.height = 256;
+		 sourceLinkButton.posX = 15;
+		 sourceLinkButton.posY = -18;
+		 sourceLinkButton.posZ = 1;
+		 sourceLinkButton.position.set(sourceLinkButton.posX, sourceLinkButton.posY, sourceLinkButton.posZ);
+		 sourceLinkButton.scale.set(15,5,1);
+		 sourceLinkButton.update();
+		 sourceLinkButton.visble = true;
+		 sourceLinkButton.url = null;
+		 sourceLinkButton.name = "sourceLinkButton";
 	 }
 
 	 function load_Game_Maze_1(){
@@ -3299,7 +3453,7 @@ function init() {
 	 
 	 //Creates four hidden buttons that allow for the touch screen controls to operate normally
 	 function load_Touch_Screen_Controls(){
-		 var rectShape;
+		 var rectShape, zPosition = -3.5;
 		 var material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
 		 
 		 //North Touch Screen Button
@@ -3316,7 +3470,7 @@ function init() {
 		 NorthButton = new THREE.Mesh(topGeometry, material);
 		 //NorthButton.material.transparent  = true;
 		 NorthButton.material.opacity = 0.2;
-		 NorthButton.position.set(0,yShifter+2, -3);
+		 NorthButton.position.set(0,yShifter+2, zPosition);
 		 scene.add(NorthButton);
 		 objects.push(NorthButton);
 		 
@@ -3333,7 +3487,7 @@ function init() {
 		 SouthButton = new THREE.Mesh(bottomGeometry, material);
 		 //SouthButton.material.opacity = 0.2;
 		 SouthButton.material.transparent  = true;
-		 SouthButton.position.set(0,yShifter+2, -3);		 
+		 SouthButton.position.set(0,yShifter+2, zPosition);		 
 		 scene.add(SouthButton);
 		 objects.push(SouthButton);
 		 
@@ -3347,7 +3501,7 @@ function init() {
 		 rectShape.lineTo( -13, 17-yShifter );
 		 var leftGeometry = new THREE.ShapeGeometry( rectShape );
 		 WestButton = new THREE.Mesh(leftGeometry, material);
-		 WestButton.position.set(-9,yShifter-2, -3); //xyz
+		 WestButton.position.set(-9,yShifter-2, zPosition); //xyz
 		 scene.add(WestButton);
 		 objects.push(WestButton);
 		 
@@ -3361,7 +3515,7 @@ function init() {
 		 rectShape.lineTo( 13, 17-yShifter );
 		 var leftGeometry = new THREE.ShapeGeometry( rectShape );
 		 EastButton = new THREE.Mesh(leftGeometry, material);
-		 EastButton.position.set(9,yShifter-2, -3); //xyz
+		 EastButton.position.set(9,yShifter-2, zPosition); //xyz
 		 scene.add(EastButton);
 		 objects.push(EastButton);
 	 }
@@ -3418,7 +3572,7 @@ function init() {
 			 return pelletTexture;	
 	 }
 	 
-	 //A Function to remove my buttons a lot more easily
+	 //A Function to remove my buttons a lot more easily - This Function will add a button to the scene and to the clickable array
 	 function addButton(button){
 		 //Removal of the startButton
 		 try{
@@ -3429,7 +3583,7 @@ function init() {
 		 }
 	 }
 	 
-	 //A Function to remove my buttons a lot more easily
+	 //A Function to remove my buttons a lot more easily - This Function will remove a button from the scene and from the clickable array
 	 function removeButton(button){
 		 //Removal of the startButton
 		 try{
@@ -3484,18 +3638,15 @@ function init() {
 		 titleSectionText.parameters.text= "About:";
 		 titleSectionText.parameters.font= "150px Arial";
 		 titleSectionText.parameters.fillStyle= "#FF1493";
-		 titleSectionText.position.set(-16,10,5);
+		 titleSectionText.position.set(-16,12,5);
 		 titleSectionText.parameters.lineHeight=0.6;
 		 titleSectionText.update();
 		 scene.add(titleSectionText);
 		 
-		 
-		 textBox.parameters.text= "This is where I'll write about the game 12345678901234567890123456789012345678901234567890";
+		 textBox.parameters.text= "The foundation of this game is based on Namaco 'Pac-man Battle Royale' game. For my final project at my univeristy, I decided to create a multi-player game for me and my friends to enjoy. After going to New Haven's Barcade, I decided that Pac-man would be basis for this project.";
 		 textBox.parameters.font= "150px Arial";
 		 textBox.parameters.fillStyle= "#FF44c3";
-		 textBox.position.set(0,0,5);
-		 
-		 
+		 textBox.position.set(0,-6,5);		 		 
 		 textBox.material.shininess=10;
 		 textBox.parameters.lineHeight=0.15;
 		 textBox.dynamicTexture.context.lineWidth=2.5;
@@ -3505,14 +3656,131 @@ function init() {
 		 textBox.scale.set(45,15,1);
 		 textBox.update();
 		 scene.add(textBox);
-		 console.log(textBox);
 		 
 		 //Add the Return Button
 		 addButton(returnButton);
 		 //Adjust the Title
 		 Title1.position.set(0,20.95,-2); 
+		 Game_Status="About";
 	 }
 	 
+	 //Loads the How To Play Page of the Game
+	 function load_How_to_Play_Screen(){
+		 //Temporarily remove the Start, Credit, About and How to Play Buttons
+		 removeButton(startButton);
+		 removeButton(howToPlayButton);
+		 removeButton(creditButton);
+		 removeButton(aboutButton);
+		 
+		 //Scene Number Reset
+		 sceneNumber = 0;
+		 
+		 //Display Box
+		 displayBox =  new THREE.Sprite(htpTextArray[sceneNumber]);	
+		 scene.add(displayBox);
+		 displayBox.scale.x  = htpTextArray[sceneNumber].scalingX;
+		 displayBox.scale.y  = htpTextArray[sceneNumber].scalingY;
+		 displayBox.name = "displayBox";
+		 displayBox.position.set(0,1.5,1);
+		 
+		 //Adjust the Section Title and then add it to the scene
+		 titleSectionText.parameters.text= "How To Play:";
+		 titleSectionText.parameters.font= "150px Arial";
+		 titleSectionText.parameters.fillStyle= "#1E90FF";
+		 titleSectionText.position.set(-16,12,5);
+		 titleSectionText.parameters.lineHeight=0.6;
+		 titleSectionText.update();
+		 scene.add(titleSectionText);
+		 
+		 textBox.parameters.text= htpTextArray[sceneNumber].text;
+		 textBox.parameters.font= "150px Arial";
+		 textBox.parameters.fillStyle= "#1E54FF";
+		 textBox.position.set(0,-14,5);		 		 
+		 textBox.material.shininess=0;
+		 textBox.parameters.lineHeight=0.15;
+		 textBox.dynamicTexture.context.lineWidth=2.5;
+		 textBox.dynamicTexture.canvas.width = 4096;
+		 textBox.dynamicTexture.context.miterLimit=25;
+		 textBox.parameters.margin=0.05;
+		 textBox.scale.set(45,15,1);
+		 textBox.update();
+		 scene.add(textBox);
+		 
+		 //Arrow Buttons
+		 addButton(rightArrowButton);
+		 addButton(leftArrowButton);
+		 leftArrowButton.material.color  = new THREE.Color("rgb( 50, 50,50)");
+		 rightArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+		 
+		 //Add the Return Button
+		 addButton(returnButton);
+		 
+		 //Adjust the Title
+		 Title1.position.set(0,20.95,-2); 
+		 Game_Status="How to Play";
+	 }
+	  
+	 //Loads the Credit Page of the Game
+	 function load_Credit_Screen(){
+		 //Temporarily remove the Start, Credit, About and How to Play Buttons
+		 removeButton(startButton);
+		 removeButton(howToPlayButton);
+		 removeButton(creditButton);
+		 removeButton(aboutButton);
+		 
+		 //Scene Number Reset
+		 sceneNumber = 0;		 
+		 
+		 //Display Box
+		 displayBox =  new THREE.Sprite(creditDisplayArray[sceneNumber]);	
+		 scene.add(displayBox);
+		 displayBox.scale.x  = creditDisplayArray[sceneNumber].scalingX;
+		 displayBox.scale.y  = creditDisplayArray[sceneNumber].scalingY;
+		 displayBox.name = "displayBox";
+		 displayBox.position.set(0,2,2);
+		 
+		 //Adjust the Section Title and then add it to the scene
+		 titleSectionText.parameters.text= "Credit:";
+		 titleSectionText.parameters.font= "150px Arial";
+		 titleSectionText.parameters.fillStyle= "#FF8C00";
+		 titleSectionText.position.set(-17,12,1);
+		 titleSectionText.parameters.lineHeight=0.6;
+		 titleSectionText.update();
+		 scene.add(titleSectionText);
+		 
+		 textBox.parameters.text=  creditDisplayArray[sceneNumber].text;
+		 textBox.parameters.font= "150px Arial";
+		 textBox.parameters.fillStyle= "#FF8C00";
+		 textBox.position.set(0,-15,5);		 		 
+		 textBox.material.shininess=10;
+		 textBox.parameters.lineHeight=0.15;
+		 textBox.dynamicTexture.context.lineWidth=2.5;
+		 textBox.dynamicTexture.canvas.width = 4096;
+		 textBox.dynamicTexture.context.miterLimit=25;
+		 textBox.parameters.margin=0.05;
+		 textBox.scale.set(45,15,1);
+		 textBox.update();
+		 scene.add(textBox);
+		 
+		 //Add the Source Link
+		 addButton(sourceLinkButton);
+		 sourceLinkButton.url = creditDisplayArray[sceneNumber].url;
+		 
+		 //Arrow Buttons
+		 addButton(rightArrowButton);
+		 addButton(leftArrowButton);
+		 leftArrowButton.material.color  = new THREE.Color("rgb( 50, 50,50)");
+		 rightArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+					 
+		 
+		 //Add the Return Button
+		 addButton(returnButton);
+		 
+		 //Adjust the Title
+		 Title1.position.set(0,20.95,-2); 
+		  Game_Status="Credit"
+	 }
+	  
 	 //The Return function to go back to the Start Screen
 	 function return_to_Start_Screen(){
 		 //Remove the Return Button
@@ -3520,6 +3788,24 @@ function init() {
 		 
 		 //Remove the Section Title
 		 scene.remove(titleSectionText);
+		 
+		 //Remove the link Source
+		 if(scene.getObjectByName('sourceLinkButton') != null)
+			 scene.remove(sourceLinkButton);
+		 
+		 //Removes the textBox if it is present
+		 if(scene.getObjectByName('textBox') != null)
+			 scene.remove(textBox);
+		 
+		 //Removes the displayBox if it is present
+		 if(scene.getObjectByName('displayBox') != null)
+			 scene.remove(displayBox);
+		 
+		 //Removes the arrows if it is present
+		 if(scene.getObjectByName('rightArrowButton') != null)
+			 scene.remove(rightArrowButton);
+		 if(scene.getObjectByName('leftArrowButton') != null)
+			 scene.remove(leftArrowButton);
 		 
 		 //Add back the buttons
 		 addButton(startButton);
@@ -3529,7 +3815,103 @@ function init() {
 		 
 		 //Readjust the Title
 		 Title1.position.set(0,15.95,-2); 
+		 Game_Status="Ready";
+		 displayBox.scale.set(20,20,1);	
 	 }
+
+	 //Load the images for the about, Credits and How to Play
+	 function load_Display_Pictures(){
+		 
+		 displayBox =  new THREE.Sprite(null);
+		 displayBox.name = "displayBox";		 
+		 
+		 var loader = new THREE.TextureLoader();
+		 loader.crossOrigin = true;
+		 //---------- About --------------------------
+		 
+		 
+		 //---------- Credit --------------------------
+		 //OriginalSpriteSheet
+		 var texture = loader.load( 'Images/OriginalSprites/Sprite.gif' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 pic.text = "The default Sprites Sheet of the Ghost and the fruits      (Not including the Grapes).";
+		 pic.url = "https://pixshark.com/ms-pacman-pixel.htm";
+		 pic.scalingX = 20;
+		 pic.scalingY = 20;
+		 creditDisplayArray.push(pic);
+		 //Style Sheet 1
+		 texture = loader.load( 'Images/Style1/53209.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 pic.text = "The Style 1 Sprites Sheet.";
+		 pic.url = "https://www.spriters-resource.com/pc_computer/pacmanchampionshipeditiondx/";
+		 pic.scalingX = 23;
+		 pic.scalingY = 23;
+		 creditDisplayArray.push(pic);
+		 //Style Sheet 2
+		 texture = loader.load( 'Images/Style2/103599.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 pic.text = "The Style 2 Sprites Sheet has the same sprite              source as Style 1.";
+		 pic.url = "https://www.spriters-resource.com/pc_computer/pacmanchampionshipeditiondx/";
+		 pic.scalingX = 23;
+		 pic.scalingY = 23;
+		 creditDisplayArray.push(pic);
+		 //Title
+		 texture = loader.load( 'Images/Title.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 pic.text = "Here is the source of the title image for Pac-mania.";
+		 pic.url = "https://fontmeme.com/fonts/pac-font-fontalicious-font/";
+		 pic.scalingX = 18;
+		 pic.scalingY = 7;
+		 creditDisplayArray.push(pic);
+		 
+		 
+		 //---------- How To Play -----------------
+		 texture = loader.load( 'Images/fruit listing.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text =  "    This web application.";
+		 htp.scalingX = 21;
+		 htp.scalingY = 21;
+		 htpTextArray.push(htp);
+		 
+		 texture = loader.load( 'Images/fruit listing.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text = "    There are various types of fruits with unique properties. A fruit can either win you the game or lead to your destruction. Unlike the original Pac-man be careful what you eat!";
+		 htp.scalingX = 20;
+		 htp.scalingY = 20;
+		 htpTextArray.push(htp);
+		 
+		 
+		 //---------- Right Arrow ------------------
+		 texture = loader.load( 'Images/rightArrow.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 rightArrowButton =  new THREE.Sprite(pic);
+		 rightArrowButton.posX = 21;
+		 rightArrowButton.posY =  0;
+		 rightArrowButton.posZ = -1;
+		 rightArrowButton.position.set(rightArrowButton.posX, rightArrowButton.posY, rightArrowButton.posZ);
+		 rightArrowButton.scale.set(6,6,1);
+		 rightArrowButton.name = "rightArrowButton";
+		 //---------- Left Arrow --------------------
+		 texture = loader.load( 'Images/leftArrow.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 leftArrowButton =  new THREE.Sprite(pic);	 
+		 leftArrowButton.posX = -21;
+		 leftArrowButton.posY =  0;
+		 leftArrowButton.posZ = -1;
+		 leftArrowButton.position.set(leftArrowButton.posX, leftArrowButton.posY, leftArrowButton.posZ);
+		 leftArrowButton.scale.set(6,6,1);
+		 leftArrowButton.name = "leftArrowButton";
+	 }
+	 
+	 
 }
 
 window.onload = init;	

@@ -84,6 +84,7 @@ var ghostsArray = [], pacArray = [], pacItems = [];
 var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumber =21; //ghostRandomModeGeneratorNumber gets low and make the ghost more aggressive (default is 21)
 var mapNodes = [],nodesList, gameRender = null, step=0;
 var ghostCreationCountDown = 4, ghostCreationList=[];
+var pacGuidedTesting = [];
 
 PacMania.on('connection',function(socket){
 	 console.log("Pac-Mania Served has been accessed");
@@ -685,24 +686,24 @@ PacMania.on('connection',function(socket){
 		 mapNodes.push(node); 
 		 //Portal Nodes
 		 //Portal A - Node 117
-		 connection = [31];
+		 connection = [31, 118];
 		 node = {x:4, y:8, Connectednodes:connection,
-							North:-1, East:-1,South:31,West:-1};
+							North:118, East:-1,South:31,West:-1};
 		 mapNodes.push(node); 
 		 //Portal A - Node 118
-		 connection = [91];
+		 connection = [91, 117];
 		 node = {x:-4, y:-7, Connectednodes:connection,
-							North:91, East:-1,South:-1,West:-1};
+							North:91, East:-1,South:117,West:-1};
 		 mapNodes.push(node); 
 		 //Portal B - Node 119
-		 connection = [35];
+		 connection = [35,120];
 		 node = {x:-10, y:4, Connectednodes:connection,
-							North:-1, East:35,South:-1,West:-1};
+							North:-1, East:35,South:-1,West:120};
 		 mapNodes.push(node); 
 		 //Portal B - Node 120
-		 connection = [84];
+		 connection = [84,119];
 		 node = {x:10, y:-4, Connectednodes:connection,
-							North:-1, East:-1,South:-1,West:84};
+							North:-1, East:119,South:-1,West:84};
 		 mapNodes.push(node); 
 		 //Ghost Yard
 		 //All of the locations will move towards the center and then towards Node 50
@@ -760,7 +761,7 @@ PacMania.on('connection',function(socket){
 	 //Start Game
      socket.on('Initiate Game Render', function(data) {
 		 if(gameRender == null){			 
-			 console.log("Started the Game State");
+			 console.log("Started the Game State @ "+(new Date().toLocaleTimeString()));
 			 console.log("Nodes: "+mapNodes.length);
 			 if(mapNodes.length <= 1)
 				 loadNodesMaze1();
@@ -794,7 +795,8 @@ PacMania.on('connection',function(socket){
 				 addPacItems(first,second);
 			 }
 			  
-			 gameRender = setInterval( UpdateGameState, 25);
+			 //gameRender = setInterval( UpdateGameState, 25);
+			 gameRender = setInterval( UpdateGameState, 20);
 		 }
 		 else{
 			 //console.log("Ended the Game State");
@@ -812,11 +814,26 @@ PacMania.on('connection',function(socket){
 		 //PacMania.emit('Add Ghost');
 	 });
 	 
-	 socket.on('Add Player', function(data) {
-		 //Add Player;
-		 addPac(socket.id);
-		 console.log("Player added with the id: "+ socket.id);
-		 console.log("PacArray Length: "+pacArray.length);
+	 socket.on('Grapes', function(data) {
+		 if(pacArray[0].fruitEffect != "Drunk"){
+			 console.log("Pac drunken mode activated!!!");
+			 pacArray[0].speed = 1.5;
+			 pacArray[0].effectTime = 500;
+			 pacArray[0].fruitEffect = "Drunk";
+		 }
+		 else
+			 console.log("Pac drunken mode already activated....");
+		 //pacGuidedTesting = loadAstarNode(pacArray[pacCount].oldNode, pacArray[pacCount].lastNode ,108)
+	 });
+	 
+	 socket.on('Node108', function(data) {
+		 if(pacGuidedTesting.length <= 0){
+			 //pacGuidedTesting = loadAstarNode(pacArray[0].oldNode, pacArray[0].lastNode ,108)
+			 pacGuidedTesting = loadAstarNode(pacArray[0].lastNode, pacArray[0].nextNode ,108)
+		 }
+		 else
+			 console.log("Target mode already activated....");
+		 //pacGuidedTesting = loadAstarNode(pacArray[pacCount].oldNode, pacArray[pacCount].lastNode ,108)
 	 });
 	 
 	 socket.on('Move', function(data){
@@ -834,7 +851,6 @@ PacMania.on('connection',function(socket){
 	 
 	 //Update the Game State
 	 function UpdateGameState(){
-		 //step++;
 		 var pacmanDistanceTravelDivsor = 20;
 		 var baseSpeed = 1.5;
 		 
@@ -882,6 +898,9 @@ PacMania.on('connection',function(socket){
 					 ghostsArray[ghostCount].nextNode = 118;
 					 ghostsArray[ghostCount].x = -4;
 					 ghostsArray[ghostCount].y = -7;
+					 if(ghostsArray[ghostCount].returnPath.length > 0 )
+						 if(ghostsArray[ghostCount].returnPath == 118)
+							 ghostsArray[ghostCount].returnPath.shift();
 				 }
 				 //A118 -> A117
 				 else if(ghostsArray[ghostCount].nextNode == 118){
@@ -890,6 +909,9 @@ PacMania.on('connection',function(socket){
 					 ghostsArray[ghostCount].nextNode = 117;
 					 ghostsArray[ghostCount].x = 4;
 					 ghostsArray[ghostCount].y = 8;
+					 if(ghostsArray[ghostCount].returnPath.length > 0 )
+						 if(ghostsArray[ghostCount].returnPath == 117)
+							 ghostsArray[ghostCount].returnPath.shift();
 				 }				 
 				 //B119 -> B120
 				 else if(ghostsArray[ghostCount].nextNode == 119){
@@ -898,6 +920,9 @@ PacMania.on('connection',function(socket){
 					 ghostsArray[ghostCount].nextNode = 120;
 					 ghostsArray[ghostCount].x = 10;
 					 ghostsArray[ghostCount].y = -4;
+					 if(ghostsArray[ghostCount].returnPath.length > 0 )
+						 if(ghostsArray[ghostCount].returnPath == 120)
+							 ghostsArray[ghostCount].returnPath.shift();
 				 }
 				 //B120 -> B119
 				 else if(ghostsArray[ghostCount].nextNode == 120){
@@ -906,6 +931,9 @@ PacMania.on('connection',function(socket){
 					 ghostsArray[ghostCount].nextNode = 119;
 					 ghostsArray[ghostCount].x = -10;
 					 ghostsArray[ghostCount].y = 4;
+					 if(ghostsArray[ghostCount].returnPath.length > 0 )
+						 if(ghostsArray[ghostCount].returnPath == 119)
+							 ghostsArray[ghostCount].returnPath.shift();
 				 }
 				 
 				 //Next Node Selected
@@ -921,95 +949,167 @@ PacMania.on('connection',function(socket){
 					 }
 					 else if(ghostsStatus == "Home"){
 						 
-						  //To solve the issue of the going home error that get stucks at the portal
-						 if(ghostsArray[ghostCount].oldNode == 92 && ghostsArray[ghostCount].lastNode == 91 ){
-							 ghostsArray[ghostCount].direction = 'South';
-							 ghostsArray[ghostCount].directionPhase = 0;
-							 ghostsArray[ghostCount].nextNode =  118;
-							 console.log("Caught the Error!!!!! Portal A: 118 -> 117");
-						 }
-						 if(ghostsArray[ghostCount].oldNode == 118 && ghostsArray[ghostCount].lastNode == 117 ){
+						 //To solve the issue of the going home error that get stucks at the portal
+						 //A117 >> A118
+						 if(ghostsArray[ghostCount].nextNode == 117){
 							 ghostsArray[ghostCount].direction = 'North';
 							 ghostsArray[ghostCount].directionPhase = 0;
-							 ghostsArray[ghostCount].x = 4;
-							 ghostsArray[ghostCount].y = 7;
-							 ghostsArray[ghostCount].nextNode =  31;
-							 console.log("Caught the Error!!!!! Portal A: 117 -> 118");
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
+							 ghostsArray[ghostCount].nextNode = 118;
+							 ghostsArray[ghostCount].x = -4;
+							 ghostsArray[ghostCount].y = -7;
+							 
+							 if(ghostsArray[ghostCount].returnPath.length != 0)
+								 if(ghostsArray[ghostCount].returnPath[0] == 118)
+									 ghostsArray[ghostCount].returnPath.shift();		
 						 }
-						 else if(ghostsArray[ghostCount].oldNode == 119 && ghostsArray[ghostCount].lastNode == 120 ){
+						 //A118 >> A117
+						 else if(ghostsArray[ghostCount].nextNode == 118){
+							 ghostsArray[ghostCount].direction = 'South';
+							 ghostsArray[ghostCount].directionPhase = 0;
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
+							 ghostsArray[ghostCount].nextNode = 117;
+							 ghostsArray[ghostCount].x = 4;
+							 ghostsArray[ghostCount].y = 8;
+							 
+							 if(ghostsArray[ghostCount].returnPath.length != 0)
+								 if(ghostsArray[ghostCount].returnPath[0] == 117)
+									 ghostsArray[ghostCount].returnPath.shift();		
+						 }
+						 //A119 >> A120
+						 else if(ghostsArray[ghostCount].nextNode == 119){
 							 ghostsArray[ghostCount].direction = 'West';
 							 ghostsArray[ghostCount].directionPhase = 0;
-							 ghostsArray[ghostCount].nextNode =  84;
-							 console.log("Caught the Error!!!!! Portal B: 119 -> 120");
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
+							 ghostsArray[ghostCount].nextNode = 120;
+							 ghostsArray[ghostCount].x = 10;
+							 ghostsArray[ghostCount].y = -4;
+							 
+							 if(ghostsArray[ghostCount].returnPath.length != 0)
+								 if(ghostsArray[ghostCount].returnPath[0] == 120)
+									 ghostsArray[ghostCount].returnPath.shift();		
 						 }
-						 else if(ghostsArray[ghostCount].oldNode == 120 && ghostsArray[ghostCount].lastNode == 119 ){
+						 //A120 >> A119
+						 else if(ghostsArray[ghostCount].nextNode == 120){
 							 ghostsArray[ghostCount].direction = 'East';
 							 ghostsArray[ghostCount].directionPhase = 0;
-							 ghostsArray[ghostCount].nextNode =  35;
-							 console.log("Caught the Error!!!!! Portal B: 120 -> 119");
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
+							 ghostsArray[ghostCount].nextNode = 119;
+							 ghostsArray[ghostCount].x = 10;
+							 ghostsArray[ghostCount].y = -4;
+							 
+							 if(ghostsArray[ghostCount].returnPath.length != 0)
+								 if(ghostsArray[ghostCount].returnPath[0] == 119)
+									 ghostsArray[ghostCount].returnPath.shift();		
 						 }
 						 
-						 
-						 
 						 //Now finding the path
-						 else if(ghostsArray[ghostCount].returnPath.length <= 0 )
+						 if(ghostsArray[ghostCount].returnPath.length <= 0 ){
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;							 
 							 ghostsArray[ghostCount].returnPath = loadAstarNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode ,ghostsArray[ghostCount].home)
-						
+						 }
+							 
 						 // if the Array is still empty then that means we are at our goal location so go to a random next location 
-						 if(ghostsArray[ghostCount].returnPath.length <= 0 )
+						 if(ghostsArray[ghostCount].returnPath.length <= 0 ){
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;	
 							 ghostsArray[ghostCount].nextNode = loadRandomNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode );
-						 else // if the Array is not empty then follow the path
+						 }
+						else{ // if the Array is not empty then follow the path
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;	
 							 ghostsArray[ghostCount].nextNode = ghostsArray[ghostCount].returnPath.shift();
-						 //ghostsArray[ghostCount].returnPath.shift();						 
+							//ghostsArray[ghostCount].returnPath.shift();	
+						 }						 
 					 }
 					 else if(ghostsStatus == "Chase"){
 						 
 						 //To solve the issue of the going home error that get stucks at the portal
-						 if(ghostsArray[ghostCount].oldNode == 92 && ghostsArray[ghostCount].lastNode == 91 ){
-							 ghostsArray[ghostCount].direction = 'South';
-							 ghostsArray[ghostCount].directionPhase = 0;
-							 ghostsArray[ghostCount].nextNode =  118;
-							 console.log("Caught the Error!!!!! Portal A: 118 -> 117");
-						 }
-						 if(ghostsArray[ghostCount].oldNode == 118 && ghostsArray[ghostCount].lastNode == 117 ){
+						 //To solve the issue of the going home error that get stucks at the portal
+						 //A117 >> A118
+						 if(ghostsArray[ghostCount].nextNode == 117){
 							 ghostsArray[ghostCount].direction = 'North';
 							 ghostsArray[ghostCount].directionPhase = 0;
-							 ghostsArray[ghostCount].x = 4;
-							 ghostsArray[ghostCount].y = 7;
-							 ghostsArray[ghostCount].nextNode =  31;
-							 console.log("Caught the Error!!!!! Portal A: 117 -> 118");
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
+							 ghostsArray[ghostCount].nextNode = 118;
+							 ghostsArray[ghostCount].x = -4;
+							 ghostsArray[ghostCount].y = -7;
+							 
+							 if(ghostsArray[ghostCount].returnPath.length != 0)
+								 if(ghostsArray[ghostCount].returnPath[0] == 118)
+									 ghostsArray[ghostCount].returnPath.shift();		
 						 }
-						 else if(ghostsArray[ghostCount].oldNode == 119 && ghostsArray[ghostCount].lastNode == 120 ){
+						 //A118 >> A117
+						 else if(ghostsArray[ghostCount].nextNode == 118){
+							 ghostsArray[ghostCount].direction = 'South';
+							 ghostsArray[ghostCount].directionPhase = 0;
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
+							 ghostsArray[ghostCount].nextNode = 117;
+							 ghostsArray[ghostCount].x = 4;
+							 ghostsArray[ghostCount].y = 8;
+							 
+							 if(ghostsArray[ghostCount].returnPath.length != 0)
+								 if(ghostsArray[ghostCount].returnPath[0] == 117)
+									 ghostsArray[ghostCount].returnPath.shift();		
+						 }
+						 //A119 >> A120
+						 else if(ghostsArray[ghostCount].nextNode == 119){
 							 ghostsArray[ghostCount].direction = 'West';
 							 ghostsArray[ghostCount].directionPhase = 0;
-							 ghostsArray[ghostCount].nextNode =  84;
-							 console.log("Caught the Error!!!!! Portal B: 119 -> 120");
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
+							 ghostsArray[ghostCount].nextNode = 120;
+							 ghostsArray[ghostCount].x = 10;
+							 ghostsArray[ghostCount].y = -4;
+							 
+							 if(ghostsArray[ghostCount].returnPath.length != 0)
+								 if(ghostsArray[ghostCount].returnPath[0] == 120)
+									 ghostsArray[ghostCount].returnPath.shift();		
 						 }
-						 else if(ghostsArray[ghostCount].oldNode == 120 && ghostsArray[ghostCount].lastNode == 119 ){
+						 //A120 >> A119
+						 else if(ghostsArray[ghostCount].nextNode == 120){
 							 ghostsArray[ghostCount].direction = 'East';
 							 ghostsArray[ghostCount].directionPhase = 0;
-							 ghostsArray[ghostCount].nextNode =  35;
-							 console.log("Caught the Error!!!!! Portal B: 120 -> 119");
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;
+							 ghostsArray[ghostCount].nextNode = 119;
+							 ghostsArray[ghostCount].x = 10;
+							 ghostsArray[ghostCount].y = -4;
+							 
+							 if(ghostsArray[ghostCount].returnPath.length != 0)
+								 if(ghostsArray[ghostCount].returnPath[0] == 119)
+									 ghostsArray[ghostCount].returnPath.shift();		
 						 }
 						 
+						  //Now finding the path
+						 if(ghostsArray[ghostCount].returnPath.length <= 0 ){
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;							 
+							 ghostsArray[ghostCount].returnPath = loadAstarNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode , pacArray[ghostsArray[ghostCount].targetPlayer].nextNode);
+						 }
 						 
-						 //Now finding the path
-						 else if(ghostsArray[ghostCount].returnPath.length <= 0 )
-							 ghostsArray[ghostCount].returnPath = loadAstarNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode , pacArray[ghostsArray[ghostCount].targetPlayer].nextNode )
-						
 						 // if the Array is still empty then that means we are at our goal location so go to a random next location 
-						 if(ghostsArray[ghostCount].returnPath.length <= 0 )
+						 if(ghostsArray[ghostCount].returnPath.length <= 0 ){
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;	
 							 ghostsArray[ghostCount].nextNode = loadRandomNode(ghostsArray[ghostCount].oldNode, ghostsArray[ghostCount].lastNode );
-						 else // if the Array is not empty then follow the path
+						 }
+						 else{ // if the Array is not empty then follow the path
+							 //ghostsArray[ghostCount].oldNode = ghostsArray[ghostCount].lastNode;
+							 //ghostsArray[ghostCount].lastNode = ghostsArray[ghostCount].nextNode;	
 							 ghostsArray[ghostCount].nextNode = ghostsArray[ghostCount].returnPath.shift();
-						 //ghostsArray[ghostCount].returnPath.shift();						 
+							//ghostsArray[ghostCount].returnPath.shift();	
+						 }
 					 }
 					 
-					 
-					 
-					 
 					 //console.log("next node: "+ghostsArray[ghostCount].nextNode+ " x:" +mapNodes[ ghostsArray[ghostCount].nextNode ].x + "  y:"+mapNodes[ ghostsArray[ghostCount].nextNode ].y);
-					 
 					 
 					 
 					 
@@ -1063,7 +1163,7 @@ PacMania.on('connection',function(socket){
 				 if(pacArray[pacCount].effectTime <= 0){
 					 pacArray[pacCount].effectTime  = 0;
 					 pacArray[pacCount].effectTime  = 0;
-					 pacArray[pacCount].speed = 1;
+					 pacArray[pacCount].speed = 1.1;
 					 pacArray[pacCount].density = 1;
 					 pacArray[pacCount].fruitEffect = null;
 					 pacArray[pacCount].status = null;
@@ -1126,36 +1226,58 @@ PacMania.on('connection',function(socket){
 				 //A117 -> A118
 				 if(pacArray[pacCount].nextNode == 117){
 					 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
-					 pacArray[pacCount].lastNode = 117;
+					 pacArray[pacCount].lastNode = pacArray[pacCount].nextNode;
 					 pacArray[pacCount].nextNode = 118;
+					 console.log("Ran 117 >> 118");
 					 pacArray[pacCount].x = -4;
 					 pacArray[pacCount].y = -7;
+					 
+					 if(pacGuidedTesting.length != 0)
+						 if(pacGuidedTesting[0] == 118)
+							 pacGuidedTesting.shift();
+					 
 				 }
 				 //A118 -> A117
-				 else if(pacArray[pacCount].nextNode == 118){
+				 else if(pacArray[pacCount].nextNode == 118 ){
 					 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
-					 pacArray[pacCount].lastNode = 118;
+					 pacArray[pacCount].lastNode = pacArray[pacCount].nextNode;
 					 pacArray[pacCount].nextNode = 117;
+					 console.log("Ran 118 >> 117");
 					 pacArray[pacCount].x = 4;
 					 pacArray[pacCount].y = 8;
+					 
+					 if(pacGuidedTesting.length != 0)
+						 if(pacGuidedTesting[0] == 117)
+							 pacGuidedTesting.shift();
 				 }				 
 				 //B119 -> B120
 				 else if(pacArray[pacCount].nextNode == 119){
 					 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
-					 pacArray[pacCount].lastNode = 119;
+					 pacArray[pacCount].lastNode = pacArray[pacCount].nextNode;
 					 pacArray[pacCount].nextNode = 120;
+					 console.log("Ran 119 >> 120");
 					 pacArray[pacCount].x = 10;
 					 pacArray[pacCount].y = -4;
+					 
+					 if(pacGuidedTesting.length != 0)
+						 if(pacGuidedTesting[0] == 120)
+							 pacGuidedTesting.shift();
 				 }
 				 //B120 -> B119
 				 else if(pacArray[pacCount].nextNode == 120){
 					 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
-					 pacArray[pacCount].lastNode = 120;
+					 pacArray[pacCount].lastNode = pacArray[pacCount].nextNode;
 					 pacArray[pacCount].nextNode = 119;
+					 console.log("Ran 120 >> 119");
 					 pacArray[pacCount].x = -10;
 					 pacArray[pacCount].y = 4;
+					 
+					 if(pacGuidedTesting.length != 0)
+						 if(pacGuidedTesting[0] == 119)
+							 pacGuidedTesting.shift();
 				 }
 				 
+				 if(pacGuidedTesting.length == 0){
 				 //Next Node Selected
 				 try{
 					 //IntendedDirections
@@ -1205,10 +1327,44 @@ PacMania.on('connection',function(socket){
 						 pacArray[pacCount].nextNode = mapNodes[ pacArray[pacCount].nextNode ].West;
 					 }
 					 
+					 
 				 }catch(e){
 					 console.log("error");
 				 }
-				 
+				 }
+				 else{ //Testing pacGuidedTesting
+					  //To solve the issue of the going home error that get stucks at the portal
+					  
+					 // if the Array is still empty then that means we are at our goal location so go to a random next location 
+					 if(pacGuidedTesting.length <= 0 ){
+						 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
+						 pacArray[pacCount].lastNode = pacArray[pacCount].nextNode;
+						 pacArray[pacCount].nextNode = loadRandomNode(pacArray[pacCount].oldNode, pacArray[pacCount].lastNode );
+					
+					 }
+					 else {// if the Array is not empty then follow the path
+						 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
+				 		 pacArray[pacCount].lastNode = pacArray[pacCount].nextNode;
+						 pacArray[pacCount].nextNode = pacGuidedTesting.shift();						 
+					 }
+					 //ghostsArray[pacCount].returnPath.shift();	
+					 console.log("* nextNode: "+pacArray[pacCount].nextNode);
+					 
+					 
+					 if(pacGuidedTesting.length == 0 ){
+						 console.log("O:"+pacArray[pacCount].oldNode);
+						 console.log("L:"+pacArray[pacCount].lastNode);
+						 console.log("N:"+pacArray[pacCount].nextNode);
+						 console.log("*direction:");
+						 console.log("N:"+mapNodes[ pacArray[pacCount].nextNode ].North);
+						 console.log("E:"+mapNodes[ pacArray[pacCount].nextNode ].East);
+						 console.log("S:"+mapNodes[ pacArray[pacCount].nextNode ].South);
+						 console.log("W:"+mapNodes[ pacArray[pacCount].nextNode ].West);
+						 console.log("*-------------------------------------- ");		
+					 }
+					 
+					 
+				 }
 			 }
 			 else{
 				 //Since your Drunk!!!
@@ -1218,33 +1374,42 @@ PacMania.on('connection',function(socket){
 				 pacArray[pacCount].nextNode = loadRandomNode(pacArray[pacCount].oldNode, pacArray[pacCount].lastNode );
 			 
 			 
-			 /**
-				  //To solve the issue of the going home error that get stucks at the portal
-				 if(ghostsArray[ghostCount].oldNode == 92 && ghostsArray[ghostCount].lastNode == 91 ){
-					 ghostsArray[ghostCount].direction = 'South';
-					 ghostsArray[ghostCount].directionPhase = 0;
-					 ghostsArray[ghostCount].nextNode =  118;
-					 console.log("Caught the Error!!!!! Portal A: 118 -> 117");
+			 
+				  //For the portals teleportation
+				 //A117 -> A118
+				 if(pacArray[pacCount].nextNode == 117){
+					 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
+					 pacArray[pacCount].lastNode = 117;
+					 pacArray[pacCount].nextNode = 118;
+					 pacArray[pacCount].x = -4;
+					 pacArray[pacCount].y = -7;
 				 }
-				 if(ghostsArray[ghostCount].oldNode == 31 && ghostsArray[ghostCount].lastNode == 117 ){
-					 ghostsArray[ghostCount].direction = 'North';
-					 ghostsArray[ghostCount].directionPhase = 0;
-					 ghostsArray[ghostCount].nextNode =  118;
-					 console.log("Caught the Error!!!!! Portal A: 117 -> 118");
+				 //A118 -> A117
+				 else if(pacArray[pacCount].nextNode == 118){
+					 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
+					 pacArray[pacCount].lastNode = 118;
+					 pacArray[pacCount].nextNode = 117;
+					 pacArray[pacCount].x = 4;
+					 pacArray[pacCount].y = 8;
+				 }				 
+				 //B119 -> B120
+				 else if(pacArray[pacCount].nextNode == 119){
+					 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
+					 pacArray[pacCount].lastNode = 119;
+					 pacArray[pacCount].nextNode = 120;
+					 pacArray[pacCount].x = 10;
+					 pacArray[pacCount].y = -4;
 				 }
-				 else if(ghostsArray[ghostCount].oldNode == 119 && ghostsArray[ghostCount].lastNode == 120 ){
-					 ghostsArray[ghostCount].direction = 'West';
-					 ghostsArray[ghostCount].directionPhase = 0;
-					 ghostsArray[ghostCount].nextNode =  84;
-					 console.log("Caught the Error!!!!! Portal B: 119 -> 120");
+				 //B120 -> B119
+				 else if(pacArray[pacCount].nextNode == 120){
+					 pacArray[pacCount].oldNode = pacArray[pacCount].lastNode;
+					 pacArray[pacCount].lastNode = 120;
+					 pacArray[pacCount].nextNode = 119;
+					 pacArray[pacCount].x = -10;
+					 pacArray[pacCount].y = 4;
 				 }
-				 else if(ghostsArray[ghostCount].oldNode == 120 && ghostsArray[ghostCount].lastNode == 119 ){
-					 ghostsArray[ghostCount].direction = 'East';
-					 ghostsArray[ghostCount].directionPhase = 0;
-					 ghostsArray[ghostCount].nextNode =  35;
-					 console.log("Caught the Error!!!!! Portal B: 120 -> 119");
-				 }
-				 **/
+				 
+				 
 			 
 			 }
 			 
@@ -1266,10 +1431,14 @@ PacMania.on('connection',function(socket){
 			 for(var pelletAdditions = 0; pelletAdditions < (Math.floor( Math.random()*12)+14); pelletAdditions++){
 				 var addPellets = true;
 				 var first = Math.floor(Math.random()*115);
-				 var second = -1;
 				 
-				 while(second == -1 ||second == 117 || second == 118 || second == 119 || second == 120)
-					 second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
+				 while(first == -1 || first == 31 || first == 35 || first == 91 || first == 84){
+					 first = Math.floor(Math.random()*115);
+				 }
+					 
+				 
+				 var second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
+				 
 				 
 				 var pel = {first:first, second:second};
 				 creationList.push (pel);
@@ -1338,7 +1507,7 @@ PacMania.on('connection',function(socket){
 			 id:socket,
 			 x : -8,
 			 y : -6,
-			 speed: 1,
+			 speed: 1.1,
 			 density:1,
 			 score: 300,
 			 lastNode : 89,
@@ -1556,18 +1725,19 @@ PacMania.on('connection',function(socket){
 		 if(Pac.fruitEffect == "Super PAC-MAN"){
 			 for(var ghostNo = 0; ghostNo < ghostsArray.length; ghostNo++)
 				 //Check x values first
-				 if(Math.abs(ghostsArray[ghostNo].x - Pac.x)<=0.25)
-					 if(Math.abs(ghostsArray[ghostNo].y - Pac.y)<=0.25){
+				 if(Math.abs(ghostsArray[ghostNo].x - Pac.x)<=0.35)
+					 if(Math.abs(ghostsArray[ghostNo].y - Pac.y)<=0.35){
 						 ghostsArray.splice(ghostNo,1);
+						 Pac.score += 200;
 						 ghostNo--;
 					 }
 		 }
 		 else{
 			 for(var ghostNo = 0; ghostNo < ghostsArray.length; ghostNo++)
 				 //Check x values first
-				 if(Math.abs(ghostsArray[ghostNo].x - Pac.x)<=0.25)
-					 if(Math.abs(ghostsArray[ghostNo].y - Pac.y)<=0.25){
-						 console.log(ghostsArray[ghostNo].type+" Killed Pac!!!");
+				 if(Math.abs(ghostsArray[ghostNo].x - Pac.x)<=0.35)
+					 if(Math.abs(ghostsArray[ghostNo].y - Pac.y)<=0.35){
+						 //console.log(ghostsArray[ghostNo].type+" Killed Pac!!!");
 					 }
 			 
 		 }
@@ -1593,12 +1763,23 @@ PacMania.on('connection',function(socket){
 				 console.log("Mode: Home");
 			}
 			else{
-				
 				 if(randomGhostMode <= 4)
-					  randomGhostMode = Math.floor(Math.random()*Math.floor(ghostRandomModeGeneratorNumber-5))+5;
+					 randomGhostMode = Math.floor(Math.random()*Math.floor(ghostRandomModeGeneratorNumber-5))+5;
 				 
-				 
-				 if(randomGhostMode < 10){
+				 if(randomGhostMode <= 10){
+					 ghostsStatus = "Scatter";
+					 ghostsCountDown = 700+Math.floor(Math.random()*300);
+					 console.log("Mode: Scatter");
+					 
+					 //Count Down to Ghost Creation
+					 if(ghostsArray.length <= 2)
+					     ghostCreationCountDown = 0;
+					 else if(ghostsArray.length <= 4)
+					     ghostCreationCountDown -= 2;
+					 else if(ghostsArray.length <= 8)
+					     ghostCreationCountDown--;
+				 }
+				 else if(randomGhostMode > 10){
 					 ghostsStatus = "Chase";
 					 ghostsCountDown = 500+Math.floor(Math.random()*400);
 					 console.log("Mode: Chase");
@@ -1606,26 +1787,21 @@ PacMania.on('connection',function(socket){
 					 //Assigning Targets
 					 for(var ghostCount =0; ghostCount<ghostsArray.length;ghostCount++)
 								ghostsArray[ghostCount].targetPlayer = Math.floor(Math.random()*pacArray.length);
-					 
 				 }
-				 else if(randomGhostMode > 10){
-					 ghostsStatus = "Scatter";
-					 ghostsCountDown = 700+Math.floor(Math.random()*300);
-					 console.log("Mode: Scatter");
-					 
-					 //Count Down to Ghost Creation
-					 if(ghostsArray.length <= 8)
-					     ghostCreationCountDown--;
-				 }
-				 
-				 
-				 
-				 
 				 
 				 if(ghostCreationCountDown <= 0){
 					 addGhost("Random");
-					 ghostCreationCountDown = Math.floor(Math.random()*12)+5;
+					 ghostCreationCountDown = Math.floor(Math.random()*5)+5;
 					 console.log("A Ghost Appeared!!! ("+ghostsArray[ghostsArray.length-1].type+")");
+					 
+					 if(ghostCreationList.length<=2){
+						 ghostCreationList.push("Blinky");
+						 ghostCreationList.push("Blinky");
+						 ghostCreationList.push("Pinky");
+						 ghostCreationList.push("Inky");
+						 ghostCreationList.push("Clyde");
+					 }
+					 
 				 }
 				 
 				 //console.log("Mode: Scatter");
