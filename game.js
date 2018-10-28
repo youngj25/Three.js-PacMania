@@ -1,7 +1,7 @@
 var socket, PacMania = io('/pacMania', {forceNew:true});
 var player=-1;
 var Game_Status="Ready",camera;
-var objects = [], board = [], dominoes= [];
+var objects = [];
 //Start Game
 var mouse = new THREE.Vector2(), raycaster = new THREE.Raycaster(), pos = new THREE.Vector3();
 //Text
@@ -10,13 +10,15 @@ var clickable = [];
 //PacMania
 var ghost,ghost2,ghost3,ghost4,ghost5,ghost6,ghost7,ghost8,ghost9;
 var pac,pac2;
-var Outline, Board, gameMaze = [], pellets=[];
+var Outline, Board, gameMaze = [], pellets=[], PacList=[];
 var Width = 0, Height = 0;
 var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
 var bgButton, startButton, backgroundState = 'Original', joinButton; //Background functions
+var gameOver, playAgainButton;
 var aboutButton, howToPlayButton, creditButton, closeButton, titleSectionText, returnButton, textBox, displayBox, displayArray=[];
 var creditDisplayArray = [], sourceLinkButton, rightArrowButton, leftArrowButton, sceneNumber=0, htpTextArray =[];
 var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [];
+var PlayerTexture=[];
 var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture = [];
 var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE BOARD
 //FOR THE TOUCH SCREENS CONtrols The four buttons
@@ -37,11 +39,11 @@ function init() {
 	 renderer.setClearColor(new THREE.Color(0x000000, 0.0));
 	
 	 for ( var x=0; Width+Height == 0; x++){
-		 if(window.innerWidth > 900-x*100 && window.innerHeight > 900-x*95){
-			 Width = 900-x*125;			
-			 Height = 900-x*140;	
+		 if(window.innerWidth > 1000-x*72 && window.innerHeight > 1000-x*75){
+			 Width = 1000-x*72;			
+			 Height = 1000-x*75;	
 		 }	
-		 else if( x >= 8){
+		 else if( x >= 17){
 			 Width = window.innerWidth*0.55;
 			 Height = window.innerHeight*0.55;
 		 }
@@ -82,7 +84,8 @@ function init() {
 			 
 			 
 			 //Update the Ghost Sprites
-			 for(var x=0; x<data.GhostList.length; x++){
+			 var listLength = data.GhostList.length;
+			 for(var x=0; x< listLength; x++){
 				 if(x == 0){
 					 if(scene.getObjectByName('Ghost1') == null){
 						 ghost =  new THREE.Sprite(BlinkyTexture[0]);		
@@ -1375,50 +1378,89 @@ function init() {
 						 scene.remove(ghost2);	
 			 }
 			  
-			 //Update the Pac Sprites
-			 for(var x=0; x<data.PacList.length; x++){
-				 if(x == 0){
-					 if(scene.getObjectByName('Pac') == null){
-						 pac.name = 'Pac';
-						 scene.add(pac);
-					 }
-					 
-					 
-					 pac.position.x = data.PacList[x].x*xMultiplier;
-					 pac.position.y = data.PacList[x].y*yMultiplier+yShifter;
-					 
-					 //if(data.PacList[x].fruitEffect == "Super PAC-MAN")
-						 //pac.scale.set = (1.5,1.5,1); 
-					 //else
-						 //pac.scale.set = (1,1,1); 
-					 
-					 //P1 Score
-					 P1Score = data.PacList[x].score;
-					 P1Text.parameters.text= "P1: "+P1Score;
-					 P1Text.update();					 
-				 }
-				 else if(x == 1){
-					 if(scene.getObjectByName('Pac2') == null){
-						 pac2.name = 'Pac2';
-						 scene.add(pac2);		
-					 }
-					 
-					 pac2.position.x = data.PacList[x].x*xMultiplier;
-					 pac2.position.y = data.PacList[x].y*yMultiplier+yShifter;
-					 P2Score = data.PacList[x].score;
-					 P2Text.parameters.text= "P2: "+P2Score;
-					 P2Text.update();
-				 }
+			 //Pac Sprites
+			 listLength = data.PacList.length;
+			 for(var x=0; x< listLength; x++){
 				 
+				 if(data.PacList[x].status != "Dead"){
+				 
+					 if(PacList.length <= x){
+						 PacList.push(addPac());
+						 scene.add(PacList[x]);
+						 //pellets[x].scale.set(0.75,0.75,1);
+					 }
+					 
+					 //Pac North
+					 if(data.PacList[x].direction == "North"){
+						 if(data.PacList[x].directionSprite %2 == 0)
+							 PacList[x].material =  PlayerTexture[0+x*8];	
+						 else
+							 PacList[x].material  =  PlayerTexture[1+x*8];	
+					 }
+					 //Pac East
+					 else if(data.PacList[x].direction == "East"){
+						 if(data.PacList[x].directionSprite %2 == 0)
+							 PacList[x].material =  PlayerTexture[2+x*8];	
+						 else
+							 PacList[x].material  =  PlayerTexture[3+x*8];	
+					 }
+					 //Pac South
+					 else if(data.PacList[x].direction == "South"){
+						 if(data.PacList[x].directionSprite %2 == 0)
+							 PacList[x].material =  PlayerTexture[4+x*8];	
+						 else
+							 PacList[x].material  =  PlayerTexture[5+x*8];	
+					 }
+					 //Pac West
+					 else if(data.PacList[x].direction == "West"){
+						 if(data.PacList[x].directionSprite %2 == 0)
+							 PacList[x].material =  PlayerTexture[6+x*8];	
+						 else
+							 PacList[x].material  =  PlayerTexture[7+x*8];	
+					 }
+					 
+					 if(data.PacList[x].fruitEffect == "Super PAC-MAN")
+						 PacList[x].scale.set(2.5,2.5,1);
+					 else
+						 PacList[x].scale.set(1.75,1.75,1);
+					 
+					 PacList[x].position.set(data.PacList[x].x*xMultiplier,data.PacList[x].y*yMultiplier+yShifter,-2);
+					 
+					 //Score Keeping
+					 if(x == 0){
+						 //P1 Score
+						 P1Score = data.PacList[x].score;
+						 P1Text.parameters.text= "P1: "+P1Score;
+						 P1Text.update();		
+					 }
+					 else if(x == 1){
+						 //P2 Score
+						 P2Score = data.PacList[x].score;
+						 P2Text.parameters.text= "P2: "+P2Score;
+						 P2Text.update();		
+					 }
+					 else if(x == 2){
+						 //P3 Score
+						 P3Score = data.PacList[x].score;
+						 P3Text.parameters.text= "P3: "+P3Score;
+						 P3Text.update();		
+					 }
+					 else if(x == 3){
+						 //P4 Score
+						 P4Score = data.PacList[x].score;
+						 P4Text.parameters.text= "P4: "+P3Score;
+						 P4Text.update();		
+					 }			 
+				 }
 			 }
 			 
-			 //Pellets
-			 for(var x=0; x<data.Pellet.length; x++){
+			  //Pellets
+			 listLength = data.Pellet.length;
+			 for(var x=0; x< listLength; x++){
 				 
 				 if(pellets.length <= x){
 					 pellets.push(addItem());
 					 scene.add(pellets[x]);
-					 //pellets[x].scale.set(0.75,0.75,1);
 				 }
 				
 				 
@@ -1431,39 +1473,47 @@ function init() {
 			 }
 			 
 			 //Removing the extra pellets
-			 while(data.Pellet.length < pellets.length){
+			 while(listLength < pellets.length){
 				 scene.remove(pellets[pellets.length-1]);
 				 pellets.splice(pellets.length-1,1);
 			 }
-			
-			 //console.log("Pac Mania")
-			 //console.log(data)
-			 
-			 //Update the Players Score
 		 }
 	 });
-	 	
+	 
+	 PacMania.on('Game Over', function(data){
+		 scene.add(gameOver);
+		 gameOver.position.set( 0, yShifter, 2); 
+		 gameOver.scale.set( 35, 12, 1);
+		 Game_Status = "Game Over";
+		 
+		 addButton(returnButton);
+	 });
+	 
 	 //EVENT LISTENERS!!!!
 	
 	 //Keyboard Functions
-	 //var onKeyDown = function(event) {
 	 function onKeyDown(event) {
 		 //Space Bar Changes Background
 		 if (event.keyCode == 38 || event.keyCode == 104 || event.keyCode ==87) { // Up Arrow - North
 			 var data = { direction: "North"  };
 			 PacMania.emit('Move',data);
+			 event.preventDefault();
 		 }
 		 else if (event.keyCode == 39  || event.keyCode == 102 || event.keyCode == 68) { // Right Arrow - East
 			 var data = { direction: "East"  };
 			 PacMania.emit('Move',data);
+			 event.preventDefault();
 		 }
 		 else if (event.keyCode == 40  || event.keyCode == 98 || event.keyCode == 83) { // Down Arrow - South
 			 var data = { direction: "South"  };
 			 PacMania.emit('Move',data);
+			 event.preventDefault();
 		 }
 		 else if (event.keyCode == 37  || event.keyCode == 100 || event.keyCode == 65) { // Left Arrow - West
 			 var data = { direction: "West"  };
 			 PacMania.emit('Move',data);
+			 event.preventDefault();
+			 //https://stackoverflow.com/questions/8916620/disable-arrow-key-scrolling-in-users-browser
 		 }
 		// else if (event.keyCode == 13)
 			// PacMania.emit('Grapes');
@@ -1478,8 +1528,8 @@ function init() {
 		 Width = Height = 0;	
 		 for ( var x=0; Width+Height == 0; x++){
 			 if(window.innerWidth > 900-x*100 && window.innerHeight > 900-x*95){
-				 Width = 900-x*100;			
-				 Height = 900-x*95;	
+				 Width = 900-x*125;			
+				 Height = 900-x*140;	
 			 }	
 			 else if( x >= 8){
 				 Width = window.innerWidth*0.55;
@@ -1511,10 +1561,10 @@ function init() {
 	 //call the render function
 	 load_Start_Screen();
 	 renderScene();
-	 drag_objects();
-	 loadPac();
+	 drag_objects();	 
 	 loadGhosts();
 	 loadItems();
+	 loadPac();
 	 load_Display_Pictures();
 	
 	 function renderScene(){
@@ -1624,7 +1674,51 @@ function init() {
 																				 load_Credit_Screen();
 																			 }
 																			 else if (event.object == returnButton){
+																				// if(Game_Status != "Game Over")
+																					
+																				
+																				 if(Game_Status == "Game Over"){
+																					 scene.remove(gameOver);
+																					 scene.remove(Board);
+																					 scene.remove(Outline);
+																					 
+																					 //Removing the extra pellets
+																					 while(pellets.length > 0){
+																						 scene.remove(pellets[0]);
+																						 pellets.splice(0,1);
+																					 }
+																					 
+																					 //Removing the maze
+																					 while(gameMaze.length > 0){
+																						 scene.remove(gameMaze[0].block);
+																						 gameMaze.splice(0,1);
+																					 }
+																					 
+																					 //Removing Background Button
+																					 removeButton(bgButton);
+																					 removeButton(NorthButton);
+																					 removeButton(SouthButton);
+																					 removeButton(EastButton);
+																					 removeButton(WestButton);
+																					 
+																					 //Remove the Scores
+																					 scene.remove(P1Text);
+																					 scene.remove(P2Text);
+																					 scene.remove(P3Text);
+																					 scene.remove(P4Text);
+																					 P1SCORE = P2SCORE = P3SCORE = P4SCORE = 0;
+																					 
+																					 
+																					 
+																					 
+																					 
+																				 }
+																				 
+																				 
+																				 
+																				
 																				 return_to_Start_Screen();
+																			
 																			 }// sourceLinkButton.position.set(15,-18.5,5);
 																			 else if (event.object == sourceLinkButton){
 																				 //Opens the Url to the Source
@@ -2440,26 +2534,169 @@ function init() {
 		 Texture.minFilter = THREE.LinearFilter;
 		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
 		 Style3Texture.push(ClydeText);
-		 
-		 
-		 
 	 }
 	
 	 function loadPac(){
-		 //var pacGeometry = new THREE.PlaneGeometry(1.5,1.5,0);
-		 var pacGeometry = new THREE.CircleGeometry(0.8, 32 );
-		 var Material = new THREE.MeshBasicMaterial({color: 0xffff55}); //RGB
-		 pac = new THREE.Mesh(pacGeometry, Material);
-		 //scene.add(pac);
-		 pac.position.set(-10,-4,-2); //xyz
-		 pac.name = 'Pac';
+		 PacList=[], PlayerTexture=[];
 		 
-		 var Material2 = new THREE.MeshBasicMaterial({color: 0xaaaaff}); //RGB
-		 pac2 = new THREE.Mesh(pacGeometry, Material2);
-		 //scene.add(pac2);
-		 pac2.position.set(-2,-4,-2); //xyz
-		 pac2.name = 'Pac2';
-		 //console.log("Created!");
+		 //Sprites
+		 var loader = new THREE.TextureLoader();
+		 loader.crossOrigin = true;
+		 //---------- Original Sprites --------------------------
+		 //Pac 1 Sprites
+		 //P1 North
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P1/P1_U1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P1/P1_U2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P1 East
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P1/P1_R1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P1/P1_R2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P1 South
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P1/P1_D1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P1/P1_D2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P1 West
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P1/P1_L1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P1/P1_L2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 
+		 //Pac 2 Sprites
+		 //P2 North
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P2/P2_U1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P2/P2_U2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P2 East
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P2/P2_R1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P2/P2_R2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P2 South
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P2/P2_D1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P2/P2_D2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P2 West
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P2/P2_L1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P2/P2_L2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 
+		 //Pac 3 Sprites
+		 //P3 North
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P3/P3_U1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P3/P3_U2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P3 East
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P3/P3_R1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P3/P3_R2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P3 South
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P3/P3_D1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P3/P3_D2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P3 West
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P3/P3_L1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P3/P3_L2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 
+		 //Pac 4 Sprites
+		 //P4 North
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P4/P4_U1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P4/P4_U2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P4 East
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P4/P4_R1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P4/P4_R2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P4 South
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P4/P4_D1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P4/P4_D2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 //P4 West
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P4/P4_L1.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 Texture = loader.load( 'Images/OriginalSprites/Pac-Man Sprites/P4/P4_L2.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(pacText);
+		 
+		 //PlayerTexture = OriginalTexture.slice(32, 56);
+		 PlayerTexture = OriginalTexture.slice(56, 64);
 	 }
 		
 	 function loadItems(){
@@ -2471,8 +2708,7 @@ function init() {
 		 //Flappy Up Flight Sprite
 		 //var FlappyUpTexture = loader.load( 'FlapPyBird-master/assets/sprites/yellowbird-upflap.png' );
 		 //FlappyUpTexture.minFilter = THREE.LinearFilter;
-		 //var FlappyUpSprite= new THREE.SpriteMaterial( { map: FlappyUpTexture, color: 0xffffff } );
-		 
+		 //var FlappyUpSprite= new THREE.SpriteMaterial( { map: FlappyUpTexture, color: 0xffffff } );		 
 		 
 		 //Pellets
 		 var texture = loader.load( 'Images/Fruits/pellets.png' );
@@ -2510,6 +2746,11 @@ function init() {
 		 texture = loader.load( 'Images/Fruits/Grape.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 grapeTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 
+		 //---------------- Game Over -----------------------
+		 texture = loader.load( 'Images/Game Over.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var go = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
 	 }
 		
 	 function load_Board(){		 
@@ -2691,6 +2932,23 @@ function init() {
 		 returnButton.update();
 		 returnButton.visble = true;
 		 returnButton.name = "returnButton";
+		 
+		 //playAgainButton
+		 playAgainButton = new THREEx.DynamicText2DObject()
+		 playAgainButton.parameters.text= "Play Again";
+		 playAgainButton.parameters.font= "86px Arial";
+		 playAgainButton.parameters.fillStyle= "#F0FEF0";
+		 playAgainButton.parameters.align = "center";
+		 playAgainButton.dynamicTexture.canvas.width = 1024;
+		 playAgainButton.dynamicTexture.canvas.height = 256;
+		 playAgainButton.posX = 0;
+		 playAgainButton.posY = -23;
+		 playAgainButton.posZ = 5;
+		 playAgainButton.position.set(playAgainButton.posX, playAgainButton.posY, playAgainButton.posZ);
+		 playAgainButton.scale.set(16,6,1);
+		 playAgainButton.update();
+		 playAgainButton.visble = true;
+		 playAgainButton.name = "playAgainButton";
 		 
 		 //titleSectionText
 		 titleSectionText = new THREEx.DynamicText2DObject()
@@ -3464,15 +3722,12 @@ function init() {
 		 rectShape.lineTo( 5, 2-yShifter  );
 		 rectShape.lineTo( 20, 15-yShifter );
 		 rectShape.lineTo( -20, 15-yShifter );
-		
 		 var topGeometry = new THREE.ShapeGeometry( rectShape );
-		 
 		 NorthButton = new THREE.Mesh(topGeometry, material);
 		 //NorthButton.material.transparent  = true;
 		 NorthButton.material.opacity = 0.2;
 		 NorthButton.position.set(0,yShifter+2, zPosition);
-		 scene.add(NorthButton);
-		 objects.push(NorthButton);
+		 addButton(NorthButton);
 		 
 		 
 		 //South Touch Screen Button
@@ -3490,6 +3745,7 @@ function init() {
 		 SouthButton.position.set(0,yShifter+2, zPosition);		 
 		 scene.add(SouthButton);
 		 objects.push(SouthButton);
+		 addButton(SouthButton);
 		 
 		 //West Touch Screen Button
 		 rectShape = new THREE.Shape();
@@ -3502,8 +3758,7 @@ function init() {
 		 var leftGeometry = new THREE.ShapeGeometry( rectShape );
 		 WestButton = new THREE.Mesh(leftGeometry, material);
 		 WestButton.position.set(-9,yShifter-2, zPosition); //xyz
-		 scene.add(WestButton);
-		 objects.push(WestButton);
+		 addButton(WestButton);
 		 
 		 //East Touch Screen Button
 		 rectShape = new THREE.Shape();
@@ -3516,8 +3771,7 @@ function init() {
 		 var leftGeometry = new THREE.ShapeGeometry( rectShape );
 		 EastButton = new THREE.Mesh(leftGeometry, material);
 		 EastButton.position.set(9,yShifter-2, zPosition); //xyz
-		 scene.add(EastButton);
-		 objects.push(EastButton);
+		 addButton(EastButton);
 	 }
 	  
 	 //From Pacman 3D- Creates/Returns the Pellets
@@ -3572,6 +3826,16 @@ function init() {
 			 return pelletTexture;	
 	 }
 	 
+	 function addPac(){
+		 
+		 var pac;
+		 //var text = new THREE.SpriteMaterial( { map: pelletTexture, color: 0xffffff } );
+		 pac =  new THREE.Sprite();	
+		 pac.position.set(0,0,-2); //xyz
+		 
+		 return pac;
+	 }
+	 
 	 //A Function to remove my buttons a lot more easily - This Function will add a button to the scene and to the clickable array
 	 function addButton(button){
 		 //Removal of the startButton
@@ -3624,6 +3888,11 @@ function init() {
 		 
 		 //How To Play Button
 		 addButton(howToPlayButton);	
+		 
+		 
+		 
+		 
+		 
 	 }
 	 
 	 //Loads the About Page of the Game
@@ -3643,19 +3912,22 @@ function init() {
 		 titleSectionText.update();
 		 scene.add(titleSectionText);
 		 
-		 textBox.parameters.text= "The foundation of this game is based on Namaco 'Pac-man Battle Royale' game. For my final project at my univeristy, I decided to create a multi-player game for me and my friends to enjoy. After going to New Haven's Barcade, I decided that Pac-man would be basis for this project.";
-		 textBox.parameters.font= "150px Arial";
+		 textBox.parameters.text= " Pac-Mania is my final project for the university that I graduated from. The foundation of this game is based on Namaco's 'Pac-man Battle Royale' game. I had already decided that for my final project to create an online multi-player game for my friends to enjoy. Then after visiting Barcade in Downtown New Haven, I decided that Pac-man would be the basis for my project. However, I didn't want to simply recreate the classic Pac-man game, I wanted to put my own twist and style in the game. My own madness per se. So please enjoy this game of madness, chaos and ghosts frenzy... Pac-Mania.";
+		 textBox.parameters.font= "105px Arial";
 		 textBox.parameters.fillStyle= "#FF44c3";
 		 textBox.position.set(0,-6,5);		 		 
 		 textBox.material.shininess=10;
-		 textBox.parameters.lineHeight=0.15;
+		 textBox.parameters.lineHeight=0.11;
 		 textBox.dynamicTexture.context.lineWidth=2.5;
 		 textBox.dynamicTexture.canvas.width = 4096;
 		 textBox.dynamicTexture.context.miterLimit=25;
 		 textBox.parameters.margin=0.05;
-		 textBox.scale.set(45,15,1);
+		 textBox.scale.set(40,17,1);
+		 textBox.dynamicTexture.texture.wrapS = 1000;
+		 textBox.dynamicTexture.texture.wrapT = 1000;
 		 textBox.update();
 		 scene.add(textBox);
+		 console.log(textBox);
 		 
 		 //Add the Return Button
 		 addButton(returnButton);
@@ -3740,7 +4012,7 @@ function init() {
 		 displayBox.position.set(0,2,2);
 		 
 		 //Adjust the Section Title and then add it to the scene
-		 titleSectionText.parameters.text= "Credit:";
+		 titleSectionText.parameters.text= "Credits:";
 		 titleSectionText.parameters.font= "150px Arial";
 		 titleSectionText.parameters.fillStyle= "#FF8C00";
 		 titleSectionText.position.set(-17,12,1);
@@ -3791,15 +4063,18 @@ function init() {
 		 
 		 //Remove the link Source
 		 if(scene.getObjectByName('sourceLinkButton') != null)
-			 scene.remove(sourceLinkButton);
+			 removeButton(sourceLinkButton);
 		 
 		 //Removes the textBox if it is present
 		 if(scene.getObjectByName('textBox') != null)
 			 scene.remove(textBox);
 		 
 		 //Removes the displayBox if it is present
-		 if(scene.getObjectByName('displayBox') != null)
+		 if(scene.getObjectByName('displayBox') != null){
+			 displayBox.scale.set(20,20,1);	
 			 scene.remove(displayBox);
+		 }
+			 
 		 
 		 //Removes the arrows if it is present
 		 if(scene.getObjectByName('rightArrowButton') != null)
@@ -3815,8 +4090,9 @@ function init() {
 		 
 		 //Readjust the Title
 		 Title1.position.set(0,15.95,-2); 
+		 Title1.scale.set(32,7,1);		 
 		 Game_Status="Ready";
-		 displayBox.scale.set(20,20,1);	
+		 
 	 }
 
 	 //Load the images for the about, Credits and How to Play
@@ -3867,24 +4143,48 @@ function init() {
 		 pic.scalingX = 18;
 		 pic.scalingY = 7;
 		 creditDisplayArray.push(pic);
-		 
+		 //Game Over
+		 texture = loader.load( 'Images/Game Over.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 pic.text = "Here is the source of the 'Game Over' image.";
+		 pic.url = "https://flamingtext.com/logo/Design-Robot?_variations=true";
+		 pic.scalingX = 22;
+		 pic.scalingY = 14;
+		 creditDisplayArray.push(pic);
+		 //Upload the GameOver Texture while I'm at it
+		 gameOver =  new THREE.Sprite(pic);		
+		 gameOver.name =  "Game Over";		
 		 
 		 //---------- How To Play -----------------
-		 texture = loader.load( 'Images/fruit listing.png' );
+		 texture = loader.load( 'Images/HtpCover.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 htp.text =  "    This web application.";
-		 htp.scalingX = 21;
-		 htp.scalingY = 21;
+		 htp.text =  " Instructions for Pac-Mania.";
+		 htp.scalingX = 35;
+		 htp.scalingY = 14;
 		 htpTextArray.push(htp);
+		 
+		 
+		 
 		 
 		 texture = loader.load( 'Images/fruit listing.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 htp.text = "    There are various types of fruits with unique properties. A fruit can either win you the game or lead to your destruction. Unlike the original Pac-man be careful what you eat!";
+		 htp.text = " There are various types of fruits with unique properties. A fruit can either lead to you to victory or to your demise. Unlike the original Pac-man be careful what you eat!";
 		 htp.scalingX = 20;
 		 htp.scalingY = 20;
 		 htpTextArray.push(htp);
+		 
+		 texture = loader.load( 'Images/appleInfo.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text = " The red Apple is a simple low reward fruit. A player will gain 50 points for eating an Apple.";
+		 htp.scalingX = 30;
+		 htp.scalingY = 12;
+		 htpTextArray.push(htp);
+		 
+		 
 		 
 		 
 		 //---------- Right Arrow ------------------
