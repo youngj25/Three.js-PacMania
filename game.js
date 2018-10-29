@@ -8,6 +8,7 @@ var mouse = new THREE.Vector2(), raycaster = new THREE.Raycaster(), pos = new TH
 var clickable = [];
 
 //PacMania
+var TextFileLog;
 var ghost,ghost2,ghost3,ghost4,ghost5,ghost6,ghost7,ghost8,ghost9;
 var pac,pac2;
 var Outline, Board, gameMaze = [], pellets=[], PacList=[];
@@ -2969,7 +2970,7 @@ function init() {
 		 textBox.parameters.text= "";
 		 textBox.parameters.font= "45px Arial";
 		 textBox.parameters.fillStyle= "#FF24b3";
-		 //textBox.parameters.align = "center";
+		 textBox.parameters.align = "center";
 		 textBox.dynamicTexture.canvas.width = 1024;
 		 textBox.dynamicTexture.canvas.height = 1024;
 		 textBox.position.set(0,-22,5);
@@ -4094,7 +4095,7 @@ function init() {
 		 Game_Status="Ready";
 		 
 	 }
-
+	
 	 //Load the images for the about, Credits and How to Play
 	 function load_Display_Pictures(){
 		 
@@ -4157,32 +4158,103 @@ function init() {
 		 gameOver.name =  "Game Over";		
 		 
 		 //---------- How To Play -----------------
+		 //Source: https://stackoverflow.com/questions/196498/how-do-i-load-the-contents-of-a-text-file-into-a-javascript-variable
+		 
+		 //How to Play Cover
 		 texture = loader.load( 'Images/HtpCover.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 htp.text =  " Instructions for Pac-Mania.";
+		 htp.text =  "Didn't Load....";
 		 htp.scalingX = 35;
 		 htp.scalingY = 14;
 		 htpTextArray.push(htp);
-		 
-		 
-		 
-		 
-		 texture = loader.load( 'Images/fruit listing.png' );
+		 //Controls Option 1, 2 & 3
+		 texture = loader.load( 'Images/Controls123.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 htp.text = " There are various types of fruits with unique properties. A fruit can either lead to you to victory or to your demise. Unlike the original Pac-man be careful what you eat!";
+		 htp.text =  "Didn't Load....";
 		 htp.scalingX = 20;
 		 htp.scalingY = 20;
 		 htpTextArray.push(htp);
-		 
+		 //Controls Option 1 & 2
+		 texture = loader.load( 'Images/Controls4.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text =  "Didn't Load....";
+		 htp.scalingX = 20;
+		 htp.scalingY = 20;
+		 htpTextArray.push(htp);
+		 //Fruit Listings
+		 texture = loader.load( 'Images/fruit listing.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text = "Didn't Load....";
+		 htp.scalingX = 20;
+		 htp.scalingY = 17;
+		 htpTextArray.push(htp);
+		 //Apple
 		 texture = loader.load( 'Images/appleInfo.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 htp.text = " The red Apple is a simple low reward fruit. A player will gain 50 points for eating an Apple.";
+		 htp.text = "Didn't Load....";
 		 htp.scalingX = 30;
 		 htp.scalingY = 12;
 		 htpTextArray.push(htp);
+		 //Banana
+		 texture = loader.load( 'Images/bananaInfo.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text = "Didn't Load....";
+		 htp.scalingX = 30;
+		 htp.scalingY = 12;
+		 htpTextArray.push(htp);
+		 //Cherry
+		 texture = loader.load( 'Images/cherryInfo.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text = "Didn't Load....";
+		 htp.scalingX = 30;
+		 htp.scalingY = 12;
+		 htpTextArray.push(htp);
+		 //Grapes
+		 texture = loader.load( 'Images/grapeInfo.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text = "Didn't Load....";
+		 htp.scalingX = 30;
+		 htp.scalingY = 12;
+		 htpTextArray.push(htp);
+		 //Orange
+		 texture = loader.load( 'Images/orangeInfo.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text = "Didn't Load....";
+		 htp.scalingX = 30;
+		 htp.scalingY = 12;
+		 htpTextArray.push(htp);
+		 
+		  jQuery.get("HowToPlay.txt", undefined, function(data) {
+			 //Prints the full data
+			 //console.log(data);
+			 var dataLength = data.split("\n").length;
+			 
+			 for(var x = 0; x< htpTextArray.length & x*2 < dataLength; x++){
+				 //console.log(data.split("\n")[x*2]);
+				 htpTextArray[x].text = data.split("\n")[x*2];
+				 
+				 // 0 - The cover text for the How to Play
+				 // 1 - The fruits intro for the How to Play
+				 // 2 - The Apple
+				 // 3 - The Banana
+			 }
+			 
+			 }, "html").done(function() {
+				 console.log("second success");
+			 }).fail(function(jqXHR, textStatus) {
+				 console.log(textStatus);
+			 }).always(function() {
+				 console.log("finished");
+		 });
 		 
 		 
 		 

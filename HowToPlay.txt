@@ -1,0 +1,24 @@
+Welcome!!
+
+In this Game there are 4 Options to control the Pac-man Character. Option 1 is to use the arrow keys to operate the Pac-man. Options 2 is to use the arrow keys on the number pad to operate the Pac-man and option 3 is to use the keys 'w', 'a', 's' & 'd'. 
+
+The last option to control the Pac-man character, provided for mobile device users, are touch screen buttons that cover the game level. In the image above, you'll notice that there are four triangles and each triangle represents a direction that the Pac-man will go.
+
+There are various types of fruits with unique properties. A fruit can either lead to you to victory or to your demise. Unlike the original Pac-man be careful what you eat!
+
+The red Apple is a simple low reward fruit. A player will gain 50 points for eating an Apple. There is no fruit effect, this is a safe fruit... for now.
+
+If you want speed, this is the fruit for you. Pac-man speed will double when this 10 point fruit is consumed. Perfect for when you need a quick escape or see a potential victory bump. Just be careful, because your density will lessen meaning you will be pushed back further than normal players.
+
+Cherries are simply high reward fruits. A player will gain 350 points for eating a Cherry. There is no fruit effect for cherries, it simply just gives you a lot of points. 
+
+Pac-mans are surprising very light-weight and this fruit is enough for the yellow munchers to become a drunk. The Grapes are most definitely the most interesting fruits in the bunch. You do get a slight speed boost, but you lose all control of this drunkard.
+
+The Plump Orange fills you up and slows you down. The Pac-mans character slows down to 60% of the Pac-man's base speed. This many seem like it could be self-destructing but used correctly and this fruit can win you the game. 
+
+
+Orange		- 250	//60%
+Pear		- 50
+Pretzel		- 50
+Strawberry	- 150
+
