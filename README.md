@@ -1,2 +1,2 @@
 # Three.js-PacMania
-## Link to Website: [Website](http://bit.ly/MPNApacman)
+Link to Website: [Website](http://bit.ly/MPNApacman)
