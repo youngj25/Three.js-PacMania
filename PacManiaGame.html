@@ -26,9 +26,7 @@
 	 </head>
 
 	 <body>
-		 <header>
-		     <h1>J.A.Y.'s Multi-player Networking Arcade!!!</h1>
-		 </header>
+		 <header>J.A.Y.'s Multi-player Networking Arcade!!!</header>
 
 		 <!-- NAV md-->
 		 <nav class="navbar navbar-inverse navbar-expand navbar-static-top"> 
@@ -40,7 +38,7 @@
 						 <span class="icon-bar"></span>
 						 <span class="icon-bar"></span>  
 					 </button>
-					 <!--<a class="navbar-brand" href="#" id="demo">Username:</a>-->
+					 <!-- <a class="navbar-brand" href="#" id="demo">Username:</a> -->
 				 </div>
 
 				 <div class = "collapse navbar-collapse" id="myNavbar">
@@ -55,28 +53,24 @@
 		     </div>
 		 </nav>
 
-	<!-- https://www.w3schools.com/bootstrap/tryit.asp?filename=trybs_temp_webpage&stacked=h -->
-		 <article>
-			 <div class = "gameContainer">
-				 <div id="WebGL-output" align= "center" align="bottom"></div>
-				 <div id="canvas" align= "center" align="bottom"></div>
-				
-				
-				 <p class = "detailPara" text align = "center" >
-					 Pac-Mania Game Github Repo- It includes the folder where I received the sprites for the game.
-					 <a href="https://github.com/youngj25/Three.js-PacMania" align="center">Link to Pac-Mania Github Repo</a>
-				 </p>
-			 </div>
 
-			 <!-- <script src="game.js" type="text/javascript" align= "left"> -->
-			 <script src="game.js" type="text/javascript">
-				 Sockets
-					 //socket = io.connect('http://localhost:9000');
-					 socket = io.connect('ec2-34-205-146-82.compute-1.amazonaws.com:9000');
-			 </script>
-			 <!-- The Text variables for the game -->
+		 <div class = "gameContainer">
+			 <div id="WebGL-output" style = "width=4vw; height=4vw;" align= "center" align="bottom"></div>
 			
-		 </article>	
+			 <p class = "detailPara" text align = "center" >
+				 Pac-Mania Game Github Repo- It includes the folder where I received the sprites for the game.
+				 <a href="https://github.com/youngj25/Three.js-PacMania" align="center">Link to Pac-Mania Github Repo</a>
+			 </p>
+		
+		</div>
+
+		 <!-- <script src="game.js" type="text/javascript" align= "left"> -->
+		 <script src="game.js" type="text/javascript">
+			 Sockets
+				 //socket = io.connect('http://localhost:9000');
+				 socket = io.connect('ec2-34-205-146-82.compute-1.amazonaws.com:9000');
+		 </script>
+			
 		 <!-- Creating a footer note -->
 		 <footer>created by Jason A. Young</footer>
 	 </body>

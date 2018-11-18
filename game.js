@@ -11,7 +11,7 @@ var clickable = [];
 var TextFileLog;
 var ghost,ghost2,ghost3,ghost4,ghost5,ghost6,ghost7,ghost8,ghost9;
 var pac,pac2;
-var Outline, Board, gameMaze = [], pellets=[], PacList=[];
+var Outline, Board, gameMaze = [], pellets=[], PacList=[], GhostList=[];
 var Width = 0, Height = 0;
 var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
 var bgButton, startButton, backgroundState = 'Original', joinButton; //Background functions
@@ -40,11 +40,12 @@ function init() {
 	 renderer.setClearColor(new THREE.Color(0x000000, 0.0));
 	
 	 for ( var x=0; Width+Height == 0; x++){
-		 if(window.innerWidth > 1000-x*72 && window.innerHeight > 1000-x*75){
-			 Width = 1000-x*72;			
-			 Height = 1000-x*75;	
+		 if((window.innerWidth*0.75) <= x*20 || (window.innerHeight*0.75)<= x*21){
+			 Width = x*20;			
+			 Height = x*21;	
+			 console.log("Width:"+Width+"	Height:"+Height);
 		 }	
-		 else if( x >= 17){
+		 else if( x >= 50){
 			 Width = window.innerWidth*0.55;
 			 Height = window.innerHeight*0.55;
 		 }
@@ -68,22 +69,25 @@ function init() {
 	 socket = io.connect('http://localhost:9000');
 	 //socket = io.connect('ec2-34-205-146-82.compute-1.amazonaws.com:9000');
 	
+	 //Update the Game State
 	 PacMania.on('Update Game State', function(data){
 		 
 		 if(Game_Status == "Active"){
 			 
 			 //Player Text
-			 if(data.PacList.length >= 1)
+			 if(data.PacList.length >= 1){
 				 scene.add(P1Text);
-			 if(data.PacList.length >= 2)
+			 }
+			 if(data.PacList.length >= 2){
 				 scene.add(P2Text);
-			 if(data.PacList.length >= 3)
+			 }
+			 if(data.PacList.length >= 3){
 				 scene.add(P3Text);
-			 if(data.PacList.length >= 4)
+			 }
+			 if(data.PacList.length >= 4){
 				 scene.add(P4Text);
-			 
-			 
-			 
+			 }
+			  
 			 //Update the Ghost Sprites
 			 var listLength = data.GhostList.length;
 			 for(var x=0; x< listLength; x++){
@@ -1379,6 +1383,16 @@ function init() {
 						 scene.remove(ghost2);	
 			 }
 			  
+			 //Ghost Sprites
+			 listLength = data.GhostList.length;
+			 for(var x=0; x< listLength; x++){
+				 if(GhostList.length <= x){
+						 GhostList.push(addGhost());
+						 scene.add(GhostList[x]);
+				 }
+				 
+			 }			 
+			  
 			 //Pac Sprites
 			 listLength = data.PacList.length;
 			 for(var x=0; x< listLength; x++){
@@ -1432,26 +1446,53 @@ function init() {
 						 //P1 Score
 						 P1Score = data.PacList[x].score;
 						 P1Text.parameters.text= "P1: "+P1Score;
+						 P1Text.parameters.fillStyle= "#ff3333";
 						 P1Text.update();		
 					 }
 					 else if(x == 1){
 						 //P2 Score
 						 P2Score = data.PacList[x].score;
 						 P2Text.parameters.text= "P2: "+P2Score;
+						 P2Text.parameters.fillStyle= "#4da6ff";
 						 P2Text.update();		
 					 }
 					 else if(x == 2){
 						 //P3 Score
 						 P3Score = data.PacList[x].score;
 						 P3Text.parameters.text= "P3: "+P3Score;
+						 P3Text.parameters.fillStyle= "#1aff1a";
 						 P3Text.update();		
 					 }
 					 else if(x == 3){
 						 //P4 Score
 						 P4Score = data.PacList[x].score;
-						 P4Text.parameters.text= "P4: "+P3Score;
+						 P4Text.parameters.text= "P4: "+P4Score;
+						 P4Text.parameters.fillStyle= "#cc33ff";
 						 P4Text.update();		
 					 }			 
+				 }
+				 else{ // if Pac is dead
+					 if( x == 0){
+						 P1Text.parameters.fillStyle= "#990000";;
+						 P1Text.update();
+					 }
+					 else if( x == 1){
+						 P2Text.parameters.fillStyle= "#0059b3";;
+						 P2Text.update();		
+					 }
+					 else if( x == 2){
+						 P3Text.parameters.fillStyle= "#009900";;
+						 P3Text.update();		
+					 }
+					 else if( x == 3){
+						 P4Text.parameters.fillStyle= "#800080";;
+						 P4Text.update();		
+					 }
+					
+					 
+					 if(scene.getObjectById(PacList[x].id) != null);
+							 scene.remove(PacList[x]);
+				
 				 }
 			 }
 			 
@@ -1481,12 +1522,13 @@ function init() {
 		 }
 	 });
 	 
+	 //Stops the Game, it's Over
 	 PacMania.on('Game Over', function(data){
 		 scene.add(gameOver);
 		 gameOver.position.set( 0, yShifter, 2); 
 		 gameOver.scale.set( 35, 12, 1);
 		 Game_Status = "Game Over";
-		 
+		 PacList = [];
 		 addButton(returnButton);
 	 });
 	 
@@ -1528,15 +1570,16 @@ function init() {
 	 function onWindowResize(){
 		 Width = Height = 0;	
 		 for ( var x=0; Width+Height == 0; x++){
-			 if(window.innerWidth > 900-x*100 && window.innerHeight > 900-x*95){
-				 Width = 900-x*125;			
-				 Height = 900-x*140;	
-			 }	
-			 else if( x >= 8){
-				 Width = window.innerWidth*0.55;
-				 Height = window.innerHeight*0.55;
-			 }
+		 if((window.innerWidth*0.75) <= x*20 || (window.innerHeight*0.75)<= x*21){
+			 Width = x*20;			
+			 Height = x*21;	
+			 console.log("Width:"+Width+"	Height:"+Height);
+		 }	
+		 else if( x >= 50){
+			 Width = window.innerWidth*0.55;
+			 Height = window.innerHeight*0.55;
 		 }
+	 }
 		 renderer.setSize(Width, Height);
 		 //camera.aspect = renderer.domElement.width/renderer.domElement.height;
 	 }
@@ -1568,6 +1611,7 @@ function init() {
 	 loadPac();
 	 load_Display_Pictures();
 	
+	 //Render the Scenes
 	 function renderScene(){
 		 try{
 			 //Render steps
@@ -1578,6 +1622,7 @@ function init() {
 		 }catch(e){}
 	 }
 	
+	 //Make Objects Draggable - Additionally used as buttons
 	 function drag_objects(){
 		 var dragControls  = new THREE.DragControls( objects, camera, renderer.domElement );
 				
@@ -1833,13 +1878,13 @@ function init() {
 																			 else if (event.object == bgButton)
 																				 bgButton.position.set(bgButton.posX, bgButton.posY, bgButton.posZ);
 																			 else if (event.object == NorthButton)
-																				 NorthButton.position.set(0,yShifter+2, -3);
+																				 NorthButton.position.set(NorthButton.posX, NorthButton.posY, NorthButton.posZ);
 																			 else if (event.object == SouthButton)
-																				 SouthButton.position.set(0,yShifter+2, -3);		 
+																				 SouthButton.position.set(SouthButton.posX, SouthButton.posY, SouthButton.posZ);	 
 																			 else if (event.object == EastButton)
-																				 EastButton.position.set(6,yShifter-2, -3); //xyz
+																				 EastButton.position.set(EastButton.posX, EastButton.posY, EastButton.posZ);
 																			 else if (event.object == WestButton)
-																				 WestButton.position.set(-6,yShifter-2, -3); //xyz
+																				 WestButton.position.set(WestButton.posX, WestButton.posY, WestButton.posZ);
 																			 else if (event.object == aboutButton)
 																				 aboutButton.position.set(aboutButton.posX, aboutButton.posY, aboutButton.posZ);
 																			 else if (event.object == howToPlayButton)
@@ -1861,7 +1906,8 @@ function init() {
 			 //console.log(dragControls);
 			 //https://www.learnthreejs.com/drag-drop-dragcontrols-mouse/
 	 }
-
+	 
+	 //Upload the Ghosts Sprite Sheets into the Texture Array
 	 function loadGhosts(){
 		 var ghostGeometry = new THREE.PlaneGeometry(1.5,1.5,0);
 		 var Material = new THREE.MeshBasicMaterial({color: 0xffffff}); //RGB
@@ -2537,6 +2583,7 @@ function init() {
 		 Style3Texture.push(ClydeText);
 	 }
 	
+	 //Upload the Pac-mans Sprite Sheets into the Texture Array
 	 function loadPac(){
 		 PacList=[], PlayerTexture=[];
 		 
@@ -2697,20 +2744,15 @@ function init() {
 		 OriginalTexture.push(pacText);
 		 
 		 //PlayerTexture = OriginalTexture.slice(32, 56);
-		 PlayerTexture = OriginalTexture.slice(56, 64);
+		 PlayerTexture = OriginalTexture.slice(32, 64);
 	 }
-		
+     
+	 //Upload the Items/Fruits Sprite Sheets into the Texture Arrray
 	 function loadItems(){
 		 //Sprites
 		 var loader = new THREE.TextureLoader();
 		 loader.crossOrigin = true;
 		 //---------- Original Sprites --------------------------
-		 
-		 //Flappy Up Flight Sprite
-		 //var FlappyUpTexture = loader.load( 'FlapPyBird-master/assets/sprites/yellowbird-upflap.png' );
-		 //FlappyUpTexture.minFilter = THREE.LinearFilter;
-		 //var FlappyUpSprite= new THREE.SpriteMaterial( { map: FlappyUpTexture, color: 0xffffff } );		 
-		 
 		 //Pellets
 		 var texture = loader.load( 'Images/Fruits/pellets.png' );
 		 texture.minFilter = THREE.LinearFilter;
@@ -2753,7 +2795,8 @@ function init() {
 		 texture.minFilter = THREE.LinearFilter;
 		 var go = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
 	 }
-		
+	
+	 //Upload the Game Back Board
 	 function load_Board(){		 
 		 //Load Board
 		 var planeGeometry = new THREE.PlaneBufferGeometry (40.5, 40,0);
@@ -2770,6 +2813,7 @@ function init() {
 		 scene.add(Outline);
 	 }
 	 
+	 //Upload the Text
 	 function load_Text(){
 		 //Players Score
 		 P1Score = P2Score = P3Score = P4Score = 0;
@@ -2828,6 +2872,7 @@ function init() {
 		 //scene.add(P4Text);
 	 }
 
+	 //Upload the Buttons
 	 function load_Buttons(){
 		 var loader = new THREE.TextureLoader();
 		 loader.crossOrigin = true;
@@ -2998,6 +3043,7 @@ function init() {
 		 sourceLinkButton.name = "sourceLinkButton";
 	 }
 
+	 //Upload Game Maze 1
 	 function load_Game_Maze_1(){
 		 gameMaze=[];
 		 
@@ -3727,7 +3773,10 @@ function init() {
 		 NorthButton = new THREE.Mesh(topGeometry, material);
 		 //NorthButton.material.transparent  = true;
 		 NorthButton.material.opacity = 0.2;
-		 NorthButton.position.set(0,yShifter+2, zPosition);
+		 NorthButton.posX = 0;
+		 NorthButton.posY =  yShifter+2;
+		 NorthButton.posZ = zPosition;
+		 NorthButton.position.set(NorthButton.posX, NorthButton.posY, NorthButton.posZ);		
 		 addButton(NorthButton);
 		 
 		 
@@ -3742,8 +3791,11 @@ function init() {
 		 var bottomGeometry = new THREE.ShapeGeometry( rectShape );
 		 SouthButton = new THREE.Mesh(bottomGeometry, material);
 		 //SouthButton.material.opacity = 0.2;
-		 SouthButton.material.transparent  = true;
-		 SouthButton.position.set(0,yShifter+2, zPosition);		 
+		 //SouthButton.material.transparent  = true;
+		 SouthButton.posX = 0;
+		 SouthButton.posY =  yShifter+1.25;
+		 SouthButton.posZ = zPosition;
+		 SouthButton.position.set(SouthButton.posX, SouthButton.posY, SouthButton.posZ);				 
 		 scene.add(SouthButton);
 		 objects.push(SouthButton);
 		 addButton(SouthButton);
@@ -3758,7 +3810,10 @@ function init() {
 		 rectShape.lineTo( -13, 17-yShifter );
 		 var leftGeometry = new THREE.ShapeGeometry( rectShape );
 		 WestButton = new THREE.Mesh(leftGeometry, material);
-		 WestButton.position.set(-9,yShifter-2, zPosition); //xyz
+		 WestButton.posX = -9;
+		 WestButton.posY =  yShifter-2;
+		 WestButton.posZ = zPosition;
+		 WestButton.position.set(WestButton.posX, WestButton.posY, WestButton.posZ);		
 		 addButton(WestButton);
 		 
 		 //East Touch Screen Button
@@ -3771,7 +3826,10 @@ function init() {
 		 rectShape.lineTo( 13, 17-yShifter );
 		 var leftGeometry = new THREE.ShapeGeometry( rectShape );
 		 EastButton = new THREE.Mesh(leftGeometry, material);
-		 EastButton.position.set(9,yShifter-2, zPosition); //xyz
+		 EastButton.posX = 9;
+		 EastButton.posY =  yShifter-2;
+		 EastButton.posZ = zPosition;
+		 EastButton.position.set(EastButton.posX, EastButton.posY, EastButton.posZ);		 
 		 addButton(EastButton);
 	 }
 	  
@@ -3827,13 +3885,17 @@ function init() {
 			 return pelletTexture;	
 	 }
 	 
+	 //For Additional Ghost Creation
+	 function addGhost(){
+		 var ghosts =  new THREE.Sprite();	
+		 ghosts.position.set(0,0,-2); //xyz
+		 return ghosts;
+	 }	 
+	 
+	 //For Additional Pac-man Creation
 	 function addPac(){
-		 
-		 var pac;
-		 //var text = new THREE.SpriteMaterial( { map: pelletTexture, color: 0xffffff } );
-		 pac =  new THREE.Sprite();	
+		 var pac =  new THREE.Sprite();	
 		 pac.position.set(0,0,-2); //xyz
-		 
 		 return pac;
 	 }
 	 
@@ -4176,10 +4238,18 @@ function init() {
 		 htp.scalingX = 20;
 		 htp.scalingY = 20;
 		 htpTextArray.push(htp);
-		 //Controls Option 1 & 2
+		 //Controls Option 4
 		 texture = loader.load( 'Images/Controls4.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text =  "Didn't Load....";
+		 htp.scalingX = 20;
+		 htp.scalingY = 20;
+		 htpTextArray.push(htp);
+		 //Bumping
+		 texture = loader.load( 'Images/Controls4.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0x000000 } );
 		 htp.text =  "Didn't Load....";
 		 htp.scalingX = 20;
 		 htp.scalingY = 20;
@@ -4232,6 +4302,30 @@ function init() {
 		 htp.scalingX = 30;
 		 htp.scalingY = 12;
 		 htpTextArray.push(htp);
+		 //Pear
+		 texture = loader.load( 'Images/pearInfo.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text = "Didn't Load....";
+		 htp.scalingX = 30;
+		 htp.scalingY = 12;
+		 htpTextArray.push(htp);
+		 //Pretzel
+		 texture = loader.load( 'Images/preztelInfo.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text = "Didn't Load....";
+		 htp.scalingX = 30;
+		 htp.scalingY = 12;
+		 htpTextArray.push(htp);
+		 //Strawberry
+		 texture = loader.load( 'Images/strawberryInfo.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text = "Didn't Load....";
+		 htp.scalingX = 30;
+		 htp.scalingY = 12;
+		 htpTextArray.push(htp);
 		 
 		  jQuery.get("HowToPlay.txt", undefined, function(data) {
 			 //Prints the full data
@@ -4246,6 +4340,12 @@ function init() {
 				 // 1 - The fruits intro for the How to Play
 				 // 2 - The Apple
 				 // 3 - The Banana
+				 // 4 - The Cherry
+				 // 5 - The Grape
+				 // 6 - The Orange
+				 // 7 - The Pear/Melon
+				 // 8 - The Pretzel
+				 // 9 - The Strawberry
 			 }
 			 
 			 }, "html").done(function() {
