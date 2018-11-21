@@ -88,7 +88,7 @@ function init() {
 				 scene.add(P4Text);
 			 }
 			  
-			 //Update the Ghost Sprites
+			 /* //Update the Ghost Sprites
 			 var listLength = data.GhostList.length;
 			 for(var x=0; x< listLength; x++){
 				 if(x == 0){
@@ -1382,17 +1382,154 @@ function init() {
 				 if(scene.getObjectByName('Ghost2') != null)
 						 scene.remove(ghost2);	
 			 }
-			  
-			 //Ghost Sprites
+			   */
+			   
+			 //Update Ghost Sprites
 			 listLength = data.GhostList.length;
 			 for(var x=0; x< listLength; x++){
+				 //Ghost Additions
 				 if(GhostList.length <= x){
 						 GhostList.push(addGhost());
 						 scene.add(GhostList[x]);
 				 }
 				 
+				 //Blinky
+				 if(data.GhostList[x].type == "Blinky"){
+					 //Blinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  BlinkyTexture[0];	
+						 else
+							 GhostList[x].material  =  BlinkyTexture[1];	
+					 }
+					 //Blinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  BlinkyTexture[2];	
+						 else
+							 GhostList[x].material  =  BlinkyTexture[3];	
+					 }
+					 //Blinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  BlinkyTexture[4];	
+						 else
+							 GhostList[x].material  =  BlinkyTexture[5];	
+					 }
+					 //Blinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  BlinkyTexture[6];	
+						 else
+							 GhostList[x].material  =  BlinkyTexture[7];	
+					 }
+				 }
+				 //Pinky
+				 else if(data.GhostList[x].type == "Pinky"){
+					 //Pinky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  PinkyTexture[0];	
+						 else
+							 GhostList[x].material  =  PinkyTexture[1];	
+					 }
+					 //Pinky East
+					 else if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  PinkyTexture[2];	
+						 else
+							 GhostList[x].material  =  PinkyTexture[3];	
+					 }
+					 //Pinky South
+					 else if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  PinkyTexture[4];	
+						 else
+							 GhostList[x].material  =  PinkyTexture[5];	
+					 }
+					 //Pinky West
+					 else if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  PinkyTexture[6];	
+						 else
+							 GhostList[x].material  =  PinkyTexture[7];	
+					 }
+				 }
+				 //Inky
+				 else if(data.GhostList[x].type == "Inky"){
+					 //Inky North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  InkyTexture[0];	
+						 else
+							 GhostList[x].material  =  InkyTexture[1];	
+					 }
+					 //Inky East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  InkyTexture[2];	
+						 else
+							 GhostList[x].material  =  InkyTexture[3];	
+					 }
+					 //Inky South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  InkyTexture[4];	
+						 else
+							 GhostList[x].material  =  InkyTexture[5];	
+					 }
+					 //Inky West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  InkyTexture[6];	
+						 else
+							 GhostList[x].material  =  InkyTexture[7];	
+					 }
+				 }
+				 //Clyde
+				 else if(data.GhostList[x].type == "Clyde"){
+					 //Clyde North
+					 if(data.GhostList[x].direction == "North"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  ClydeTexture[0];	
+						 else
+							 GhostList[x].material  =  ClydeTexture[1];	
+					 }
+					 //Clyde East
+					 if(data.GhostList[x].direction == "East"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  ClydeTexture[2];	
+						 else
+							 GhostList[x].material  =  ClydeTexture[3];	
+					 }
+					 //Clyde South
+					 if(data.GhostList[x].direction == "South"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  ClydeTexture[4];	
+						 else
+							 GhostList[x].material  =  ClydeTexture[5];	
+					 }
+					 //Clyde West
+					 if(data.GhostList[x].direction == "West"){
+						 if(data.GhostList[x].directionSprite %2 == 0)
+							 GhostList[x].material  =  ClydeTexture[6];	
+						 else
+							 GhostList[x].material  =  ClydeTexture[7];	
+					 }
+				 }
+				 else if(data.GhostList[x].type == "Courage")
+					 GhostList[x].material  = new THREE.Color( "rgb(200,200,50)");
+			 
+				 GhostList[x].position.x = data.GhostList[x].x*xMultiplier;
+				 GhostList[x].position.y = data.GhostList[x].y*yMultiplier+yShifter;
 			 }			 
-			  
+			 
+			 //Remove Extra Ghost Sprites
+			 while(GhostList.length > listLength){				 
+				 scene.remove(GhostList[GhostList.length-1]);
+				 GhostList.splice(GhostList.length-1, GhostList.length);				 
+			 }
+			 
 			 //Pac Sprites
 			 listLength = data.PacList.length;
 			 for(var x=0; x< listLength; x++){
@@ -3889,6 +4026,7 @@ function init() {
 	 function addGhost(){
 		 var ghosts =  new THREE.Sprite();	
 		 ghosts.position.set(0,0,-2); //xyz
+		 ghosts.scale.set(1.75,1.75,1);
 		 return ghosts;
 	 }	 
 	 
@@ -4022,7 +4160,7 @@ function init() {
 		 titleSectionText.parameters.text= "How To Play:";
 		 titleSectionText.parameters.font= "150px Arial";
 		 titleSectionText.parameters.fillStyle= "#1E90FF";
-		 titleSectionText.position.set(-16,12,5);
+		 titleSectionText.position.set(-13,12,5);
 		 titleSectionText.parameters.lineHeight=0.6;
 		 titleSectionText.update();
 		 scene.add(titleSectionText);
@@ -4155,6 +4293,12 @@ function init() {
 		 Title1.position.set(0,15.95,-2); 
 		 Title1.scale.set(32,7,1);		 
 		 Game_Status="Ready";
+		 
+		 //Remove Ghost if present
+		 while(GhostList.length >0){
+			 scene.remove(GhostList[0]);
+			 GhostList.splice(0,1);
+		 }
 		 
 	 }
 	

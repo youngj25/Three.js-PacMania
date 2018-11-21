@@ -52,50 +52,21 @@
 				 </div>
 		     </div>
 		 </nav>
-
-
+		 
 		 <div class = "gameContainer">
 			 <div id="WebGL-output" style = "width=4vw; height=4vw;" align= "center" align="bottom"></div>
 			
-			 <p class = "detailPara" text align = "center" >
+			 <p class = "githubDescription">
 				 Pac-Mania Game Github Repo- It includes the folder where I received the sprites for the game.
-				 <a href="https://github.com/youngj25/Three.js-PacMania" align="center">Link to Pac-Mania Github Repo</a>
+				 <a href="https://github.com/youngj25/Three.js-PacMania">Link to Pac-Mania Github Repo</a>
 			 </p>
 		
-		</div>
+		 </div>
 
-		 <!-- <script src="game.js" type="text/javascript" align= "left"> -->
-		 <script src="game.js" type="text/javascript">
-			 Sockets
-				 //socket = io.connect('http://localhost:9000');
-				 socket = io.connect('ec2-34-205-146-82.compute-1.amazonaws.com:9000');
-		 </script>
+		 <!-- Load the Game into the WebGL-output -->
+		 <script src="game.js" type="text/javascript"></script>
 			
 		 <!-- Creating a footer note -->
 		 <footer>created by Jason A. Young</footer>
 	 </body>
-
-	 <!-- I'll leave this out for now
-	 <script type="application/javascript">	
-		 //Sockets
-		 socket = io.connect('http://localhost:9000');
-		 //socket = io.connect('ec2-34-205-146-82.compute-1.amazonaws.com:9000');
-			
-		 //Sends the IP address of the user to the Server, so we can receive the correct Username
-		 function getIP(json) {
-			 console.log("My public IP address is: " + json.ip);
-			 var data={ip:json.ip};
-			 socket.emit('Username',data);
-			 console.log("IP sent");		
-		 }
-		
-		 //Receives the assigned Username from the Server and sets it as the Username in this HTML
-		 socket.on('Username',function(data){
-		 console.log("Username Received");
-		 //document.getElementById("demo").innerHTML ="Username: "+ data.username;			
-		 });	
-	 </script>
-		
-	 <script type="application/javascript"  src="http://api.ipify.org?format=jsonp&callback=getIP"> </script>
-	 -->
 </html>
