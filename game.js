@@ -9,8 +9,6 @@ var clickable = [];
 
 //PacMania
 var TextFileLog;
-var ghost,ghost2,ghost3,ghost4,ghost5,ghost6,ghost7,ghost8,ghost9;
-var pac,pac2;
 var Outline, Board, gameMaze = [], pellets=[], PacList=[], GhostList=[];
 var Width = 0, Height = 0;
 var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
@@ -18,7 +16,7 @@ var bgButton, startButton, backgroundState = 'Original', joinButton; //Backgroun
 var gameOver, playAgainButton;
 var aboutButton, howToPlayButton, creditButton, closeButton, titleSectionText, returnButton, textBox, displayBox, displayArray=[];
 var creditDisplayArray = [], sourceLinkButton, rightArrowButton, leftArrowButton, sceneNumber=0, htpTextArray =[];
-var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [];
+var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [], DeadGhostTexture=[];
 var PlayerTexture=[];
 var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture = [];
 var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE BOARD
@@ -1393,8 +1391,23 @@ function init() {
 						 scene.add(GhostList[x]);
 				 }
 				 
+				 //If Ghost is dead
+				 if(data.GhostList[x].status == "Dead"){
+					 //North
+					 if(data.GhostList[x].direction == "North")
+						 GhostList[x].material  =  DeadGhostTexture[0];
+					 //East
+					 else if(data.GhostList[x].direction == "East")
+						 GhostList[x].material  =  DeadGhostTexture[1];
+					 //South
+					 else if(data.GhostList[x].direction == "South")
+						 GhostList[x].material  =  DeadGhostTexture[2];
+					 //West
+					 else if(data.GhostList[x].direction == "West")
+						 GhostList[x].material  =  DeadGhostTexture[3];
+				 }
 				 //Blinky
-				 if(data.GhostList[x].type == "Blinky"){
+				 else if(data.GhostList[x].type == "Blinky"){
 					 //Blinky North
 					 if(data.GhostList[x].direction == "North"){
 						 if(data.GhostList[x].directionSprite %2 == 0)
@@ -1673,33 +1686,25 @@ function init() {
 	
 	 //Keyboard Functions
 	 function onKeyDown(event) {
-		 //Space Bar Changes Background
-		 if (event.keyCode == 38 || event.keyCode == 104 || event.keyCode ==87) { // Up Arrow - North
-			 var data = { direction: "North"  };
-			 PacMania.emit('Move',data);
+		 if(Game_Status == "Active") 
+			 if (event.keyCode == 38 || event.keyCode == 104 || event.keyCode ==87) { // Up Arrow - North
+				 var data = { direction: "North"  };
+				 PacMania.emit('Move',data);
+			 }
+			 else if (event.keyCode == 39  || event.keyCode == 102 || event.keyCode == 68) { // Right Arrow - East
+				 var data = { direction: "East"  };
+				 PacMania.emit('Move',data);
+			 }
+			 else if (event.keyCode == 40  || event.keyCode == 98 || event.keyCode == 83) { // Down Arrow - South
+				 var data = { direction: "South"  };
+				 PacMania.emit('Move',data);
+			 }
+			 else if (event.keyCode == 37  || event.keyCode == 100 || event.keyCode == 65) { // Left Arrow - West
+				 var data = { direction: "West"  };
+				 PacMania.emit('Move',data);
+				 //https://stackoverflow.com/questions/8916620/disable-arrow-key-scrolling-in-users-browser
+			 }
 			 event.preventDefault();
-		 }
-		 else if (event.keyCode == 39  || event.keyCode == 102 || event.keyCode == 68) { // Right Arrow - East
-			 var data = { direction: "East"  };
-			 PacMania.emit('Move',data);
-			 event.preventDefault();
-		 }
-		 else if (event.keyCode == 40  || event.keyCode == 98 || event.keyCode == 83) { // Down Arrow - South
-			 var data = { direction: "South"  };
-			 PacMania.emit('Move',data);
-			 event.preventDefault();
-		 }
-		 else if (event.keyCode == 37  || event.keyCode == 100 || event.keyCode == 65) { // Left Arrow - West
-			 var data = { direction: "West"  };
-			 PacMania.emit('Move',data);
-			 event.preventDefault();
-			 //https://stackoverflow.com/questions/8916620/disable-arrow-key-scrolling-in-users-browser
-		 }
-		// else if (event.keyCode == 13)
-			// PacMania.emit('Grapes');
-		 //else if (event.keyCode == 32)
-			// PacMania.emit('Node108');
-		 //else console.log("Key: "+event.keyCode);
 	 }; 
 	 document.addEventListener('keydown', onKeyDown, false);
 		
@@ -1744,8 +1749,8 @@ function init() {
 	 renderScene();
 	 drag_objects();	 
 	 loadGhosts();
-	 loadItems();
 	 loadPac();
+	 loadItems();
 	 load_Display_Pictures();
 	
 	 //Render the Scenes
@@ -1795,6 +1800,17 @@ function init() {
 																					 InkyTexture = Style1Texture.slice(16, 24);
 																					 ClydeTexture = Style1Texture.slice(24, 32);
 																					 
+																					 //Fruits/Pellets
+																					 pelletTexture = Style1Texture[Style1Texture.length-9];
+																					 appleTexture = Style1Texture[Style1Texture.length-8];
+																					 bananaTexture = Style1Texture[Style1Texture.length-7];
+																					 cherryTexture = Style1Texture[Style1Texture.length-6];
+																					 grapeTexture = Style1Texture[Style1Texture.length-5];
+																					 orangeTexture = Style1Texture[Style1Texture.length-4];
+																					 pearTexture = Style1Texture[Style1Texture.length-3];
+																					 pretzelTexture = Style1Texture[Style1Texture.length-2];
+																					 strawberryTexture = Style1Texture[Style1Texture.length-1];
+																					 
 																					 backgroundState ="Style 1";
 																				 }
 																				 else if(backgroundState == "Style 1"){
@@ -1802,6 +1818,17 @@ function init() {
 																					 PinkyTexture = Style2Texture.slice(8, 16);
 																					 InkyTexture = Style2Texture.slice(16, 24);
 																					 ClydeTexture = Style2Texture.slice(24, 32);
+																					 
+																					 //Fruits/Pellets
+																					 pelletTexture = Style2Texture[Style2Texture.length-9];
+																					 appleTexture = Style2Texture[Style2Texture.length-8];
+																					 bananaTexture = Style2Texture[Style2Texture.length-7];
+																					 cherryTexture = Style2Texture[Style2Texture.length-6];
+																					 grapeTexture = Style2Texture[Style2Texture.length-5];
+																					 orangeTexture = Style2Texture[Style2Texture.length-4];
+																					 pearTexture = Style2Texture[Style2Texture.length-3];
+																					 pretzelTexture = Style2Texture[Style2Texture.length-2];
+																					 strawberryTexture = Style2Texture[Style2Texture.length-1];
 																					 
 																					 backgroundState ="Style 2";
 																				 }
@@ -1818,6 +1845,17 @@ function init() {
 																					 PinkyTexture = OriginalTexture.slice(8, 16);
 																					 InkyTexture = OriginalTexture.slice(16, 24);
 																					 ClydeTexture = OriginalTexture.slice(24, 32);
+																					 
+																					 //Fruits/Pellets
+																					 pelletTexture = OriginalTexture[OriginalTexture.length-9];
+																					 appleTexture = OriginalTexture[OriginalTexture.length-8];
+																					 bananaTexture = OriginalTexture[OriginalTexture.length-7];
+																					 cherryTexture = OriginalTexture[OriginalTexture.length-6];
+																					 grapeTexture = OriginalTexture[OriginalTexture.length-5];
+																					 orangeTexture = OriginalTexture[OriginalTexture.length-4];
+																					 pearTexture = OriginalTexture[OriginalTexture.length-3];
+																					 pretzelTexture = OriginalTexture[OriginalTexture.length-2];
+																					 strawberryTexture = OriginalTexture[OriginalTexture.length-1];
 																					 
 																					 backgroundState ="Original";
 																				 }
@@ -2046,54 +2084,6 @@ function init() {
 	 
 	 //Upload the Ghosts Sprite Sheets into the Texture Array
 	 function loadGhosts(){
-		 var ghostGeometry = new THREE.PlaneGeometry(1.5,1.5,0);
-		 var Material = new THREE.MeshBasicMaterial({color: 0xffffff}); //RGB
-		 ghost = new THREE.Mesh(ghostGeometry, Material);
-		 //scene.add(ghost);
-		 ghost.position.set(0,0,-2); //xyz
-		 ghost.name = 'Ghost1';
-		 
-		 Material = new THREE.MeshBasicMaterial({color: 0xaa55aa}); //RGB
-		 ghost2 = new THREE.Mesh(ghostGeometry, Material);
-		 ghost2.position.set(0,0,-2); //xyz
-		 ghost2.name = 'Ghost2';
-		 
-		 Material = new THREE.MeshBasicMaterial({color: 0xaa5555}); //RGB
-		 ghost3 = new THREE.Mesh(ghostGeometry, Material);
-		 ghost3.position.set(0,0,-2); //xyz
-		 ghost3.name = 'Ghost3';
-		 
-		 Material = new THREE.MeshBasicMaterial({color: 0xaaff55}); //RGB
-		 ghost4 = new THREE.Mesh(ghostGeometry, Material);
-		 ghost4.position.set(0,0,-2); //xyz
-		 ghost4.name = 'Ghost4';
-		 
-		 Material = new THREE.MeshBasicMaterial({color: 0xfa11f5}); //RGB
-		 ghost5 = new THREE.Mesh(ghostGeometry, Material);
-		 ghost5.position.set(0,0,-2); //xyz
-		 ghost5.name = 'Ghost5';
-		 
-		 Material = new THREE.MeshBasicMaterial({color: 0x2a11ff}); //RGB
-		 ghost6 = new THREE.Mesh(ghostGeometry, Material);
-		 ghost6.position.set(0,0,-2); //xyz
-		 ghost6.name = 'Ghost6';		 
-		 
-		 Material = new THREE.MeshBasicMaterial({color: 0xfa11f5}); //RGB
-		 ghost7 = new THREE.Mesh(ghostGeometry, Material);
-		 ghost7.position.set(0,0,-2); //xyz
-		 ghost7.name = 'Ghost7';
-		 
-		 Material = new THREE.MeshBasicMaterial({color: 0x2af125}); //RGB
-		 ghost8 = new THREE.Mesh(ghostGeometry, Material);
-		 ghost8.position.set(0,0,-2); //xyz
-		 ghost8.name = 'Ghost8';
-		 
-		 Material = new THREE.MeshBasicMaterial({color: 0xfaccaf}); //RGB
-		 ghost9 = new THREE.Mesh(ghostGeometry, Material);
-		 ghost9.position.set(0,0,-2); //xyz
-		 ghost9.name = 'Ghost9';
-		 
-		 
 		 //Sprites
 		 var loader = new THREE.TextureLoader();
 		 loader.crossOrigin = true;
@@ -2258,6 +2248,30 @@ function init() {
 		 OriginalTexture.push(ClydeText);	 
 		 
 		 ClydeTexture = OriginalTexture.slice(24, 32);
+		 
+		 //Dead Ghost Eyes Texture
+		 //North
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/ghostDeadNorth.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 var tx =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(tx);	
+		 //East
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/ghostDeadEast.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 tx =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(tx);	
+		 //South
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/ghostDeadSouth.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 tx =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(tx);	
+		 //West
+		 Texture = loader.load( 'Images/OriginalSprites/Ghosts/ghostDeadWest.png' );
+		 Texture.minFilter = THREE.LinearFilter;
+		 tx =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
+		 OriginalTexture.push(tx);	
+		 DeadGhostTexture = OriginalTexture.slice(32, 36);
+		 
 		 
 		 //---------------------Style 1 Sprites Shiny!!!!---------------------
 		 
@@ -2880,8 +2894,7 @@ function init() {
 		 pacText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
 		 OriginalTexture.push(pacText);
 		 
-		 //PlayerTexture = OriginalTexture.slice(32, 56);
-		 PlayerTexture = OriginalTexture.slice(32, 64);
+		 PlayerTexture = OriginalTexture.slice(36, 68);
 	 }
      
 	 //Upload the Items/Fruits Sprite Sheets into the Texture Arrray
@@ -2894,38 +2907,144 @@ function init() {
 		 var texture = loader.load( 'Images/Fruits/pellets.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 pelletTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 OriginalTexture.push(pelletTexture);
 		 //Apple
 		 texture = loader.load( 'Images/Fruits/Apple.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 appleTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 OriginalTexture.push(appleTexture);		 
 		 //Banana
 		 texture = loader.load( 'Images/Fruits/Banana.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 bananaTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 OriginalTexture.push(bananaTexture);		 
 		 //Cherry
 		 texture = loader.load( 'Images/Fruits/Cherry.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 cherryTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 //Orange
-		 texture = loader.load( 'Images/Fruits/Orange.png' );
-		 texture.minFilter = THREE.LinearFilter;
-		 orangeTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 //Pear
-		 texture = loader.load( 'Images/Fruits/Pear.png' );
-		 texture.minFilter = THREE.LinearFilter;
-		 pearTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 //Pretzel
-		 texture = loader.load( 'Images/Fruits/Pretzel.png' );
-		 texture.minFilter = THREE.LinearFilter;
-		 pretzelTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 //Strawberry
-		 texture = loader.load( 'Images/Fruits/Strawberry.png' );
-		 texture.minFilter = THREE.LinearFilter;
-		 strawberryTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 OriginalTexture.push(cherryTexture);		 
 		 //Grape
 		 texture = loader.load( 'Images/Fruits/Grape.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 grapeTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 OriginalTexture.push(grapeTexture);
+		 //Orange
+		 texture = loader.load( 'Images/Fruits/Orange.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 orangeTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 OriginalTexture.push(orangeTexture);		 
+		 //Pear
+		 texture = loader.load( 'Images/Fruits/Pear.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pearTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 OriginalTexture.push(pearTexture);		 
+		 //Pretzel
+		 texture = loader.load( 'Images/Fruits/Pretzel.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pretzelTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 OriginalTexture.push(pretzelTexture);		 
+		 //Strawberry
+		 texture = loader.load( 'Images/Fruits/Strawberry.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 strawberryTexture = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 OriginalTexture.push(strawberryTexture);		 
+		 
+		 //---------------------Style 1 Sprites Shiny!!!!---------------------
+		 //Pellets
+		 texture = loader.load( 'Images/Style1/Fruits/pellets.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style1Texture.push(t);
+		 //Apple
+		 texture = loader.load( 'Images/Style1/Fruits/Apple.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style1Texture.push(t);
+		 //Banana
+		 texture = loader.load( 'Images/Style1/Fruits/Banana.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style1Texture.push(t);
+		 //Cherry
+		 texture = loader.load( 'Images/Style1/Fruits/Cherry.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style1Texture.push(t);
+		 //Grape
+		 //Skipping Grapes for now and re-entering the Grape texture
+		 texture = loader.load( 'Images/Fruits/Grape.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style1Texture.push(t);
+		 //Orange
+		 texture = loader.load( 'Images/Style1/Fruits/Orange.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style1Texture.push(t);
+		 //Pear
+		 texture = loader.load( 'Images/Style1/Fruits/Pear.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style1Texture.push(t);
+		 //Pretzel
+		 texture = loader.load( 'Images/Fruits/Pretzel.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style1Texture.push(t);		 
+		 //Strawberry
+		 texture = loader.load( 'Images/Style1/Fruits/Strawberry.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style1Texture.push(t);
+		 
+		 //---------------------Style 2 Sprites 3D Shiny!!!!---------------------
+		 //Pellets
+		 texture = loader.load( 'Images/Style2/Fruits/pellets.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style2Texture.push(t);
+		 //Apple
+		 texture = loader.load( 'Images/Style2/Fruits/Apple.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style2Texture.push(t);
+		 //Banana
+		 texture = loader.load( 'Images/Style2/Fruits/Banana.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style2Texture.push(t);
+		 //Cherry
+		 texture = loader.load( 'Images/Style2/Fruits/Cherry.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style2Texture.push(t);
+		 //Grape
+		 //Skipping Grapes for now and re-entering the Grape texture
+		 texture = loader.load( 'Images/Fruits/Grape.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style2Texture.push(t);
+		 //Orange
+		 texture = loader.load( 'Images/Style2/Fruits/Orange.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style2Texture.push(t);
+		 //Melon
+		 texture = loader.load( 'Images/Style2/Fruits/Melon.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style2Texture.push(t);
+		 //Pretzel
+		 //Skipping Grapes for now and re-entering the Grape texture
+		 texture = loader.load( 'Images/Fruits/Pretzel.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style2Texture.push(t);		 
+		 //Strawberry
+		 texture = loader.load( 'Images/Style2/Fruits/Strawberry.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 t = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 Style2Texture.push(t);
 		 
 		 //---------------- Game Over -----------------------
 		 texture = loader.load( 'Images/Game Over.png' );
@@ -3995,27 +4114,33 @@ function init() {
 		 return item;
 	 }
 	 
-	 //
+	 //Set the Item 
 	 function setItem(pacItem){
-		 
-		 if(pacItem == "Pellet")
+		 //Pellet and Super Pellet Texture
+		 if(pacItem == "Pellet" || pacItem == "Super Pellet")
 			 return pelletTexture;
-		 else if(pacItem == "Super Pellet")
-			 return pelletTexture;
+		 //Apple Texture
 		 else if(pacItem == "Apple")
 			 return appleTexture;
+		 //Banana Texture
 		 else if(pacItem == "Banana")
 			 return bananaTexture;
+		 //Cherry Texture
 		 else if(pacItem == "Cherry")
 			 return cherryTexture;
+		 //Orange Texture
 		 else if(pacItem == "Orange")
 			 return orangeTexture;
+		 //Pear Texture
 		 else if(pacItem == "Pear")
 			 return pearTexture;
+		 //Pretzel Texture
 		 else if(pacItem == "Pretzel")
 			 return pretzelTexture;
+		 //Strawberry Texture
 		 else if(pacItem == "Strawberry")
 			 return strawberryTexture;
+		 //Grape Texture
 		 else if(pacItem == "Grape")
 			 return grapeTexture;
 		 else
@@ -4114,16 +4239,16 @@ function init() {
 		 scene.add(titleSectionText);
 		 
 		 textBox.parameters.text= " Pac-Mania is my final project for the university that I graduated from. The foundation of this game is based on Namaco's 'Pac-man Battle Royale' game. I had already decided that for my final project to create an online multi-player game for my friends to enjoy. Then after visiting Barcade in Downtown New Haven, I decided that Pac-man would be the basis for my project. However, I didn't want to simply recreate the classic Pac-man game, I wanted to put my own twist and style in the game. My own madness per se. So please enjoy this game of madness, chaos and ghosts frenzy... Pac-Mania.";
-		 textBox.parameters.font= "105px Arial";
+		 textBox.parameters.font= "115px Arial";
 		 textBox.parameters.fillStyle= "#FF44c3";
 		 textBox.position.set(0,-6,5);		 		 
 		 textBox.material.shininess=10;
-		 textBox.parameters.lineHeight=0.11;
-		 textBox.dynamicTexture.context.lineWidth=2.5;
+		 textBox.parameters.lineHeight=0.105;
+		 textBox.dynamicTexture.context.lineWidth=2.75;
 		 textBox.dynamicTexture.canvas.width = 4096;
 		 textBox.dynamicTexture.context.miterLimit=25;
 		 textBox.parameters.margin=0.05;
-		 textBox.scale.set(40,17,1);
+		 textBox.scale.set(42,21,1);
 		 textBox.dynamicTexture.texture.wrapS = 1000;
 		 textBox.dynamicTexture.texture.wrapT = 1000;
 		 textBox.update();
