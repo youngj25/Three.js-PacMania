@@ -825,7 +825,122 @@ function init() {
 																					 //sourceLinkButton.url = creditDisplayArray[sceneNumber].url;
 																				 }
 																			 }
-																			//console.log("lol start of drag: ");
+																			 else if (event.object == waitingText[0]){ //CountDown
+																			 
+																				 var integer = parseFloat( waitingText[0].parameters.text);
+																				 integer = Math.floor(integer*10 -1)/10;
+																				 waitingText[0].parameters.text= ""+integer;
+																				 waitingText[0].update();
+																				 
+																			 }
+																			 //Type of Game
+																			 else if (event.object == waitingText[2]){ //Endless Settings is chosen for Type of Game
+																				 waitingText[waitingText.length-3].position.x= waitingText[2].posX;
+																				 waitingText[2].parameters.fillStyle= waitingText[1].parameters.fillStyle;
+																				 waitingText[3].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[2].update();
+																				 waitingText[3].update();
+																			 }
+																			 else if (event.object == waitingText[3]){ //Last Man Standing Settings is chosen for Type of Game
+																				 waitingText[waitingText.length-3].position.x= waitingText[3].posX;
+																				 waitingText[3].parameters.fillStyle= waitingText[1].parameters.fillStyle;
+																				 waitingText[2].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[2].update();
+																				 waitingText[3].update();
+																			 }
+																			 //Fruits Occurance
+																			 else if (event.object == waitingText[5]){ //No Fruits Settings is chosen for Fruit Occurance
+																				 waitingText[waitingText.length-2].position.x= waitingText[5].posX;
+																				 waitingText[5].parameters.fillStyle= waitingText[4].parameters.fillStyle;
+																				 waitingText[6].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[7].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[5].update();
+																				 waitingText[6].update();
+																				 waitingText[7].update();
+
+																				 if(scene.getObjectByName('typesOfFruits') != null)
+																					 scene.remove(waitingText[8]);
+																				 if(scene.getObjectByName('moreBadFruits') != null)
+																					 removeButton(waitingText[9]);
+																				 if(scene.getObjectByName('evenMix') != null)
+																					 removeButton(waitingText[10]);
+																				 if(scene.getObjectByName('moreGoodFruits') != null)
+																					 removeButton(waitingText[11]);
+																				 if(scene.getObjectByName('HighLights-RowThree') != null)
+																					 scene.remove(waitingText[waitingText.length-1]);
+																				 
+																			 }
+																			 else if (event.object == waitingText[6]){ //Usual Amount is chosen for Fruit Occurance
+																				 waitingText[waitingText.length-2].position.x= waitingText[6].posX;
+																				 waitingText[5].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[6].parameters.fillStyle= waitingText[4].parameters.fillStyle;
+																				 waitingText[7].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[5].update();
+																				 waitingText[6].update();
+																				 waitingText[7].update();		
+																				 
+																				 if(scene.getObjectByName('typesOfFruits') == null)
+																					 scene.add(waitingText[8]);
+																				 if(scene.getObjectByName('moreBadFruits') == null)
+																					 addButton(waitingText[9]);
+																				 if(scene.getObjectByName('evenMix') == null)
+																					 addButton(waitingText[10]);
+																				 if(scene.getObjectByName('moreGoodFruits') == null)
+																					 addButton(waitingText[11]);
+																				 if(scene.getObjectByName('HighLights-RowThree') == null)
+																					 scene.add(waitingText[waitingText.length-1]);
+																			 }
+																			 else if (event.object == waitingText[7]){ //More Fruits Settings is chosen for Fruit Occurance
+																				 waitingText[waitingText.length-2].position.x= waitingText[7].posX;
+																				 waitingText[5].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[6].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[7].parameters.fillStyle= waitingText[4].parameters.fillStyle;
+																				 waitingText[5].update();
+																				 waitingText[6].update();
+																				 waitingText[7].update();	
+																				 
+																				 if(scene.getObjectByName('typesOfFruits') == null)
+																					 scene.add(waitingText[8]);
+																				 if(scene.getObjectByName('moreBadFruits') == null)
+																					 addButton(waitingText[9]);
+																				 if(scene.getObjectByName('evenMix') == null)
+																					 addButton(waitingText[10]);
+																				 if(scene.getObjectByName('moreGoodFruits') == null)
+																					 addButton(waitingText[11]);
+																				 if(scene.getObjectByName('HighLights-RowThree') == null)
+																					 scene.add(waitingText[waitingText.length-1]);
+																			 }
+																			 //Types of Fruits
+																			 else if (event.object == waitingText[9]){ //Endless Settings is chosen for Type of Game
+																				 waitingText[waitingText.length-1].position.x= waitingText[9].posX;
+																				 waitingText[9].parameters.fillStyle= waitingText[8].parameters.fillStyle;
+																				 waitingText[10].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[11].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[9].update();
+																				 waitingText[10].update();
+																				 waitingText[11].update();
+																			 }
+																			 else if (event.object == waitingText[10]){ //Last Man Standing Settings is chosen for Type of Game
+																				 waitingText[waitingText.length-1].position.x= waitingText[10].posX;
+																				 waitingText[9].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[10].parameters.fillStyle=waitingText[8].parameters.fillStyle;
+																				 waitingText[11].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[9].update();
+																				 waitingText[10].update();
+																				 waitingText[11].update();
+																			 }
+																			 else if (event.object == waitingText[11]){ //Last Man Standing Settings is chosen for Type of Game
+																				 waitingText[waitingText.length-1].position.x= waitingText[11].posX;
+																				 waitingText[9].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[10].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[11].parameters.fillStyle= waitingText[8].parameters.fillStyle;
+																				 waitingText[9].update();
+																				 waitingText[10].update();
+																				 waitingText[11].update();
+																			 }
+																			 
+																			 
+																			 //console.log("lol start of drag: ");
 																		 });
 																		 
 			 dragControls.addEventListener( 'drag', function(event)   {
@@ -855,7 +970,25 @@ function init() {
 																				 rightArrowButton.position.set(rightArrowButton.posX, rightArrowButton.posY, rightArrowButton.posZ);
 																			 else if (event.object == leftArrowButton)
 																				 leftArrowButton.position.set(leftArrowButton.posX, leftArrowButton.posY, leftArrowButton.posZ);
-																		 });
+																			 //Waiting Screen Buttons
+																			 else if (event.object == waitingText[2])
+																				 waitingText[2].position.set(waitingText[2].posX, waitingText[2].posY, waitingText[2].posZ);
+																			 else if (event.object == waitingText[3])
+																				 waitingText[3].position.set(waitingText[3].posX, waitingText[3].posY, waitingText[3].posZ);
+																			 else if (event.object == waitingText[5])
+																				 waitingText[5].position.set(waitingText[5].posX, waitingText[5].posY, waitingText[5].posZ);
+																			 else if (event.object == waitingText[6])
+																				 waitingText[6].position.set(waitingText[6].posX, waitingText[6].posY, waitingText[6].posZ);
+																			 else if (event.object == waitingText[7])
+																				 waitingText[7].position.set(waitingText[7].posX, waitingText[7].posY, waitingText[7].posZ);
+																			 else if (event.object == waitingText[9])
+																				 waitingText[9].position.set(waitingText[9].posX, waitingText[9].posY, waitingText[9].posZ);
+																			 else if (event.object == waitingText[10])
+																				 waitingText[10].position.set(waitingText[10].posX, waitingText[10].posY, waitingText[10].posZ);
+																			 else if (event.object == waitingText[11])
+																				 waitingText[11].position.set(waitingText[11].posX, waitingText[11].posY, waitingText[11].posZ);
+
+																		});
 																		
 			 dragControls.addEventListener( 'dragend', function(event)   {});
 																		 
@@ -1926,7 +2059,6 @@ function init() {
 		 bgButton.posY =  22.95;
 		 bgButton.posZ = -2;
 		 bgButton.position.set(bgButton.posX, bgButton.posY, bgButton.posZ);
-		 bgButton.position.set(19,22.95,-2); 
 		 bgButton.scale.set(14,5,1);		  
 		 bgButton.name = "bgButton";
 		 
@@ -3030,12 +3162,43 @@ function init() {
 				 scene.add(waitingText[x]);				
 			 else if(waitingText[x].displayType == "Button")
 				 addButton(waitingText[x])
-			 else{
-				 console.log("Hi!!!")
+			 else if(waitingText[x].displayType == "HighLights-RowOne"){
+				 waitingText[x].position.x = waitingText[2].posX;
+				 scene.add(waitingText[x]);		
+				 console.log(waitingText[x].position.x );
+				 console.log(waitingText[x].position.y);
 				 
 			 }
+			 else if(waitingText[x].displayType == "HighLights-RowTwo"){
+				 waitingText[x].position.x = waitingText[6].posX;
+				 scene.add(waitingText[x]);	
+				 console.log("??43?");				 
+			 }
+			 else if(waitingText[x].displayType == "HighLights-RowThree"){
+				 waitingText[x].position.x = waitingText[10].posX;
+				 scene.add(waitingText[x]);		
+				 console.log("43");	
+			 }
 			 
-		 }
+			 /** Order:
+				 0 - CountDown
+				 1 - Type of Game
+				 2 - Endless
+				 3 - Last Man Standing
+				 4 - Fruits Occurance
+				 5 - No Fruits
+				 6 - Usual Amount
+				 7 - More Fruits
+				 8 - Types of Fruits
+				 9 - More Bad Fruits
+				 10 - Even Mix
+				 11 - More Good Fruits
+				 ...
+				 (length - 3) - HighLights for the 'Types of Game'
+				 (length - 2) - HighLights for the 'Fruits Occurance'
+				 (length - 1) - HighLights for the 'Types of Fruits'
+			 **/
+		}
 	 }
 	 
 	 //Pre-Sets the Text for the Waiting Screen
@@ -3044,7 +3207,7 @@ function init() {
 		 
 		 //countDown
 		 var countDown = new THREEx.DynamicText2DObject();
-		 countDown.parameters.text= "9";
+		 countDown.parameters.text= "15.0";
 		 countDown.parameters.font= "125px Arial";
 		 countDown.parameters.fillStyle= "Green";
 		 countDown.parameters.align = "center";
@@ -3054,7 +3217,8 @@ function init() {
 		 countDown.scale.set(20,15,1);
 		 countDown.parameters.lineHeight=0.6;
 		 countDown.update();
-		 countDown.displayType = "Scene";
+		 countDown.displayType = "Button";
+		 countDown.name = "countDown";
 		 waitingText.push(countDown)
 		 //scene.add(countDown);		 
 		 
@@ -3063,7 +3227,7 @@ function init() {
 		 var typeOfGame = new THREEx.DynamicText2DObject();
 		 typeOfGame.parameters.text= "Type of Game:";
 		 typeOfGame.parameters.font= "125px Arial";
-		 typeOfGame.parameters.fillStyle= "Green";
+		 typeOfGame.parameters.fillStyle= "#FF001F";
 		 typeOfGame.parameters.align = "center";
 		 typeOfGame.dynamicTexture.canvas.width = 1024;
 		 typeOfGame.dynamicTexture.canvas.height = 256;
@@ -3079,7 +3243,7 @@ function init() {
 		 var endless = new THREEx.DynamicText2DObject();
 		 endless.parameters.text= "Endless";
 		 endless.parameters.font= "105px Arial";
-		 endless.parameters.fillStyle= "Green";
+		 endless.parameters.fillStyle= "#FF001F";
 		 endless.parameters.align = "center";
 		 endless.dynamicTexture.canvas.width = 512;
 		 endless.dynamicTexture.canvas.height = 128;
@@ -3098,7 +3262,7 @@ function init() {
 		 var lastManStanding = new THREEx.DynamicText2DObject();
 		 lastManStanding.parameters.text= "Last Man Standing";
 		 lastManStanding.parameters.font= "105px Arial";
-		 lastManStanding.parameters.fillStyle= "Green";
+		 lastManStanding.parameters.fillStyle= "#FFFFFF";
 		 lastManStanding.parameters.align = "center";
 		 lastManStanding.dynamicTexture.canvas.width = 1024;
 		 lastManStanding.dynamicTexture.canvas.height = 128;
@@ -3117,9 +3281,9 @@ function init() {
 		 var roundTwo = yShifter-4;
 		 //fruitOccurance
 		 var fruitOccurance = new THREEx.DynamicText2DObject();
-		 fruitOccurance.parameters.text= "Fruit Occurance:";
-		 fruitOccurance.parameters.font= "115px Arial";
-		 fruitOccurance.parameters.fillStyle= "Cyan";
+		 fruitOccurance.parameters.text= "Fruits Occurance:";
+		 fruitOccurance.parameters.font= "113px Arial";
+		 fruitOccurance.parameters.fillStyle= "#8D4CF6";
 		 fruitOccurance.parameters.align = "center";
 		 fruitOccurance.dynamicTexture.canvas.width = 1024;
 		 fruitOccurance.dynamicTexture.canvas.height = 256;
@@ -3132,48 +3296,60 @@ function init() {
 		 //scene.add(waitingText[1]);
 		 
 		 //noFruits
-		 noFruits = new THREEx.DynamicText2DObject();
+		 var noFruits = new THREEx.DynamicText2DObject();
 		 noFruits.parameters.text= "No Fruits";
 		 noFruits.parameters.font= "105px Arial";
-		 noFruits.parameters.fillStyle= "Cyan";
+		 noFruits.parameters.fillStyle= "#FFFFFF";
 		 noFruits.parameters.align = "center";
 		 noFruits.dynamicTexture.canvas.width = 512;
 		 noFruits.dynamicTexture.canvas.height = 128;
-		 noFruits.position.set(-16,roundTwo-4,1);
+		 noFruits.posX = -16;
+		 noFruits.posY = roundTwo-4;
+		 noFruits.posZ = 1;
+		 noFruits.position.set(noFruits.posX, noFruits.posY, noFruits.posZ);
 		 noFruits.scale.set(10,3,1);
 		 noFruits.parameters.lineHeight=0.6;
 		 noFruits.update();
 		 noFruits.displayType = "Button";
+		 waitingText.push(noFruits)
 		 //addButton(noFruits);
 		 
-		 //lessFruits
-		 lessFruits = new THREEx.DynamicText2DObject();
-		 lessFruits.parameters.text= "Usual";
-		 lessFruits.parameters.font= "105px Arial";
-		 lessFruits.parameters.fillStyle= "Cyan";
-		 lessFruits.parameters.align = "center";
-		 lessFruits.dynamicTexture.canvas.width = 512;
-		 lessFruits.dynamicTexture.canvas.height = 128;
-		 lessFruits.position.set(0,roundTwo-4,1);
-		 lessFruits.scale.set(10,3,1);
-		 lessFruits.parameters.lineHeight=0.5;
-		 lessFruits.update();
-		 lessFruits.displayType = "Button";
-		 //addButton(lessFruits);
+		 //usualAmount
+		 var usualAmount = new THREEx.DynamicText2DObject();
+		 usualAmount.parameters.text= "Usual Amount";
+		 usualAmount.parameters.font= "115px Arial";
+		 usualAmount.parameters.fillStyle= "#8D4CF6";
+		 usualAmount.parameters.align = "center";
+		 usualAmount.dynamicTexture.canvas.width = 1024;
+		 usualAmount.dynamicTexture.canvas.height = 128;
+		 usualAmount.posX = 0;
+		 usualAmount.posY = roundTwo-4;
+		 usualAmount.posZ = 1;
+		 usualAmount.position.set(usualAmount.posX, usualAmount.posY, usualAmount.posZ);
+		 usualAmount.scale.set(16,3,1);
+		 usualAmount.parameters.lineHeight=0.6;
+		 usualAmount.update();
+		 usualAmount.displayType = "Button";
+		 waitingText.push(usualAmount)
+		 //addButton(usualAmount);
 		 
 		 //moreFruits
-		 moreFruits = new THREEx.DynamicText2DObject();
+		 var moreFruits = new THREEx.DynamicText2DObject();
 		 moreFruits.parameters.text= "More Fruits";
-		 moreFruits.parameters.font= "105px Arial";
-		 moreFruits.parameters.fillStyle= "Cyan";
+		 moreFruits.parameters.font= "115px Arial";
+		 moreFruits.parameters.fillStyle= "#FFFFFF";
 		 moreFruits.parameters.align = "center";
 		 moreFruits.dynamicTexture.canvas.width = 1024;
 		 moreFruits.dynamicTexture.canvas.height = 128;
-		 moreFruits.position.set(16,roundTwo-4,1);
+		 moreFruits.posX = 16;
+		 moreFruits.posY = roundTwo-4;
+		 moreFruits.posZ = 1;
+		 moreFruits.position.set(moreFruits.posX, moreFruits.posY, moreFruits.posZ);
 		 moreFruits.scale.set(16,3,1);
 		 moreFruits.parameters.lineHeight=0.6;
 		 moreFruits.update();
 		 moreFruits.displayType = "Button";
+		 waitingText.push(moreFruits)
 		 //addButton(moreFruits);
 		 
 		 var roundThree = yShifter-14;
@@ -3181,7 +3357,7 @@ function init() {
 		 var typesOfFruits = new THREEx.DynamicText2DObject();
 		 typesOfFruits.parameters.text= "Types of Fruits:";
 		 typesOfFruits.parameters.font= "115px Arial";
-		 typesOfFruits.parameters.fillStyle= "DodgerBlue";
+		 typesOfFruits.parameters.fillStyle= "#0365FA";
 		 typesOfFruits.parameters.align = "center";
 		 typesOfFruits.dynamicTexture.canvas.width = 1024;
 		 typesOfFruits.dynamicTexture.canvas.height = 256;
@@ -3190,66 +3366,94 @@ function init() {
 		 typesOfFruits.parameters.lineHeight=0.5;
 		 typesOfFruits.update();
 		 typesOfFruits.displayType = "Scene";
+		 typesOfFruits.name = "typesOfFruits";
 		 waitingText.push(typesOfFruits)
 		 //scene.add(waitingText[2]);
 		 
-		 //noFruits
-		 noFruits = new THREEx.DynamicText2DObject();
-		 noFruits.parameters.text= "More Bad Fruits";
-		 noFruits.parameters.font= "105px Arial";
-		 noFruits.parameters.fillStyle= "Magenta";
-		 noFruits.parameters.align = "center";
-		 noFruits.dynamicTexture.canvas.width = 1024;
-		 noFruits.dynamicTexture.canvas.height = 128;
-		 noFruits.position.set(-16,roundThree-4,1);
-		 noFruits.scale.set(16,3,1);
-		 noFruits.parameters.lineHeight=0.6;
-		 noFruits.update();
-		 noFruits.displayType = "Button";
-		 //addButton(noFruits);
+		 //moreBadFruits
+		 var moreBadFruits = new THREEx.DynamicText2DObject();
+		 moreBadFruits.parameters.text= "More Bad Fruits";
+		 moreBadFruits.parameters.font= "115px Arial";
+		 moreBadFruits.parameters.fillStyle= "#FFFFFF";
+		 moreBadFruits.parameters.align = "center";
+		 moreBadFruits.dynamicTexture.canvas.width = 1024;
+		 moreBadFruits.dynamicTexture.canvas.height = 128;
+		 moreBadFruits.posX = -16;
+		 moreBadFruits.posY = roundThree-4;
+		 moreBadFruits.posZ = 1;
+		 moreBadFruits.position.set(moreBadFruits.posX, moreBadFruits.posY, moreBadFruits.posZ);
+		 moreBadFruits.scale.set(16,3,1);
+		 moreBadFruits.parameters.lineHeight=0.6;
+		 moreBadFruits.update();
+		 moreBadFruits.displayType = "Button";
+		 moreBadFruits.name = "moreBadFruits";
+		 waitingText.push(moreBadFruits)
+		 //addButton(moreBadFruits);
 		 
-		 //lessFruits
-		 lessFruits = new THREEx.DynamicText2DObject();
-		 lessFruits.parameters.text= "Even Mix";
-		 lessFruits.parameters.font= "105px Arial";
-		 lessFruits.parameters.fillStyle= "DodgerBlue";
-		 lessFruits.parameters.align = "center";
-		 lessFruits.dynamicTexture.canvas.width = 1024;
-		 lessFruits.dynamicTexture.canvas.height = 128;
-		 lessFruits.position.set(0,roundThree-4,1);
-		 lessFruits.scale.set(18,3,1);
-		 lessFruits.parameters.lineHeight=0.6;
-		 lessFruits.update();
-		 lessFruits.displayType = "Button";
-		 //addButton(lessFruits);
+		 //evenMix
+		 var evenMix = new THREEx.DynamicText2DObject();
+		 evenMix.parameters.text= "Even Mix";
+		 evenMix.parameters.font= "115px Arial";
+		 evenMix.parameters.fillStyle= "#0365FA";
+		 evenMix.parameters.align = "center";
+		 evenMix.dynamicTexture.canvas.width = 1024;
+		 evenMix.dynamicTexture.canvas.height = 128;
+		 evenMix.posX = 0;
+		 evenMix.posY = roundThree-4;
+		 evenMix.posZ = 1;
+		 evenMix.position.set(evenMix.posX, evenMix.posY, evenMix.posZ);
+		 evenMix.position.set(0,roundThree-4,1);
+		 evenMix.scale.set(18,3,1);
+		 evenMix.parameters.lineHeight=0.6;
+		 evenMix.update();
+		 evenMix.displayType = "Button";
+		 evenMix.name = "evenMix";
+		 waitingText.push(evenMix)
+		 //addButton(evenMix);
 		 
-		 //moreFruits
-		 moreFruits = new THREEx.DynamicText2DObject();
-		 moreFruits.parameters.text= "More Good Fruits";
-		 moreFruits.parameters.font= "105px Arial";
-		 moreFruits.parameters.fillStyle= "Cyan";
-		 moreFruits.parameters.align = "center";
-		 moreFruits.dynamicTexture.canvas.width = 1024;
-		 moreFruits.dynamicTexture.canvas.height = 128;
-		 moreFruits.position.set(16,roundThree-4,1);
-		 moreFruits.scale.set(16,3,1);
-		 moreFruits.parameters.lineHeight=0.6;
-		 moreFruits.update();
-		 moreFruits.displayType = "Button";
-		 //addButton(moreFruits);
+		 //moreGoodFruits
+		 moreGoodFruits = new THREEx.DynamicText2DObject();
+		 moreGoodFruits.parameters.text= "More Good Fruits";
+		 moreGoodFruits.parameters.font= "115px Arial";
+		 moreGoodFruits.parameters.fillStyle= "#FFFFFF";
+		 moreGoodFruits.parameters.align = "center";
+		 moreGoodFruits.dynamicTexture.canvas.width = 1024;
+		 moreGoodFruits.dynamicTexture.canvas.height = 128;
+		 moreGoodFruits.posX = 16;
+		 moreGoodFruits.posY = roundThree-4;
+		 moreGoodFruits.posZ = 1;
+		 moreGoodFruits.position.set(moreGoodFruits.posX, moreGoodFruits.posY, moreGoodFruits.posZ);
+		 moreGoodFruits.scale.set(16,3,1);
+		 moreGoodFruits.parameters.lineHeight=0.6;
+		 moreGoodFruits.update();
+		 moreGoodFruits.displayType = "Button";
+		 moreGoodFruits.name = "moreGoodFruits";
+		 waitingText.push(moreGoodFruits)
+		 //addButton(moreGoodFruits);
 		 
 		 
 		 
-		 // lessFruits, moreFruits, moreBadFruits, mixFruits, moreGoodFruits;
+		 //highLight
 		 var planeGeometry = new THREE.PlaneBufferGeometry (16, 3,0);
 		 var planeMaterial = new THREE.MeshBasicMaterial({color: 0x222222}); //RGB
-		 var highLight = new THREE.Mesh(planeGeometry, planeMaterial);
-		 highLight.position.set(16,roundThree-4.5, -1);
-		 highLight.displayType = "HighLights";
-		 //highLight.material.transparent = true;
-		 //highLight.material.opacity=0.85;
-		 //scene.add(highLight);
+		 var highLightOne = new THREE.Mesh(planeGeometry, planeMaterial);
+		 highLightOne.position.set(16,roundOne-3.75, -1);
+		 highLightOne.displayType = "HighLights-RowOne";
+		 highLightOne.name = "HighLights-RowOne";
+		 waitingText.push(highLightOne);
 		 
+		 var highLightTwo = new THREE.Mesh(planeGeometry, planeMaterial);
+		 highLightTwo.displayType = "HighLights-RowTwo";
+		 highLightTwo.name = "HighLights-RowTwo";
+		 highLightTwo.position.set(16,roundTwo-4.25, -1);
+		 waitingText.push(highLightTwo);
+		 
+		 var highLightThree = new THREE.Mesh(planeGeometry, planeMaterial);
+		 highLightThree.displayType = "HighLights-RowThree";
+		 highLightThree.name = "HighLights-RowThree";
+		 highLightThree.position.set(16,roundThree-4.5, -1);
+		 waitingText.push(highLightThree);
+		 //scene.add(highLightThree);
 	 }
 	 
 	 //Loads the About Page of the Game
