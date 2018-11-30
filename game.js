@@ -24,10 +24,7 @@ var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE 
 var NorthButton, SouthButton, EastButton, WestButton;
 var pelletTexture, appleTexture, bananaTexture, cherryTexture, orangeTexture, pearTexture, pretzelTexture, strawberryTexture, grapeTexture;
 //For the Waiting Screen
-var countDown;
-var endless, lastManStanding;
-var noFruits, lessFruits, moreFruits;
-var moreBadFruits, mixFruits, moreGoodFruits;
+var waitingText=[];
  
 
 
@@ -514,6 +511,7 @@ function init() {
 	 loadPac();
 	 loadItems();
 	 load_Display_Pictures();
+	 preset_Waiting_Screen();
 	
 	 //Render the Scenes
 	 function renderScene(){
@@ -3023,80 +3021,234 @@ function init() {
 	 
 	 //Loads the Waiting Screen of the Game
 	 function load_Wait_Screen(){
+		 
+		 var len = waitingText.length;
+		 
+		 //Goes through the waitingText Array and adds the text to the scene and turn the items set as buttons into buttons
+		 for(var x=0; x< len; x++){
+			 if(waitingText[x].displayType == "Scene")
+				 scene.add(waitingText[x]);				
+			 else if(waitingText[x].displayType == "Button")
+				 addButton(waitingText[x])
+			 else{
+				 console.log("Hi!!!")
+				 
+			 }
+			 
+		 }
+	 }
+	 
+	 //Pre-Sets the Text for the Waiting Screen
+	 function preset_Waiting_Screen(){
+		 waitingText = [];
+		 
 		 //countDown
-		 countDown = new THREEx.DynamicText2DObject();
-		 countDown.parameters.text= "10";
+		 var countDown = new THREEx.DynamicText2DObject();
+		 countDown.parameters.text= "9";
 		 countDown.parameters.font= "125px Arial";
 		 countDown.parameters.fillStyle= "Green";
 		 countDown.parameters.align = "center";
 		 countDown.dynamicTexture.canvas.width = 512;
 		 countDown.dynamicTexture.canvas.height = 256;
-		 countDown.position.set(0,yShifter+10,1);
-		 countDown.scale.set(14,12,1);
+		 countDown.position.set(0,yShifter+15,-1);
+		 countDown.scale.set(20,15,1);
 		 countDown.parameters.lineHeight=0.6;
 		 countDown.update();
-		 scene.add(countDown);
+		 countDown.displayType = "Scene";
+		 waitingText.push(countDown)
+		 //scene.add(countDown);		 
+		 
+		 var roundOne = yShifter+5.5;		 
+		 //typeOfGame
+		 var typeOfGame = new THREEx.DynamicText2DObject();
+		 typeOfGame.parameters.text= "Type of Game:";
+		 typeOfGame.parameters.font= "125px Arial";
+		 typeOfGame.parameters.fillStyle= "Green";
+		 typeOfGame.parameters.align = "center";
+		 typeOfGame.dynamicTexture.canvas.width = 1024;
+		 typeOfGame.dynamicTexture.canvas.height = 256;
+		 typeOfGame.position.set(0,roundOne,1);
+		 typeOfGame.scale.set(24,7.5,1);
+		 typeOfGame.parameters.lineHeight=0.5;
+		 typeOfGame.update();
+		 typeOfGame.displayType = "Scene";
+		 waitingText.push(typeOfGame)
+		 //scene.add(waitingText[0]);
 		 
 		 //endless
-		 endless = new THREEx.DynamicText2DObject();
+		 var endless = new THREEx.DynamicText2DObject();
 		 endless.parameters.text= "Endless";
 		 endless.parameters.font= "105px Arial";
 		 endless.parameters.fillStyle= "Green";
 		 endless.parameters.align = "center";
 		 endless.dynamicTexture.canvas.width = 512;
-		 endless.dynamicTexture.canvas.height = 256;
-		 endless.position.set(-16,yShifter+1,1);
-		 endless.scale.set(10,8.5,1);
-		 endless.parameters.lineHeight=0.6;
+		 endless.dynamicTexture.canvas.height = 128;
+		 endless.posX = -16;
+		 endless.posY = roundOne-4;
+		 endless.posZ = 1;
+		 endless.position.set(endless.posX, endless.posY, endless.posZ);
+		 endless.scale.set(10,3,1);
+		 endless.parameters.lineHeight=0.5;
 		 endless.update();
-		 addButton(endless);
+		 endless.displayType = "Button";
+		 waitingText.push(endless)
+		 //addButton(endless);
 		 
 		 //lastManStanding
-		 lastManStanding = new THREEx.DynamicText2DObject();
+		 var lastManStanding = new THREEx.DynamicText2DObject();
 		 lastManStanding.parameters.text= "Last Man Standing";
 		 lastManStanding.parameters.font= "105px Arial";
 		 lastManStanding.parameters.fillStyle= "Green";
 		 lastManStanding.parameters.align = "center";
-		 lastManStanding.dynamicTexture.canvas.width = 512;
-		 lastManStanding.dynamicTexture.canvas.height = 256;
-		 lastManStanding.position.set(16,yShifter,1);
-		 lastManStanding.scale.set(10,8,1);
-		 lastManStanding.parameters.lineHeight=0.32;
+		 lastManStanding.dynamicTexture.canvas.width = 1024;
+		 lastManStanding.dynamicTexture.canvas.height = 128;
+		 lastManStanding.posX = 16;
+		 lastManStanding.posY = roundOne-4;
+		 lastManStanding.posZ = 1;
+		 lastManStanding.position.set(lastManStanding.posX, lastManStanding.posY, lastManStanding.posZ);
+		 lastManStanding.scale.set(16,3,1);
+		 lastManStanding.parameters.lineHeight=0.5;
 		 lastManStanding.update();
-		 addButton(lastManStanding);
+		 lastManStanding.displayType = "Button";
+		 waitingText.push(lastManStanding)
+		 //addButton(lastManStanding);
+		 
+		 
+		 var roundTwo = yShifter-4;
+		 //fruitOccurance
+		 var fruitOccurance = new THREEx.DynamicText2DObject();
+		 fruitOccurance.parameters.text= "Fruit Occurance:";
+		 fruitOccurance.parameters.font= "115px Arial";
+		 fruitOccurance.parameters.fillStyle= "Cyan";
+		 fruitOccurance.parameters.align = "center";
+		 fruitOccurance.dynamicTexture.canvas.width = 1024;
+		 fruitOccurance.dynamicTexture.canvas.height = 256;
+		 fruitOccurance.position.set(0,roundTwo,1);
+		 fruitOccurance.scale.set(24,7.5,1);
+		 fruitOccurance.parameters.lineHeight=0.5;
+		 fruitOccurance.update();
+		 fruitOccurance.displayType = "Scene";
+		 waitingText.push(fruitOccurance)
+		 //scene.add(waitingText[1]);
 		 
 		 //noFruits
 		 noFruits = new THREEx.DynamicText2DObject();
 		 noFruits.parameters.text= "No Fruits";
 		 noFruits.parameters.font= "105px Arial";
-		 noFruits.parameters.fillStyle= "Magenta";
+		 noFruits.parameters.fillStyle= "Cyan";
 		 noFruits.parameters.align = "center";
 		 noFruits.dynamicTexture.canvas.width = 512;
-		 noFruits.dynamicTexture.canvas.height = 256;
-		 noFruits.position.set(-16,yShifter-6,1);
-		 noFruits.scale.set(10,8.5,1);
+		 noFruits.dynamicTexture.canvas.height = 128;
+		 noFruits.position.set(-16,roundTwo-4,1);
+		 noFruits.scale.set(10,3,1);
 		 noFruits.parameters.lineHeight=0.6;
 		 noFruits.update();
-		 addButton(noFruits);
+		 noFruits.displayType = "Button";
+		 //addButton(noFruits);
 		 
 		 //lessFruits
 		 lessFruits = new THREEx.DynamicText2DObject();
-		 lessFruits.parameters.text= "Normal Fruits";
+		 lessFruits.parameters.text= "Usual";
 		 lessFruits.parameters.font= "105px Arial";
-		 lessFruits.parameters.fillStyle= "Magenta";
+		 lessFruits.parameters.fillStyle= "Cyan";
 		 lessFruits.parameters.align = "center";
 		 lessFruits.dynamicTexture.canvas.width = 512;
-		 lessFruits.dynamicTexture.canvas.height = 512;
-		 lessFruits.position.set(0,yShifter-8.5,1);
-		 lessFruits.scale.set(10,8.5,1);
-		 lessFruits.parameters.lineHeight=0.18;
+		 lessFruits.dynamicTexture.canvas.height = 128;
+		 lessFruits.position.set(0,roundTwo-4,1);
+		 lessFruits.scale.set(10,3,1);
+		 lessFruits.parameters.lineHeight=0.5;
 		 lessFruits.update();
-		 addButton(lessFruits);
+		 lessFruits.displayType = "Button";
+		 //addButton(lessFruits);
+		 
+		 //moreFruits
+		 moreFruits = new THREEx.DynamicText2DObject();
+		 moreFruits.parameters.text= "More Fruits";
+		 moreFruits.parameters.font= "105px Arial";
+		 moreFruits.parameters.fillStyle= "Cyan";
+		 moreFruits.parameters.align = "center";
+		 moreFruits.dynamicTexture.canvas.width = 1024;
+		 moreFruits.dynamicTexture.canvas.height = 128;
+		 moreFruits.position.set(16,roundTwo-4,1);
+		 moreFruits.scale.set(16,3,1);
+		 moreFruits.parameters.lineHeight=0.6;
+		 moreFruits.update();
+		 moreFruits.displayType = "Button";
+		 //addButton(moreFruits);
+		 
+		 var roundThree = yShifter-14;
+		 //typesOfFruits
+		 var typesOfFruits = new THREEx.DynamicText2DObject();
+		 typesOfFruits.parameters.text= "Types of Fruits:";
+		 typesOfFruits.parameters.font= "115px Arial";
+		 typesOfFruits.parameters.fillStyle= "DodgerBlue";
+		 typesOfFruits.parameters.align = "center";
+		 typesOfFruits.dynamicTexture.canvas.width = 1024;
+		 typesOfFruits.dynamicTexture.canvas.height = 256;
+		 typesOfFruits.position.set(0,roundThree,1);
+		 typesOfFruits.scale.set(24,7.5,1);
+		 typesOfFruits.parameters.lineHeight=0.5;
+		 typesOfFruits.update();
+		 typesOfFruits.displayType = "Scene";
+		 waitingText.push(typesOfFruits)
+		 //scene.add(waitingText[2]);
+		 
+		 //noFruits
+		 noFruits = new THREEx.DynamicText2DObject();
+		 noFruits.parameters.text= "More Bad Fruits";
+		 noFruits.parameters.font= "105px Arial";
+		 noFruits.parameters.fillStyle= "Magenta";
+		 noFruits.parameters.align = "center";
+		 noFruits.dynamicTexture.canvas.width = 1024;
+		 noFruits.dynamicTexture.canvas.height = 128;
+		 noFruits.position.set(-16,roundThree-4,1);
+		 noFruits.scale.set(16,3,1);
+		 noFruits.parameters.lineHeight=0.6;
+		 noFruits.update();
+		 noFruits.displayType = "Button";
+		 //addButton(noFruits);
+		 
+		 //lessFruits
+		 lessFruits = new THREEx.DynamicText2DObject();
+		 lessFruits.parameters.text= "Even Mix";
+		 lessFruits.parameters.font= "105px Arial";
+		 lessFruits.parameters.fillStyle= "DodgerBlue";
+		 lessFruits.parameters.align = "center";
+		 lessFruits.dynamicTexture.canvas.width = 1024;
+		 lessFruits.dynamicTexture.canvas.height = 128;
+		 lessFruits.position.set(0,roundThree-4,1);
+		 lessFruits.scale.set(18,3,1);
+		 lessFruits.parameters.lineHeight=0.6;
+		 lessFruits.update();
+		 lessFruits.displayType = "Button";
+		 //addButton(lessFruits);
+		 
+		 //moreFruits
+		 moreFruits = new THREEx.DynamicText2DObject();
+		 moreFruits.parameters.text= "More Good Fruits";
+		 moreFruits.parameters.font= "105px Arial";
+		 moreFruits.parameters.fillStyle= "Cyan";
+		 moreFruits.parameters.align = "center";
+		 moreFruits.dynamicTexture.canvas.width = 1024;
+		 moreFruits.dynamicTexture.canvas.height = 128;
+		 moreFruits.position.set(16,roundThree-4,1);
+		 moreFruits.scale.set(16,3,1);
+		 moreFruits.parameters.lineHeight=0.6;
+		 moreFruits.update();
+		 moreFruits.displayType = "Button";
+		 //addButton(moreFruits);
 		 
 		 
 		 
 		 // lessFruits, moreFruits, moreBadFruits, mixFruits, moreGoodFruits;
- 
+		 var planeGeometry = new THREE.PlaneBufferGeometry (16, 3,0);
+		 var planeMaterial = new THREE.MeshBasicMaterial({color: 0x222222}); //RGB
+		 var highLight = new THREE.Mesh(planeGeometry, planeMaterial);
+		 highLight.position.set(16,roundThree-4.5, -1);
+		 highLight.displayType = "HighLights";
+		 //highLight.material.transparent = true;
+		 //highLight.material.opacity=0.85;
+		 //scene.add(highLight);
 		 
 	 }
 	 
