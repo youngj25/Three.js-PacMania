@@ -25,8 +25,6 @@ var NorthButton, SouthButton, EastButton, WestButton;
 var pelletTexture, appleTexture, bananaTexture, cherryTexture, orangeTexture, pearTexture, pretzelTexture, strawberryTexture, grapeTexture;
 //For the Waiting Screen
 var waitingText=[];
- 
-
 
 function init() {
 	 // create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -75,6 +73,41 @@ function init() {
 	 socket = io.connect('http://localhost:9000');
 	 //socket = io.connect('ec2-34-205-146-82.compute-1.amazonaws.com:9000');
 	
+	 //CountDown
+	 PacMania.on('Countdown', function(data){
+		 waitingText[0].parameters.text= data.Count+"";
+		 waitingText[0].update();
+	 });
+	
+	//CountDown
+	 PacMania.on('Setup Board', function(data){
+		 //Load the Text and the Board
+		 load_Text();
+		 load_Board();
+		 //Set the Game_Status to Active 
+		 Game_Status = "Active"; 
+		 //Addition of the Screen Bottoms and Background Button
+		 load_Touch_Screen_Controls();
+		 
+		 //Remove the Settings
+		 var len = waitingText.length;
+		 
+		 //Goes through the waitingText Array and adds the text to the scene and turn the items set as buttons into buttons
+		 for(var x=0; x< len; x++){
+			 if(waitingText[x].displayType != "Button")
+				 scene.remove(waitingText[x]);				
+			 else
+				 removeButton(waitingText[x])
+		 }
+		 
+		 scene.remove(tempGhost);
+		 scene.remove(tempFruit);
+		 
+		 if(data.Maze == 1)
+			 load_Game_Maze_1();
+			 
+	 });
+	 	
 	 //Update the Game State
 	 PacMania.on('Update Game State', function(data){
 		 if(Game_Status == "Active"){
@@ -531,7 +564,7 @@ function init() {
 			 dragControls.addEventListener( 'dragstart', function(event) {
 																			 if (event.object == startButton && startButton.visble == true){
 																				
-
+																				 PacMania.emit('Start Countdown');
 																				 load_Wait_Screen();
 
 																				 //Rescale and Reposition the Title
@@ -543,24 +576,8 @@ function init() {
 																				 removeButton(howToPlayButton);
 																				 removeButton(creditButton);
 																				 removeButton(aboutButton);
-																				 scene.remove(tempGhost);
-																				 scene.remove(tempFruit);
 																				 
-																				 
-																				 
-																				 /*
-																				 console.log("Start the Game");
-																				 load_Text();
-																				 load_Board();
-																				 load_Game_Maze_1();
-																				 
-																				 //Emit the Server 
-																				 PacMania.emit('Initiate Game Render');
-																				 Game_Status = "Active";
-																				 
-																				 //Addition of the Screen Bottoms and Background Button
-																				 load_Touch_Screen_Controls();
-																				 */
+																				 Game_Status = "Waiting";
 																			 }
 																			 else if (event.object == bgButton){
 																				 if(backgroundState == "Original"){
@@ -829,8 +846,7 @@ function init() {
 																			 
 																				 var integer = parseFloat( waitingText[0].parameters.text);
 																				 integer = Math.floor(integer*10 -1)/10;
-																				 waitingText[0].parameters.text= ""+integer;
-																				 waitingText[0].update();
+																				 
 																				 
 																			 }
 																			 //Type of Game
@@ -840,6 +856,8 @@ function init() {
 																				 waitingText[3].parameters.fillStyle= "#FFFFFF";
 																				 waitingText[2].update();
 																				 waitingText[3].update();
+																				 
+																				 PacMania.emit('Game Settings',data = {change: "Endless"});
 																			 }
 																			 else if (event.object == waitingText[3]){ //Last Man Standing Settings is chosen for Type of Game
 																				 waitingText[waitingText.length-3].position.x= waitingText[3].posX;
@@ -847,6 +865,8 @@ function init() {
 																				 waitingText[2].parameters.fillStyle= "#FFFFFF";
 																				 waitingText[2].update();
 																				 waitingText[3].update();
+																				 
+																				 PacMania.emit('Game Settings',data = {change: "Last Man Standing"});
 																			 }
 																			 //Fruits Occurance
 																			 else if (event.object == waitingText[5]){ //No Fruits Settings is chosen for Fruit Occurance
@@ -869,6 +889,7 @@ function init() {
 																				 if(scene.getObjectByName('HighLights-RowThree') != null)
 																					 scene.remove(waitingText[waitingText.length-1]);
 																				 
+																				 PacMania.emit('Game Settings',data = {change: "No Fruits"});
 																			 }
 																			 else if (event.object == waitingText[6]){ //Usual Amount is chosen for Fruit Occurance
 																				 waitingText[waitingText.length-2].position.x= waitingText[6].posX;
@@ -889,6 +910,8 @@ function init() {
 																					 addButton(waitingText[11]);
 																				 if(scene.getObjectByName('HighLights-RowThree') == null)
 																					 scene.add(waitingText[waitingText.length-1]);
+																				 
+																				 PacMania.emit('Game Settings',data = {change: "Usual Amount"});
 																			 }
 																			 else if (event.object == waitingText[7]){ //More Fruits Settings is chosen for Fruit Occurance
 																				 waitingText[waitingText.length-2].position.x= waitingText[7].posX;
@@ -909,9 +932,11 @@ function init() {
 																					 addButton(waitingText[11]);
 																				 if(scene.getObjectByName('HighLights-RowThree') == null)
 																					 scene.add(waitingText[waitingText.length-1]);
+																				 
+																				 PacMania.emit('Game Settings',data = {change: "More Fruits"});
 																			 }
 																			 //Types of Fruits
-																			 else if (event.object == waitingText[9]){ //Endless Settings is chosen for Type of Game
+																			 else if (event.object == waitingText[9]){ //More Bad Fruits
 																				 waitingText[waitingText.length-1].position.x= waitingText[9].posX;
 																				 waitingText[9].parameters.fillStyle= waitingText[8].parameters.fillStyle;
 																				 waitingText[10].parameters.fillStyle= "#FFFFFF";
@@ -919,8 +944,9 @@ function init() {
 																				 waitingText[9].update();
 																				 waitingText[10].update();
 																				 waitingText[11].update();
+																				 PacMania.emit('Game Settings',data = {change: "More Bad Fruits"});
 																			 }
-																			 else if (event.object == waitingText[10]){ //Last Man Standing Settings is chosen for Type of Game
+																			 else if (event.object == waitingText[10]){ //Even Mix of Fruits
 																				 waitingText[waitingText.length-1].position.x= waitingText[10].posX;
 																				 waitingText[9].parameters.fillStyle= "#FFFFFF";
 																				 waitingText[10].parameters.fillStyle=waitingText[8].parameters.fillStyle;
@@ -928,8 +954,9 @@ function init() {
 																				 waitingText[9].update();
 																				 waitingText[10].update();
 																				 waitingText[11].update();
+																				 PacMania.emit('Game Settings',data = {change: "Even Mix"});
 																			 }
-																			 else if (event.object == waitingText[11]){ //Last Man Standing Settings is chosen for Type of Game
+																			 else if (event.object == waitingText[11]){ //More Good Fruits
 																				 waitingText[waitingText.length-1].position.x= waitingText[11].posX;
 																				 waitingText[9].parameters.fillStyle= "#FFFFFF";
 																				 waitingText[10].parameters.fillStyle= "#FFFFFF";
@@ -937,6 +964,7 @@ function init() {
 																				 waitingText[9].update();
 																				 waitingText[10].update();
 																				 waitingText[11].update();
+																				 PacMania.emit('Game Settings',data = {change: "More Good Fruits"});
 																			 }
 																			 
 																			 
@@ -3153,6 +3181,8 @@ function init() {
 	 
 	 //Loads the Waiting Screen of the Game
 	 function load_Wait_Screen(){
+		 waitingText[0].parameters.text= "15";
+		 waitingText[0].update();
 		 
 		 var len = waitingText.length;
 		 
