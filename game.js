@@ -90,17 +90,9 @@ function init() {
 		 //Addition of the Screen Bottoms and Background Button
 		 load_Touch_Screen_Controls();
 		 
-		 //Remove the Settings
-		 var len = waitingText.length;
-		 
-		 //Goes through the waitingText Array and adds the text to the scene and turn the items set as buttons into buttons
-		 for(var x=0; x< len; x++){
-			 if(waitingText[x].displayType != "Button")
-				 scene.remove(waitingText[x]);				
-			 else
-				 removeButton(waitingText[x])
-		 }
-		 
+		 countDown.parameters.text= "15";
+		 countDown.update();
+		 scene.remove(countDown);
 		 scene.remove(tempGhost);
 		 scene.remove(tempFruit);
 		 
@@ -567,6 +559,7 @@ function init() {
 																				
 																				 PacMania.emit('Start Countdown');
 																				 //load_Wait_Screen();
+																				 scene.add(countDown);
 
 																				 //Rescale and Reposition the Title
 																				 Title1.position.set(0,22.95,-2);
@@ -732,14 +725,19 @@ function init() {
 																					 scene.remove(P4Text);
 																					 P1SCORE = P2SCORE = P3SCORE = P4SCORE = 0;
 																					 
-																					 
-																					 
-																					 
-																					 
 																				 }
-																				 
-																				 
-																				 
+																				 else if(Game_Status == "Game Settings"){
+																					 //Remove the Settings
+																					 var len = waitingText.length;
+																					 
+																					 //Goes through the waitingText Array and adds the text to the scene and turn the items set as buttons into buttons
+																					 for(var x=0; x< len; x++){
+																						 if(waitingText[x].displayType != "Button")
+																							 scene.remove(waitingText[x]);				
+																						 else
+																							 removeButton(waitingText[x])
+																					 } 
+																				 }
 																				
 																				 return_to_Start_Screen();
 																			
@@ -2249,13 +2247,13 @@ function init() {
 		 
 		 //countDown
 		 countDown = new THREEx.DynamicText2DObject();
-		 countDown.parameters.text= "15.0";
+		 countDown.parameters.text= "15";
 		 countDown.parameters.font= "125px Arial";
 		 countDown.parameters.fillStyle= "Green";
 		 countDown.parameters.align = "center";
 		 countDown.dynamicTexture.canvas.width = 512;
 		 countDown.dynamicTexture.canvas.height = 256;
-		 countDown.position.set(0,yShifter+15,-1);
+		 countDown.position.set(0,yShifter+10,-1);
 		 countDown.scale.set(20,15,1);
 		 countDown.parameters.lineHeight=0.6;
 		 countDown.update();
@@ -3230,7 +3228,7 @@ function init() {
 	 function load_Game_Settings_Screen(){
 		 remove_Start_Screen();
 		 
-		 waitingText[0].parameters.text= "15";
+		 waitingText[0].parameters.text= "...";
 		 waitingText[0].update();
 		 
 		 var len = waitingText.length;
@@ -3299,7 +3297,7 @@ function init() {
 		 GameSettingTitle.dynamicTexture.canvas.width = 512;
 		 GameSettingTitle.dynamicTexture.canvas.height = 256;
 		 GameSettingTitle.position.set(0,yShifter+15,-1);
-		 GameSettingTitle.scale.set(20,15,1);
+		 GameSettingTitle.scale.set(15,12,1);
 		 GameSettingTitle.parameters.lineHeight=0.6;
 		 GameSettingTitle.update();
 		 GameSettingTitle.displayType = "Button";
@@ -3307,7 +3305,7 @@ function init() {
 		 waitingText.push(GameSettingTitle)
 		 //scene.add(GameSettingTitle);		 
 		 
-		 var roundOne = yShifter+5.5;		 
+		 var roundOne = yShifter+8.5;		 
 		 //typeOfGame
 		 var typeOfGame = new THREEx.DynamicText2DObject();
 		 typeOfGame.parameters.text= "Type of Game:";
@@ -3363,7 +3361,7 @@ function init() {
 		 //addButton(lastManStanding);
 		 
 		 
-		 var roundTwo = yShifter-4;
+		 var roundTwo = yShifter-1;
 		 //fruitOccurance
 		 var fruitOccurance = new THREEx.DynamicText2DObject();
 		 fruitOccurance.parameters.text= "Fruits Occurance:";
@@ -3437,7 +3435,7 @@ function init() {
 		 waitingText.push(moreFruits)
 		 //addButton(moreFruits);
 		 
-		 var roundThree = yShifter-14;
+		 var roundThree = yShifter-11;
 		 //typesOfFruits
 		 var typesOfFruits = new THREEx.DynamicText2DObject();
 		 typesOfFruits.parameters.text= "Types of Fruits:";
