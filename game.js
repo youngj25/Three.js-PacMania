@@ -24,7 +24,8 @@ var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE 
 var NorthButton, SouthButton, EastButton, WestButton;
 var pelletTexture, appleTexture, bananaTexture, cherryTexture, orangeTexture, pearTexture, pretzelTexture, strawberryTexture, grapeTexture;
 //For the Waiting Screen
-var waitingText=[], countDown;
+var gameSettingsOptions=[], countDown;
+//For the Game Settings
 
 function init() {
 	 // create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -437,13 +438,13 @@ function init() {
 							 scene.add(winner);								 
 						 }
 						 else if(data.PacList[x].title == "Fallen King"){
-							 fallenKing.scale.set(30,16,3);
+							 fallenKing.scale.set(35,16,3);
 							 fallenKing.name = "fallenKing";
 							 fallenKing.position.set(0,resultsHeight,-2); 
 							 scene.add(fallenKing);	
 						 }
 						 else{
-							 sorry.scale.set(30,16,3);
+							 sorry.scale.set(40,16,3);
 							 sorry.name = "sorry";
 							 sorry.position.set(0,resultsHeight,-2); 
 							 scene.add(sorry);							 
@@ -454,7 +455,6 @@ function init() {
 			 scene.add(gameOver);
 			 gameOver.scale.set( 35, 12, 1);
 			 Game_Status = "Game Over";
-			 PacList = [];
 			 addButton(returnButton);
 		 }
 	 });
@@ -557,7 +557,7 @@ function init() {
 			 dragControls.addEventListener( 'dragstart', function(event) {
 																			 if (event.object == startButton && startButton.visble == true){
 																				
-																				 PacMania.emit('Start Countdown');
+																				 PacMania.emit('Start Countdown',gameSettingsOptions[0]);
 																				 //load_Wait_Screen();
 																				 addButton(countDown);
 
@@ -685,8 +685,6 @@ function init() {
 																				 load_Credit_Screen();
 																			 }
 																			 else if (event.object == returnButton){
-																				// if(Game_Status != "Game Over")
-																					
 																				
 																				 if(Game_Status == "Game Over"){
 																					 scene.remove(gameOver);
@@ -714,8 +712,20 @@ function init() {
 																						 gameMaze.splice(0,1);
 																					 }
 																					 
-																					 //Removing Background Button
-																					 //removeButton(bgButton);
+																					 //Remove Ghost if present
+																					 while(GhostList.length >0){
+																						 scene.remove(GhostList[0]);
+																						 GhostList.splice(0,1);
+																					 }
+																					 
+																					 //Remove Players if present
+																					 while(PacList.length >0){
+																						 scene.remove(PacList[0]);
+																						 PacList.splice(0,1);
+																					 }		 
+																					 PacList = [];
+																					 
+																					 //Removing Buttons
 																					 removeButton(NorthButton);
 																					 removeButton(SouthButton);
 																					 removeButton(EastButton);
@@ -731,14 +741,14 @@ function init() {
 																				 }
 																				 else if(Game_Status == "Game Settings"){
 																					 //Remove the Settings
-																					 var len = waitingText.length;
+																					 var len = gameSettingsOptions.length;
 																					 
-																					 //Goes through the waitingText Array and adds the text to the scene and turn the items set as buttons into buttons
+																					 //Goes through the gameSettingsOptions Array and adds the text to the scene and turn the items set as buttons into buttons
 																					 for(var x=0; x< len; x++){
-																						 if(waitingText[x].displayType != "Button")
-																							 scene.remove(waitingText[x]);				
+																						 if(gameSettingsOptions[x].displayType != "Button")
+																							 scene.remove(gameSettingsOptions[x]);				
 																						 else
-																							 removeButton(waitingText[x])
+																							 removeButton(gameSettingsOptions[x])
 																					 } 
 																				 }
 																				
@@ -848,129 +858,139 @@ function init() {
 																					 //sourceLinkButton.url = creditDisplayArray[sceneNumber].url;
 																				 }
 																			 }
-																			 else if (event.object == waitingText[0]){ //CountDown
-																			 
-																				 var integer = parseFloat( waitingText[0].parameters.text);
-																				 integer = Math.floor(integer*10 -1)/10;
-																				 
-																				 
-																			 }
 																			 //Type of Game
-																			 else if (event.object == waitingText[2]){ //Endless Settings is chosen for Type of Game
-																				 waitingText[waitingText.length-3].position.x= waitingText[2].posX;
-																				 waitingText[2].parameters.fillStyle= waitingText[1].parameters.fillStyle;
-																				 waitingText[3].parameters.fillStyle= "Crimson";
-																				 waitingText[2].update();
-																				 waitingText[3].update();
-																				 
-																				 PacMania.emit('Game Settings',data = {change: "Endless"});
+																			 else if (event.object == gameSettingsOptions[2]){ //Endless Settings is chosen for Type of Game
+																				 //Updates Animation
+																				 gameSettingsOptions[gameSettingsOptions.length-3].position.x= gameSettingsOptions[2].posX;
+																				 gameSettingsOptions[2].parameters.fillStyle= "Crimson";
+																				 gameSettingsOptions[3].parameters.fillStyle= "darkred";
+																				 gameSettingsOptions[2].update();
+																				 gameSettingsOptions[3].update();
+																				 //Sets the Game Setting
+																				 gameSettingsOptions[0].typeOfGame= gameSettingsOptions[2].parameters.text;
 																			 }
-																			 else if (event.object == waitingText[3]){ //Last Man Standing Settings is chosen for Type of Game
-																				 waitingText[waitingText.length-3].position.x= waitingText[3].posX;
-																				 waitingText[3].parameters.fillStyle= waitingText[1].parameters.fillStyle;
-																				 waitingText[2].parameters.fillStyle= "Crimson";
-																				 waitingText[2].update();
-																				 waitingText[3].update();
-																				 
-																				 PacMania.emit('Game Settings',data = {change: "Last Man Standing"});
+																			 else if (event.object == gameSettingsOptions[3]){ //Last Man Standing Settings is chosen for Type of Game
+																				 //Updates Animation
+																				 gameSettingsOptions[gameSettingsOptions.length-3].position.x= gameSettingsOptions[3].posX;
+																				 gameSettingsOptions[3].parameters.fillStyle= "Crimson";
+																				 gameSettingsOptions[2].parameters.fillStyle= "darkred";
+																				 gameSettingsOptions[2].update();
+																				 gameSettingsOptions[3].update();																				 
+																				 //Sets the Game Setting
+																				 gameSettingsOptions[0].typeOfGame= gameSettingsOptions[3].parameters.text;
 																			 }
 																			 //Fruits Occurance
-																			 else if (event.object == waitingText[5]){ //No Fruits Settings is chosen for Fruit Occurance
-																				 waitingText[waitingText.length-2].position.x= waitingText[5].posX;
-																				 waitingText[5].parameters.fillStyle= waitingText[4].parameters.fillStyle;
-																				 waitingText[6].parameters.fillStyle= "Indigo";
-																				 waitingText[7].parameters.fillStyle= "Indigo";
-																				 waitingText[5].update();
-																				 waitingText[6].update();
-																				 waitingText[7].update();
+																			 else if (event.object == gameSettingsOptions[5]){ //No Fruits Settings is chosen for Fruit Occurance
+																				 //Updates Animation
+																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[5].posX;
+																				 gameSettingsOptions[5].parameters.fillStyle= gameSettingsOptions[4].parameters.fillStyle;
+																				 gameSettingsOptions[6].parameters.fillStyle= "Indigo";
+																				 gameSettingsOptions[7].parameters.fillStyle= "Indigo";
+																				 gameSettingsOptions[5].update();
+																				 gameSettingsOptions[6].update();
+																				 gameSettingsOptions[7].update();
 
 																				 if(scene.getObjectByName('typesOfFruits') != null)
-																					 scene.remove(waitingText[8]);
+																					 scene.remove(gameSettingsOptions[8]);
 																				 if(scene.getObjectByName('moreBadFruits') != null)
-																					 removeButton(waitingText[9]);
+																					 removeButton(gameSettingsOptions[9]);
 																				 if(scene.getObjectByName('evenMix') != null)
-																					 removeButton(waitingText[10]);
+																					 removeButton(gameSettingsOptions[10]);
 																				 if(scene.getObjectByName('moreGoodFruits') != null)
-																					 removeButton(waitingText[11]);
+																					 removeButton(gameSettingsOptions[11]);
 																				 if(scene.getObjectByName('HighLights-RowThree') != null)
-																					 scene.remove(waitingText[waitingText.length-1]);
-																				 
-																				 PacMania.emit('Game Settings',data = {change: "No Fruits"});
+																					 scene.remove(gameSettingsOptions[gameSettingsOptions.length-1]);
+																				
+																				 //Sets the Game Setting
+																				 gameSettingsOptions[0].fruitOccurance= gameSettingsOptions[5].parameters.text;
 																			 }
-																			 else if (event.object == waitingText[6]){ //Usual Amount is chosen for Fruit Occurance
-																				 waitingText[waitingText.length-2].position.x= waitingText[6].posX;
-																				 waitingText[5].parameters.fillStyle= "Indigo";
-																				 waitingText[6].parameters.fillStyle= waitingText[4].parameters.fillStyle;
-																				 waitingText[7].parameters.fillStyle= "Indigo";
-																				 waitingText[5].update();
-																				 waitingText[6].update();
-																				 waitingText[7].update();		
+																			 else if (event.object == gameSettingsOptions[6]){ //Usual Amount is chosen for Fruit Occurance
+																				 //Updates Animation
+																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[6].posX;
+																				 gameSettingsOptions[5].parameters.fillStyle= "Indigo";
+																				 gameSettingsOptions[6].parameters.fillStyle= gameSettingsOptions[4].parameters.fillStyle;
+																				 gameSettingsOptions[7].parameters.fillStyle= "Indigo";
+																				 gameSettingsOptions[5].update();
+																				 gameSettingsOptions[6].update();
+																				 gameSettingsOptions[7].update();		
 																				 
 																				 if(scene.getObjectByName('typesOfFruits') == null)
-																					 scene.add(waitingText[8]);
+																					 scene.add(gameSettingsOptions[8]);
 																				 if(scene.getObjectByName('moreBadFruits') == null)
-																					 addButton(waitingText[9]);
+																					 addButton(gameSettingsOptions[9]);
 																				 if(scene.getObjectByName('evenMix') == null)
-																					 addButton(waitingText[10]);
+																					 addButton(gameSettingsOptions[10]);
 																				 if(scene.getObjectByName('moreGoodFruits') == null)
-																					 addButton(waitingText[11]);
+																					 addButton(gameSettingsOptions[11]);
 																				 if(scene.getObjectByName('HighLights-RowThree') == null)
-																					 scene.add(waitingText[waitingText.length-1]);
+																					 scene.add(gameSettingsOptions[gameSettingsOptions.length-1]);
 																				 
-																				 PacMania.emit('Game Settings',data = {change: "Usual Amount"});
+																				 //Sets the Game Setting
+																				 gameSettingsOptions[0].fruitOccurance= gameSettingsOptions[6].parameters.text;
 																			 }
-																			 else if (event.object == waitingText[7]){ //More Fruits Settings is chosen for Fruit Occurance
-																				 waitingText[waitingText.length-2].position.x= waitingText[7].posX;
-																				 waitingText[5].parameters.fillStyle= "Indigo";
-																				 waitingText[6].parameters.fillStyle= "Indigo";
-																				 waitingText[7].parameters.fillStyle= waitingText[4].parameters.fillStyle;
-																				 waitingText[5].update();
-																				 waitingText[6].update();
-																				 waitingText[7].update();	
+																			 else if (event.object == gameSettingsOptions[7]){ //More Fruits Settings is chosen for Fruit Occurance
+																				 //Updates Animation
+																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[7].posX;
+																				 gameSettingsOptions[5].parameters.fillStyle= "Indigo";
+																				 gameSettingsOptions[6].parameters.fillStyle= "Indigo";
+																				 gameSettingsOptions[7].parameters.fillStyle= gameSettingsOptions[4].parameters.fillStyle;
+																				 gameSettingsOptions[5].update();
+																				 gameSettingsOptions[6].update();
+																				 gameSettingsOptions[7].update();	
 																				 
 																				 if(scene.getObjectByName('typesOfFruits') == null)
-																					 scene.add(waitingText[8]);
+																					 scene.add(gameSettingsOptions[8]);
 																				 if(scene.getObjectByName('moreBadFruits') == null)
-																					 addButton(waitingText[9]);
+																					 addButton(gameSettingsOptions[9]);
 																				 if(scene.getObjectByName('evenMix') == null)
-																					 addButton(waitingText[10]);
+																					 addButton(gameSettingsOptions[10]);
 																				 if(scene.getObjectByName('moreGoodFruits') == null)
-																					 addButton(waitingText[11]);
+																					 addButton(gameSettingsOptions[11]);
 																				 if(scene.getObjectByName('HighLights-RowThree') == null)
-																					 scene.add(waitingText[waitingText.length-1]);
+																					 scene.add(gameSettingsOptions[gameSettingsOptions.length-1]);
 																				 
-																				 PacMania.emit('Game Settings',data = {change: "More Fruits"});
+																				 //Sets the Game Setting
+																				 gameSettingsOptions[0].fruitOccurance= gameSettingsOptions[7].parameters.text;
 																			 }
 																			 //Types of Fruits
-																			 else if (event.object == waitingText[9]){ //More Bad Fruits
-																				 waitingText[waitingText.length-1].position.x= waitingText[9].posX;
-																				 waitingText[9].parameters.fillStyle= waitingText[8].parameters.fillStyle;
-																				 waitingText[10].parameters.fillStyle= "Midnightblue";
-																				 waitingText[11].parameters.fillStyle= "Midnightblue";
-																				 waitingText[9].update();
-																				 waitingText[10].update();
-																				 waitingText[11].update();
-																				 PacMania.emit('Game Settings',data = {change: "More Bad Fruits"});
+																			 else if (event.object == gameSettingsOptions[9]){ //More Bad Fruits
+																				 //Updates Animation
+																				 gameSettingsOptions[gameSettingsOptions.length-1].position.x= gameSettingsOptions[9].posX;
+																				 gameSettingsOptions[9].parameters.fillStyle= gameSettingsOptions[8].parameters.fillStyle;
+																				 gameSettingsOptions[10].parameters.fillStyle= "Midnightblue";
+																				 gameSettingsOptions[11].parameters.fillStyle= "Midnightblue";
+																				 gameSettingsOptions[9].update();
+																				 gameSettingsOptions[10].update();
+																				 gameSettingsOptions[11].update();
+																				 
+																				 //Sets the Game Setting
+																				 gameSettingsOptions[0].typesOfFruits= gameSettingsOptions[9].parameters.text;
 																			 }
-																			 else if (event.object == waitingText[10]){ //Even Mix of Fruits
-																				 waitingText[waitingText.length-1].position.x= waitingText[10].posX;
-																				 waitingText[9].parameters.fillStyle= "Midnightblue";
-																				 waitingText[10].parameters.fillStyle=waitingText[8].parameters.fillStyle;
-																				 waitingText[11].parameters.fillStyle= "Midnightblue";
-																				 waitingText[9].update();
-																				 waitingText[10].update();
-																				 waitingText[11].update();
-																				 PacMania.emit('Game Settings',data = {change: "Even Mix"});
+																			 else if (event.object == gameSettingsOptions[10]){ //Even Mix of Fruits
+																				 //Updates Animation
+																				 gameSettingsOptions[gameSettingsOptions.length-1].position.x= gameSettingsOptions[10].posX;
+																				 gameSettingsOptions[9].parameters.fillStyle= "Midnightblue";
+																				 gameSettingsOptions[10].parameters.fillStyle=gameSettingsOptions[8].parameters.fillStyle;
+																				 gameSettingsOptions[11].parameters.fillStyle= "Midnightblue";
+																				 gameSettingsOptions[9].update();
+																				 gameSettingsOptions[10].update();
+																				 gameSettingsOptions[11].update();
+																				 
+																				 //Sets the Game Setting
+																				 gameSettingsOptions[0].typesOfFruits= gameSettingsOptions[10].parameters.text;
 																			 }
-																			 else if (event.object == waitingText[11]){ //More Good Fruits
-																				 waitingText[waitingText.length-1].position.x= waitingText[11].posX;
-																				 waitingText[9].parameters.fillStyle= "Midnightblue";
-																				 waitingText[10].parameters.fillStyle= "Midnightblue";
-																				 waitingText[11].parameters.fillStyle= waitingText[8].parameters.fillStyle;
-																				 waitingText[9].update();
-																				 waitingText[10].update();
-																				 waitingText[11].update();
-																				 PacMania.emit('Game Settings',data = {change: "More Good Fruits"});
+																			 else if (event.object == gameSettingsOptions[11]){ //More Good Fruits
+																				 //Updates Animation
+																				 gameSettingsOptions[gameSettingsOptions.length-1].position.x= gameSettingsOptions[11].posX;
+																				 gameSettingsOptions[9].parameters.fillStyle= "Midnightblue";
+																				 gameSettingsOptions[10].parameters.fillStyle= "Midnightblue";
+																				 gameSettingsOptions[11].parameters.fillStyle= gameSettingsOptions[8].parameters.fillStyle;
+																				 gameSettingsOptions[9].update();
+																				 gameSettingsOptions[10].update();
+																				 gameSettingsOptions[11].update();
+																				 
+																				 //Sets the Game Setting
+																				 gameSettingsOptions[0].typesOfFruits= gameSettingsOptions[11].parameters.text;
 																			 }
 																			 
 																			 
@@ -1005,22 +1025,22 @@ function init() {
 																			 else if (event.object == leftArrowButton)
 																				 leftArrowButton.position.set(leftArrowButton.posX, leftArrowButton.posY, leftArrowButton.posZ);
 																			 //Waiting Screen Buttons
-																			 else if (event.object == waitingText[2])
-																				 waitingText[2].position.set(waitingText[2].posX, waitingText[2].posY, waitingText[2].posZ);
-																			 else if (event.object == waitingText[3])
-																				 waitingText[3].position.set(waitingText[3].posX, waitingText[3].posY, waitingText[3].posZ);
-																			 else if (event.object == waitingText[5])
-																				 waitingText[5].position.set(waitingText[5].posX, waitingText[5].posY, waitingText[5].posZ);
-																			 else if (event.object == waitingText[6])
-																				 waitingText[6].position.set(waitingText[6].posX, waitingText[6].posY, waitingText[6].posZ);
-																			 else if (event.object == waitingText[7])
-																				 waitingText[7].position.set(waitingText[7].posX, waitingText[7].posY, waitingText[7].posZ);
-																			 else if (event.object == waitingText[9])
-																				 waitingText[9].position.set(waitingText[9].posX, waitingText[9].posY, waitingText[9].posZ);
-																			 else if (event.object == waitingText[10])
-																				 waitingText[10].position.set(waitingText[10].posX, waitingText[10].posY, waitingText[10].posZ);
-																			 else if (event.object == waitingText[11])
-																				 waitingText[11].position.set(waitingText[11].posX, waitingText[11].posY, waitingText[11].posZ);
+																			 else if (event.object == gameSettingsOptions[2])
+																				 gameSettingsOptions[2].position.set(gameSettingsOptions[2].posX, gameSettingsOptions[2].posY, gameSettingsOptions[2].posZ);
+																			 else if (event.object == gameSettingsOptions[3])
+																				 gameSettingsOptions[3].position.set(gameSettingsOptions[3].posX, gameSettingsOptions[3].posY, gameSettingsOptions[3].posZ);
+																			 else if (event.object == gameSettingsOptions[5])
+																				 gameSettingsOptions[5].position.set(gameSettingsOptions[5].posX, gameSettingsOptions[5].posY, gameSettingsOptions[5].posZ);
+																			 else if (event.object == gameSettingsOptions[6])
+																				 gameSettingsOptions[6].position.set(gameSettingsOptions[6].posX, gameSettingsOptions[6].posY, gameSettingsOptions[6].posZ);
+																			 else if (event.object == gameSettingsOptions[7])
+																				 gameSettingsOptions[7].position.set(gameSettingsOptions[7].posX, gameSettingsOptions[7].posY, gameSettingsOptions[7].posZ);
+																			 else if (event.object == gameSettingsOptions[9])
+																				 gameSettingsOptions[9].position.set(gameSettingsOptions[9].posX, gameSettingsOptions[9].posY, gameSettingsOptions[9].posZ);
+																			 else if (event.object == gameSettingsOptions[10])
+																				 gameSettingsOptions[10].position.set(gameSettingsOptions[10].posX, gameSettingsOptions[10].posY, gameSettingsOptions[10].posZ);
+																			 else if (event.object == gameSettingsOptions[11])
+																				 gameSettingsOptions[11].position.set(gameSettingsOptions[11].posX, gameSettingsOptions[11].posY, gameSettingsOptions[11].posZ);
 
 																		});
 																		
@@ -3231,37 +3251,35 @@ function init() {
 	 function load_Game_Settings_Screen(){
 		 remove_Start_Screen();
 		 
-		 //waitingText[0].parameters.text= "Game Settings";
-		 //waitingText[0].update();
+		 var len = gameSettingsOptions.length;
 		 
-		 var len = waitingText.length;
-		 
-		 //Goes through the waitingText Array and adds the text to the scene and turn the items set as buttons into buttons
+		 //Goes through the gameSettingsOptions Array and adds the text to the scene and turn the items set as buttons into buttons
 		 for(var x=1; x< len; x++){
-			 if(waitingText[x].displayType == "Scene")
-				 scene.add(waitingText[x]);				
-			 else if(waitingText[x].displayType == "Button")
-				 addButton(waitingText[x])
-			 else if(waitingText[x].displayType == "HighLights-RowOne"){
-				 waitingText[x].position.x = waitingText[2].posX;
-				 scene.add(waitingText[x]);		
-				 console.log(waitingText[x].position.x );
-				 console.log(waitingText[x].position.y);
-				 
+			 
+			 if(gameSettingsOptions[x].displayType == "Scene")
+				 scene.add(gameSettingsOptions[x]);				
+			 else if(gameSettingsOptions[x].displayType == "Button")
+				 addButton(gameSettingsOptions[x])
+			 else if(gameSettingsOptions[x].displayType == "HighLights-RowOne"){
+				 //gameSettingsOptions[x].position.x = gameSettingsOptions[2].posX;
+				 scene.add(gameSettingsOptions[x]);		
 			 }
-			 else if(waitingText[x].displayType == "HighLights-RowTwo"){
-				 waitingText[x].position.x = waitingText[6].posX;
-				 scene.add(waitingText[x]);	
-				 console.log("??43?");				 
+			 else if(gameSettingsOptions[x].displayType == "HighLights-RowTwo"){
+				 //gameSettingsOptions[x].position.x = gameSettingsOptions[6].posX;
+				 scene.add(gameSettingsOptions[x]);	
 			 }
-			 else if(waitingText[x].displayType == "HighLights-RowThree"){
-				 waitingText[x].position.x = waitingText[10].posX;
-				 scene.add(waitingText[x]);		
-				 console.log("43");	
+			 else if(gameSettingsOptions[x].displayType == "HighLights-RowThree"){
+				 //gameSettingsOptions[x].position.x = gameSettingsOptions[10].posX;
+				 scene.add(gameSettingsOptions[x]);		
 			 }
 			 
+			 // Stops before 8.Types of Fruits and skips to the HighLights to hide the Types of Fruits
+			 if(gameSettingsOptions[0].fruitOccurance == "No Fruits" && x == 7){
+				 x+=4; //Skips over the Fruit Types
+				 len--; // Removes Last HighLights
+			 }
 			 /** Order:
-				 0 - CountDown
+				 0 - Users Game Setting
 				 1 - Type of Game
 				 2 - Endless
 				 3 - Last Man Standing
@@ -3289,7 +3307,15 @@ function init() {
 	 
 	 //Pre-Sets the Text for the Game Settings Screen
 	 function preset_Game_Settings_Screen(){
-		 waitingText = [];
+		 gameSettingsOptions = [];
+		 
+		 //The Users Game Settings
+		 var usersGameSettings = {
+			 typeOfGame : "Endless",
+			 fruitOccurance : "Usual Amount",
+			 typesOfFruits : "Even Mix"
+		 }
+		 gameSettingsOptions.push(usersGameSettings);
 		 
 		 //GameSettingTitle
 		 var GameSettingTitle = new THREEx.DynamicText2DObject();
@@ -3305,7 +3331,7 @@ function init() {
 		 GameSettingTitle.update();
 		 GameSettingTitle.displayType = "Button";
 		 GameSettingTitle.name = "GameSettingTitle";
-		 waitingText.push(GameSettingTitle)
+		 //gameSettingsOptions.push(GameSettingTitle)
 		 //scene.add(GameSettingTitle);		 
 		 
 		 var roundOne = yShifter+8.5;		 
@@ -3322,14 +3348,14 @@ function init() {
 		 typeOfGame.parameters.lineHeight=0.5;
 		 typeOfGame.update();
 		 typeOfGame.displayType = "Scene";
-		 waitingText.push(typeOfGame)
-		 //scene.add(waitingText[0]);
+		 gameSettingsOptions.push(typeOfGame)
+		 //scene.add(gameSettingsOptions[0]);
 		 
 		 //endless
 		 var endless = new THREEx.DynamicText2DObject();
 		 endless.parameters.text= "Endless";
 		 endless.parameters.font= "105px Arial";
-		 endless.parameters.fillStyle= "#FF001F";
+		 endless.parameters.fillStyle= "Crimson";
 		 endless.parameters.align = "center";
 		 endless.dynamicTexture.canvas.width = 512;
 		 endless.dynamicTexture.canvas.height = 128;
@@ -3341,14 +3367,14 @@ function init() {
 		 endless.parameters.lineHeight=0.5;
 		 endless.update();
 		 endless.displayType = "Button";
-		 waitingText.push(endless)
+		 gameSettingsOptions.push(endless)
 		 //addButton(endless);
 		 
 		 //lastManStanding
 		 var lastManStanding = new THREEx.DynamicText2DObject();
 		 lastManStanding.parameters.text= "Last Man Standing";
 		 lastManStanding.parameters.font= "105px Arial";
-		 lastManStanding.parameters.fillStyle= "Crimson";
+		 lastManStanding.parameters.fillStyle= "darkred";
 		 lastManStanding.parameters.align = "center";
 		 lastManStanding.dynamicTexture.canvas.width = 1024;
 		 lastManStanding.dynamicTexture.canvas.height = 128;
@@ -3360,7 +3386,7 @@ function init() {
 		 lastManStanding.parameters.lineHeight=0.5;
 		 lastManStanding.update();
 		 lastManStanding.displayType = "Button";
-		 waitingText.push(lastManStanding)
+		 gameSettingsOptions.push(lastManStanding)
 		 //addButton(lastManStanding);
 		 
 		 
@@ -3378,8 +3404,8 @@ function init() {
 		 fruitOccurance.parameters.lineHeight=0.5;
 		 fruitOccurance.update();
 		 fruitOccurance.displayType = "Scene";
-		 waitingText.push(fruitOccurance)
-		 //scene.add(waitingText[1]);
+		 gameSettingsOptions.push(fruitOccurance)
+		 //scene.add(gameSettingsOptions[1]);
 		 
 		 //noFruits
 		 var noFruits = new THREEx.DynamicText2DObject();
@@ -3397,7 +3423,7 @@ function init() {
 		 noFruits.parameters.lineHeight=0.6;
 		 noFruits.update();
 		 noFruits.displayType = "Button";
-		 waitingText.push(noFruits)
+		 gameSettingsOptions.push(noFruits)
 		 //addButton(noFruits);
 		 
 		 //usualAmount
@@ -3416,7 +3442,7 @@ function init() {
 		 usualAmount.parameters.lineHeight=0.6;
 		 usualAmount.update();
 		 usualAmount.displayType = "Button";
-		 waitingText.push(usualAmount)
+		 gameSettingsOptions.push(usualAmount)
 		 //addButton(usualAmount);
 		 
 		 //moreFruits
@@ -3435,7 +3461,7 @@ function init() {
 		 moreFruits.parameters.lineHeight=0.6;
 		 moreFruits.update();
 		 moreFruits.displayType = "Button";
-		 waitingText.push(moreFruits)
+		 gameSettingsOptions.push(moreFruits)
 		 //addButton(moreFruits);
 		 
 		 var roundThree = yShifter-11;
@@ -3453,8 +3479,8 @@ function init() {
 		 typesOfFruits.update();
 		 typesOfFruits.displayType = "Scene";
 		 typesOfFruits.name = "typesOfFruits";
-		 waitingText.push(typesOfFruits)
-		 //scene.add(waitingText[2]);
+		 gameSettingsOptions.push(typesOfFruits)
+		 //scene.add(gameSettingsOptions[2]);
 		 
 		 //moreBadFruits
 		 var moreBadFruits = new THREEx.DynamicText2DObject();
@@ -3473,7 +3499,7 @@ function init() {
 		 moreBadFruits.update();
 		 moreBadFruits.displayType = "Button";
 		 moreBadFruits.name = "moreBadFruits";
-		 waitingText.push(moreBadFruits)
+		 gameSettingsOptions.push(moreBadFruits)
 		 //addButton(moreBadFruits);
 		 
 		 //evenMix
@@ -3494,7 +3520,7 @@ function init() {
 		 evenMix.update();
 		 evenMix.displayType = "Button";
 		 evenMix.name = "evenMix";
-		 waitingText.push(evenMix)
+		 gameSettingsOptions.push(evenMix)
 		 //addButton(evenMix);
 		 
 		 //moreGoodFruits
@@ -3514,7 +3540,7 @@ function init() {
 		 moreGoodFruits.update();
 		 moreGoodFruits.displayType = "Button";
 		 moreGoodFruits.name = "moreGoodFruits";
-		 waitingText.push(moreGoodFruits)
+		 gameSettingsOptions.push(moreGoodFruits)
 		 //addButton(moreGoodFruits);
 		 
 		 
@@ -3523,22 +3549,22 @@ function init() {
 		 var planeGeometry = new THREE.PlaneBufferGeometry (16, 3,0);
 		 var planeMaterial = new THREE.MeshBasicMaterial({color: 0x222222}); //RGB
 		 var highLightOne = new THREE.Mesh(planeGeometry, planeMaterial);
-		 highLightOne.position.set(16,roundOne-3.75, -1);
+		 highLightOne.position.set(gameSettingsOptions[2].posX,roundOne-3.5, -1);
 		 highLightOne.displayType = "HighLights-RowOne";
 		 highLightOne.name = "HighLights-RowOne";
-		 waitingText.push(highLightOne);
+		 gameSettingsOptions.push(highLightOne);
 		 
 		 var highLightTwo = new THREE.Mesh(planeGeometry, planeMaterial);
 		 highLightTwo.displayType = "HighLights-RowTwo";
 		 highLightTwo.name = "HighLights-RowTwo";
-		 highLightTwo.position.set(16,roundTwo-4.25, -1);
-		 waitingText.push(highLightTwo);
+		 highLightTwo.position.set(gameSettingsOptions[6].posX,roundTwo-4, -1);
+		 gameSettingsOptions.push(highLightTwo);
 		 
 		 var highLightThree = new THREE.Mesh(planeGeometry, planeMaterial);
 		 highLightThree.displayType = "HighLights-RowThree";
 		 highLightThree.name = "HighLights-RowThree";
-		 highLightThree.position.set(16,roundThree-4.5, -1);
-		 waitingText.push(highLightThree);
+		 highLightThree.position.set(gameSettingsOptions[10].posX,roundThree-4.25, -1);
+		 gameSettingsOptions.push(highLightThree);
 		 //scene.add(highLightThree);
 	 }
 	 
@@ -3731,12 +3757,6 @@ function init() {
 		 Title1.position.set(0,15.95,-2); 
 		 Title1.scale.set(32,7,1);		 
 		 Game_Status="Ready";
-		 
-		 //Remove Ghost if present
-		 while(GhostList.length >0){
-			 scene.remove(GhostList[0]);
-			 GhostList.splice(0,1);
-		 }
 		 
 	 }
 	
