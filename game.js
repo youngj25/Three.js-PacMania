@@ -76,11 +76,11 @@ function init() {
 	 //CountDown
 	 PacMania.on('Countdown', function(data){
 		 //Update the Countdown
-		 countDown.parameters.text= data.Count+"";
+		 countDown.parameters.text= "Count Down: "+data.Count;
 		 countDown.update();
 	 });
 	
-	//Set up the Board
+	 //Set up the Board
 	 PacMania.on('Setup Board', function(data){
 		 //Load the Text and the Board
 		 load_Text();
@@ -90,7 +90,7 @@ function init() {
 		 //Addition of the Screen Bottoms and Background Button
 		 load_Touch_Screen_Controls();
 		 
-		 countDown.parameters.text= "15";
+		 countDown.parameters.text= "Count Down: 10";
 		 countDown.update();
 		 scene.remove(countDown);
 		 scene.remove(tempGhost);
@@ -559,7 +559,7 @@ function init() {
 																				
 																				 PacMania.emit('Start Countdown');
 																				 //load_Wait_Screen();
-																				 scene.add(countDown);
+																				 addButton(countDown);
 
 																				 //Rescale and Reposition the Title
 																				 Title1.position.set(0,22.95,-2);
@@ -647,6 +647,9 @@ function init() {
 																			 }
 																			 else if (event.object == gsButton){
 																				 load_Game_Settings_Screen();
+																			 }
+																			 else if (event.object == countDown){
+																				 PacMania.emit('CountDown Pressed');
 																			 }
 																			 else if (event.object == joinButton && joinButton.visble == true){
 																				 PacMania.emit('Add Player');
@@ -856,7 +859,7 @@ function init() {
 																			 else if (event.object == waitingText[2]){ //Endless Settings is chosen for Type of Game
 																				 waitingText[waitingText.length-3].position.x= waitingText[2].posX;
 																				 waitingText[2].parameters.fillStyle= waitingText[1].parameters.fillStyle;
-																				 waitingText[3].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[3].parameters.fillStyle= "Crimson";
 																				 waitingText[2].update();
 																				 waitingText[3].update();
 																				 
@@ -865,7 +868,7 @@ function init() {
 																			 else if (event.object == waitingText[3]){ //Last Man Standing Settings is chosen for Type of Game
 																				 waitingText[waitingText.length-3].position.x= waitingText[3].posX;
 																				 waitingText[3].parameters.fillStyle= waitingText[1].parameters.fillStyle;
-																				 waitingText[2].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[2].parameters.fillStyle= "Crimson";
 																				 waitingText[2].update();
 																				 waitingText[3].update();
 																				 
@@ -875,8 +878,8 @@ function init() {
 																			 else if (event.object == waitingText[5]){ //No Fruits Settings is chosen for Fruit Occurance
 																				 waitingText[waitingText.length-2].position.x= waitingText[5].posX;
 																				 waitingText[5].parameters.fillStyle= waitingText[4].parameters.fillStyle;
-																				 waitingText[6].parameters.fillStyle= "#FFFFFF";
-																				 waitingText[7].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[6].parameters.fillStyle= "Indigo";
+																				 waitingText[7].parameters.fillStyle= "Indigo";
 																				 waitingText[5].update();
 																				 waitingText[6].update();
 																				 waitingText[7].update();
@@ -896,9 +899,9 @@ function init() {
 																			 }
 																			 else if (event.object == waitingText[6]){ //Usual Amount is chosen for Fruit Occurance
 																				 waitingText[waitingText.length-2].position.x= waitingText[6].posX;
-																				 waitingText[5].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[5].parameters.fillStyle= "Indigo";
 																				 waitingText[6].parameters.fillStyle= waitingText[4].parameters.fillStyle;
-																				 waitingText[7].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[7].parameters.fillStyle= "Indigo";
 																				 waitingText[5].update();
 																				 waitingText[6].update();
 																				 waitingText[7].update();		
@@ -918,8 +921,8 @@ function init() {
 																			 }
 																			 else if (event.object == waitingText[7]){ //More Fruits Settings is chosen for Fruit Occurance
 																				 waitingText[waitingText.length-2].position.x= waitingText[7].posX;
-																				 waitingText[5].parameters.fillStyle= "#FFFFFF";
-																				 waitingText[6].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[5].parameters.fillStyle= "Indigo";
+																				 waitingText[6].parameters.fillStyle= "Indigo";
 																				 waitingText[7].parameters.fillStyle= waitingText[4].parameters.fillStyle;
 																				 waitingText[5].update();
 																				 waitingText[6].update();
@@ -942,8 +945,8 @@ function init() {
 																			 else if (event.object == waitingText[9]){ //More Bad Fruits
 																				 waitingText[waitingText.length-1].position.x= waitingText[9].posX;
 																				 waitingText[9].parameters.fillStyle= waitingText[8].parameters.fillStyle;
-																				 waitingText[10].parameters.fillStyle= "#FFFFFF";
-																				 waitingText[11].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[10].parameters.fillStyle= "Midnightblue";
+																				 waitingText[11].parameters.fillStyle= "Midnightblue";
 																				 waitingText[9].update();
 																				 waitingText[10].update();
 																				 waitingText[11].update();
@@ -951,9 +954,9 @@ function init() {
 																			 }
 																			 else if (event.object == waitingText[10]){ //Even Mix of Fruits
 																				 waitingText[waitingText.length-1].position.x= waitingText[10].posX;
-																				 waitingText[9].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[9].parameters.fillStyle= "Midnightblue";
 																				 waitingText[10].parameters.fillStyle=waitingText[8].parameters.fillStyle;
-																				 waitingText[11].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[11].parameters.fillStyle= "Midnightblue";
 																				 waitingText[9].update();
 																				 waitingText[10].update();
 																				 waitingText[11].update();
@@ -961,8 +964,8 @@ function init() {
 																			 }
 																			 else if (event.object == waitingText[11]){ //More Good Fruits
 																				 waitingText[waitingText.length-1].position.x= waitingText[11].posX;
-																				 waitingText[9].parameters.fillStyle= "#FFFFFF";
-																				 waitingText[10].parameters.fillStyle= "#FFFFFF";
+																				 waitingText[9].parameters.fillStyle= "Midnightblue";
+																				 waitingText[10].parameters.fillStyle= "Midnightblue";
 																				 waitingText[11].parameters.fillStyle= waitingText[8].parameters.fillStyle;
 																				 waitingText[9].update();
 																				 waitingText[10].update();
@@ -2247,14 +2250,14 @@ function init() {
 		 
 		 //countDown
 		 countDown = new THREEx.DynamicText2DObject();
-		 countDown.parameters.text= "15";
+		 countDown.parameters.text= "Count Down: 10";
 		 countDown.parameters.font= "125px Arial";
 		 countDown.parameters.fillStyle= "Green";
 		 countDown.parameters.align = "center";
-		 countDown.dynamicTexture.canvas.width = 512;
+		 countDown.dynamicTexture.canvas.width = 1024;
 		 countDown.dynamicTexture.canvas.height = 256;
 		 countDown.position.set(0,yShifter+10,-1);
-		 countDown.scale.set(20,15,1);
+		 countDown.scale.set(20,12,1);
 		 countDown.parameters.lineHeight=0.6;
 		 countDown.update();
 		 countDown.displayType = "Button";
@@ -3228,13 +3231,13 @@ function init() {
 	 function load_Game_Settings_Screen(){
 		 remove_Start_Screen();
 		 
-		 waitingText[0].parameters.text= "...";
-		 waitingText[0].update();
+		 //waitingText[0].parameters.text= "Game Settings";
+		 //waitingText[0].update();
 		 
 		 var len = waitingText.length;
 		 
 		 //Goes through the waitingText Array and adds the text to the scene and turn the items set as buttons into buttons
-		 for(var x=0; x< len; x++){
+		 for(var x=1; x< len; x++){
 			 if(waitingText[x].displayType == "Scene")
 				 scene.add(waitingText[x]);				
 			 else if(waitingText[x].displayType == "Button")
@@ -3290,14 +3293,14 @@ function init() {
 		 
 		 //GameSettingTitle
 		 var GameSettingTitle = new THREEx.DynamicText2DObject();
-		 GameSettingTitle.parameters.text= "...";
+		 GameSettingTitle.parameters.text= "Game Settings";
 		 GameSettingTitle.parameters.font= "125px Arial";
 		 GameSettingTitle.parameters.fillStyle= "Green";
 		 GameSettingTitle.parameters.align = "center";
-		 GameSettingTitle.dynamicTexture.canvas.width = 512;
+		 GameSettingTitle.dynamicTexture.canvas.width = 1024;
 		 GameSettingTitle.dynamicTexture.canvas.height = 256;
 		 GameSettingTitle.position.set(0,yShifter+15,-1);
-		 GameSettingTitle.scale.set(15,12,1);
+		 GameSettingTitle.scale.set(16,8,1);
 		 GameSettingTitle.parameters.lineHeight=0.6;
 		 GameSettingTitle.update();
 		 GameSettingTitle.displayType = "Button";
@@ -3345,7 +3348,7 @@ function init() {
 		 var lastManStanding = new THREEx.DynamicText2DObject();
 		 lastManStanding.parameters.text= "Last Man Standing";
 		 lastManStanding.parameters.font= "105px Arial";
-		 lastManStanding.parameters.fillStyle= "#FFFFFF";
+		 lastManStanding.parameters.fillStyle= "Crimson";
 		 lastManStanding.parameters.align = "center";
 		 lastManStanding.dynamicTexture.canvas.width = 1024;
 		 lastManStanding.dynamicTexture.canvas.height = 128;
@@ -3382,7 +3385,7 @@ function init() {
 		 var noFruits = new THREEx.DynamicText2DObject();
 		 noFruits.parameters.text= "No Fruits";
 		 noFruits.parameters.font= "105px Arial";
-		 noFruits.parameters.fillStyle= "#FFFFFF";
+		 noFruits.parameters.fillStyle= "Indigo";
 		 noFruits.parameters.align = "center";
 		 noFruits.dynamicTexture.canvas.width = 512;
 		 noFruits.dynamicTexture.canvas.height = 128;
@@ -3420,7 +3423,7 @@ function init() {
 		 var moreFruits = new THREEx.DynamicText2DObject();
 		 moreFruits.parameters.text= "More Fruits";
 		 moreFruits.parameters.font= "115px Arial";
-		 moreFruits.parameters.fillStyle= "#FFFFFF";
+		 moreFruits.parameters.fillStyle= "Indigo";
 		 moreFruits.parameters.align = "center";
 		 moreFruits.dynamicTexture.canvas.width = 1024;
 		 moreFruits.dynamicTexture.canvas.height = 128;
@@ -3457,7 +3460,7 @@ function init() {
 		 var moreBadFruits = new THREEx.DynamicText2DObject();
 		 moreBadFruits.parameters.text= "More Bad Fruits";
 		 moreBadFruits.parameters.font= "115px Arial";
-		 moreBadFruits.parameters.fillStyle= "#FFFFFF";
+		 moreBadFruits.parameters.fillStyle= "Midnightblue";
 		 moreBadFruits.parameters.align = "center";
 		 moreBadFruits.dynamicTexture.canvas.width = 1024;
 		 moreBadFruits.dynamicTexture.canvas.height = 128;
@@ -3498,7 +3501,7 @@ function init() {
 		 moreGoodFruits = new THREEx.DynamicText2DObject();
 		 moreGoodFruits.parameters.text= "More Good Fruits";
 		 moreGoodFruits.parameters.font= "115px Arial";
-		 moreGoodFruits.parameters.fillStyle= "#FFFFFF";
+		 moreGoodFruits.parameters.fillStyle= "Midnightblue";
 		 moreGoodFruits.parameters.align = "center";
 		 moreGoodFruits.dynamicTexture.canvas.width = 1024;
 		 moreGoodFruits.dynamicTexture.canvas.height = 128;
