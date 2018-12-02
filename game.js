@@ -24,7 +24,7 @@ var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE 
 var NorthButton, SouthButton, EastButton, WestButton;
 var pelletTexture, appleTexture, bananaTexture, cherryTexture, orangeTexture, pearTexture, pretzelTexture, strawberryTexture, grapeTexture;
 //For the Waiting Screen
-var waitingText=[];
+var waitingText=[], countDown;
 
 function init() {
 	 // create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -75,11 +75,12 @@ function init() {
 	
 	 //CountDown
 	 PacMania.on('Countdown', function(data){
-		 waitingText[0].parameters.text= data.Count+"";
-		 waitingText[0].update();
+		 //Update the Countdown
+		 countDown.parameters.text= data.Count+"";
+		 countDown.update();
 	 });
 	
-	//CountDown
+	//Set up the Board
 	 PacMania.on('Setup Board', function(data){
 		 //Load the Text and the Board
 		 load_Text();
@@ -544,7 +545,7 @@ function init() {
 	 loadPac();
 	 loadItems();
 	 load_Display_Pictures();
-	 preset_Waiting_Screen();
+	 preset_Game_Settings_Screen();
 	
 	 //Render the Scenes
 	 function renderScene(){
@@ -565,7 +566,7 @@ function init() {
 																			 if (event.object == startButton && startButton.visble == true){
 																				
 																				 PacMania.emit('Start Countdown');
-																				 load_Wait_Screen();
+																				 //load_Wait_Screen();
 
 																				 //Rescale and Reposition the Title
 																				 Title1.position.set(0,22.95,-2);
@@ -576,6 +577,7 @@ function init() {
 																				 removeButton(howToPlayButton);
 																				 removeButton(creditButton);
 																				 removeButton(aboutButton);
+																				 removeButton(gsButton);
 																				 
 																				 Game_Status = "Waiting";
 																			 }
@@ -649,6 +651,9 @@ function init() {
 																				  bgButton.position.set(bgButton.posX, bgButton.posY, bgButton.posZ);
 																				  tempGhost.material = BlinkyTexture[5];
 																				  tempFruit.material = appleTexture;
+																			 }
+																			 else if (event.object == gsButton){
+																				 load_Game_Settings_Screen();
 																			 }
 																			 else if (event.object == joinButton && joinButton.visble == true){
 																				 PacMania.emit('Add Player');
@@ -2241,6 +2246,33 @@ function init() {
 		 sourceLinkButton.visble = true;
 		 sourceLinkButton.url = null;
 		 sourceLinkButton.name = "sourceLinkButton";
+		 
+		 //countDown
+		 countDown = new THREEx.DynamicText2DObject();
+		 countDown.parameters.text= "15.0";
+		 countDown.parameters.font= "125px Arial";
+		 countDown.parameters.fillStyle= "Green";
+		 countDown.parameters.align = "center";
+		 countDown.dynamicTexture.canvas.width = 512;
+		 countDown.dynamicTexture.canvas.height = 256;
+		 countDown.position.set(0,yShifter+15,-1);
+		 countDown.scale.set(20,15,1);
+		 countDown.parameters.lineHeight=0.6;
+		 countDown.update();
+		 countDown.displayType = "Button";
+		 countDown.name = "countDown";
+		 
+		 //Game Settings Button
+		 T = loader.load( 'Images/additionalGameSettings.png' );
+		 T.minFilter = THREE.LinearFilter;
+		 var T1 =  new THREE.SpriteMaterial( { map: T, color: 0xffffff } );
+		 gsButton = new THREE.Sprite(T1);	
+		 gsButton.posX = 17.5;
+		 gsButton.posY =  -22.95;
+		 gsButton.posZ = -2;
+		 gsButton.position.set(gsButton.posX, gsButton.posY, gsButton.posZ);
+		 gsButton.scale.set(14,5,1);		  
+		 gsButton.name = "gsButton";
 	 }
 
 	 //Upload Game Maze 1
@@ -3157,7 +3189,10 @@ function init() {
 		 addButton(creditButton);
 		 
 		 //How To Play Button
-		 addButton(howToPlayButton);	
+		 addButton(howToPlayButton);
+
+		 //Game Settings Button
+		 addButton(gsButton);
 		 
 		 //BackgroundButton
 		 if(scene.getObjectByName('bgButton') == null)
@@ -3179,8 +3214,22 @@ function init() {
 		 }
 	 }
 	 
-	 //Loads the Waiting Screen of the Game
-	 function load_Wait_Screen(){
+     //Remove the Start, Credit, About, How To Play and Sprites Texture Button from the Scene and from the DragControls
+	 function remove_Start_Screen(){
+		 removeButton(startButton);
+		 removeButton(howToPlayButton);
+		 removeButton(creditButton);
+		 removeButton(aboutButton);
+		 removeButton(gsButton);
+		 removeButton(bgButton);
+		 scene.remove(tempGhost);
+		 scene.remove(tempFruit);		 
+	 }
+	
+	 //Loads the Game Settings Screen of the Game
+	 function load_Game_Settings_Screen(){
+		 remove_Start_Screen();
+		 
 		 waitingText[0].parameters.text= "15";
 		 waitingText[0].update();
 		 
@@ -3229,28 +3278,34 @@ function init() {
 				 (length - 1) - HighLights for the 'Types of Fruits'
 			 **/
 		}
+	
+		  //Add the Return Button
+		 addButton(returnButton);
+		 //Adjust the Title
+		 Title1.position.set(0,20.95,-2); 
+		 Game_Status="Game Settings";	
 	 }
 	 
-	 //Pre-Sets the Text for the Waiting Screen
-	 function preset_Waiting_Screen(){
+	 //Pre-Sets the Text for the Game Settings Screen
+	 function preset_Game_Settings_Screen(){
 		 waitingText = [];
 		 
-		 //countDown
-		 var countDown = new THREEx.DynamicText2DObject();
-		 countDown.parameters.text= "15.0";
-		 countDown.parameters.font= "125px Arial";
-		 countDown.parameters.fillStyle= "Green";
-		 countDown.parameters.align = "center";
-		 countDown.dynamicTexture.canvas.width = 512;
-		 countDown.dynamicTexture.canvas.height = 256;
-		 countDown.position.set(0,yShifter+15,-1);
-		 countDown.scale.set(20,15,1);
-		 countDown.parameters.lineHeight=0.6;
-		 countDown.update();
-		 countDown.displayType = "Button";
-		 countDown.name = "countDown";
-		 waitingText.push(countDown)
-		 //scene.add(countDown);		 
+		 //GameSettingTitle
+		 var GameSettingTitle = new THREEx.DynamicText2DObject();
+		 GameSettingTitle.parameters.text= "...";
+		 GameSettingTitle.parameters.font= "125px Arial";
+		 GameSettingTitle.parameters.fillStyle= "Green";
+		 GameSettingTitle.parameters.align = "center";
+		 GameSettingTitle.dynamicTexture.canvas.width = 512;
+		 GameSettingTitle.dynamicTexture.canvas.height = 256;
+		 GameSettingTitle.position.set(0,yShifter+15,-1);
+		 GameSettingTitle.scale.set(20,15,1);
+		 GameSettingTitle.parameters.lineHeight=0.6;
+		 GameSettingTitle.update();
+		 GameSettingTitle.displayType = "Button";
+		 GameSettingTitle.name = "GameSettingTitle";
+		 waitingText.push(GameSettingTitle)
+		 //scene.add(GameSettingTitle);		 
 		 
 		 var roundOne = yShifter+5.5;		 
 		 //typeOfGame
@@ -3488,14 +3543,7 @@ function init() {
 	 
 	 //Loads the About Page of the Game
 	 function load_About_Screen(){
-		 //Temporarily remove the Start, Credit, About and How to Play Buttons
-		 removeButton(startButton);
-		 removeButton(howToPlayButton);
-		 removeButton(creditButton);
-		 removeButton(aboutButton);
-		 removeButton(bgButton);
-		 scene.remove(tempGhost);
-		 scene.remove(tempFruit);
+		 remove_Start_Screen();
 		 
 		 //Adjust the Section Title and then add it to the scene
 		 titleSectionText.parameters.text= "About:";
@@ -3532,14 +3580,7 @@ function init() {
 	 
 	 //Loads the How To Play Page of the Game
 	 function load_How_to_Play_Screen(){
-		 //Temporarily remove the Start, Credit, About and How to Play Buttons
-		 removeButton(startButton);
-		 removeButton(howToPlayButton);
-		 removeButton(creditButton);
-		 removeButton(aboutButton);
-		 removeButton(bgButton);
-		 scene.remove(tempGhost);
-		 scene.remove(tempFruit);
+		 remove_Start_Screen();
 		 
 		 //Scene Number Reset
 		 sceneNumber = 0;
@@ -3591,14 +3632,7 @@ function init() {
 	  
 	 //Loads the Credit Page of the Game
 	 function load_Credit_Screen(){
-		 //Temporarily remove the Start, Credit, About and How to Play Buttons
-		 removeButton(startButton);
-		 removeButton(howToPlayButton);
-		 removeButton(creditButton);
-		 removeButton(aboutButton);
-		 removeButton(bgButton);
-		 scene.remove(tempGhost);
-		 scene.remove(tempFruit);
+		 remove_Start_Screen();
 		 
 		 //Scene Number Reset
 		 sceneNumber = 0;		 
@@ -3687,6 +3721,7 @@ function init() {
 		 addButton(howToPlayButton);
 		 addButton(creditButton);
 		 addButton(aboutButton);
+		 addButton(gsButton);
 		 addButton(bgButton);
 		 scene.add(tempGhost);
 		 scene.add(tempFruit);		 
