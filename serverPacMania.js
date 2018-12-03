@@ -83,7 +83,7 @@ var PacMania = io.of('/pacMania'), PacSocketList=[];
 var ghostsArray = [], pacArray = [], pacItems = [];
 var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumber =21; //ghostRandomModeGeneratorNumber gets low and make the ghost more aggressive (default is 21)
 var mapNodes = [],nodesList, gameRender = null, step=0;
-var ghostCreationCountDown = 5, ghostCreationList=[];
+var ghostCreationCountDown = 2, ghostCreationList=[];
 var pacGuidedTesting = [], rowSections = [], stepCounter=0;
 var pacManiaCountDown = 10, countDownInterval=null;
 var pacManiaGameSetting =[];
@@ -160,7 +160,7 @@ PacMania.on('connection',function(socket){
 				 pacManiaGameSetting[0].fruitsOccurance = data.fruitOccurance;				 
 			 }
 			 else if(data.fruitOccurance == "Usual Amount"){
-				 pacManiaGameSetting[0].fruitsOccuranceOdds = 35;
+				 pacManiaGameSetting[0].fruitsOccuranceOdds = 40;
 				 pacManiaGameSetting[0].fruitsOccurance = data.fruitOccurance;				 
 			 }
 			 else if(data.fruitOccurance == "More Fruits"){
@@ -286,6 +286,12 @@ PacMania.on('connection',function(socket){
 			 gameRender = setInterval( UpdateGameState, 20);
 			 stepCounter=0;
 			 
+			 //If there's only one player change the Game type to endless
+			 if(pacArray.length==1)
+				 pacManiaGameSetting[0].typeofGame = "Endless";
+			 
+			 //Add Pellets to the gameboard-----------------------------
+			 fillWithPacItems();
 			 //-------------------- Print out the Game Settings
 			 console.log("---------------------------------------------------------");
 			 console.log(pacManiaGameSetting[0].typeofGame);
@@ -295,13 +301,7 @@ PacMania.on('connection',function(socket){
 		 }
 		 else if(pacManiaCountDown == 2){
 			 
-			  //Add Pellets to the gameboard
-			 for(var pelletAdditions = 0; pelletAdditions <15; pelletAdditions++){
-				 var first = Math.floor(Math.random()*115);
-				 var second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
-				 
-				 addPacItems(first,second);
-			 }
+			  
 		 
 			 
 		 }
@@ -983,13 +983,14 @@ PacMania.on('connection',function(socket){
 		 }
 		 
 		 //Broadcast the updated Game State
-		 PacMania.emit('Update Game State', data={	 GhostList : ghostsArray, PacList : pacArray, Pellet: pacItems	 });
+		 PacMania.emit('Update Game State', data={ GhostList : ghostsArray, PacList : pacArray, Pellet: pacItems	 });
 		 
 		 ghostStatusUpdate();
 		 
 		 //Hard Code Set not to replenish items until there's less than 3 items left!!!! lol I might be evil for this but it makes it more fun!!!
 		 if(pacItems.length < 3){
-		
+			 fillWithPacItems();
+			 /**
 			 var creationList = [ ];
 			 //Add the remaing leftovers into the creationList 
 			 for(var x = 0; x< pacItems.length; x++){
@@ -1021,6 +1022,7 @@ PacMania.on('connection',function(socket){
 				 else
 					 pelletAdditions--;
 			}
+			**/
 		 }
 	
 		 //If Game Over
@@ -1178,6 +1180,7 @@ PacMania.on('connection',function(socket){
 		 var p = {
 			 //PAC-MAN Object
 			 id:socket,
+			 playerID: pacArray.length,
 			 x : -8,
 			 y : -6,
 			 speed: 1.1,
@@ -1198,7 +1201,37 @@ PacMania.on('connection',function(socket){
 			 survivalTime:null,
 			 title: null
 		 };
-		
+		 
+		 //Pre-setting Players Locations!!
+		 //P1 - Default Properties
+		 if(pacArray.length == 1){ //P2
+			 p.x = 7;
+			 p.y = -6;
+			 p.lastNode = 95;
+			 p.nextNode = 94;
+			 p.oldNode = -1;
+			 p.direction = 'West';
+			 p.intendedDirection = 'North';
+		 }
+		 else if(pacArray.length == 2){ //P3
+			 p.x = -8;
+			 p.y = 6;
+			 p.lastNode = 25;
+			 p.nextNode = 26;
+			 p.oldNode = -1;
+			 p.direction = 'East';
+			 p.intendedDirection = 'South';			 
+		 }
+		 if(pacArray.length == 3){ //P4
+			 p.x = 9;
+			 p.y = 6;
+			 p.lastNode = 23;
+			 p.nextNode = 22;
+			 p.oldNode = -1;
+			 p.direction = 'West';
+			 p.intendedDirection = 'South';
+		 }		 
+		 
 		 pacArray.push (	p	); 
 	 }
 
@@ -1309,6 +1342,42 @@ PacMania.on('connection',function(socket){
 		 //console.log("Pellets Size:"+pellets.length);
 	 }
 	  
+	 function fillWithPacItems(){
+		 var creationList = [ ];
+			 //Add the remaing leftovers (if any) into the creationList 
+			 for(var x = 0; x< pacItems.length; x++){
+				 var leftOvers = {first:pacItems[x].first, second:pacItems[x].second};
+				 creationList.push (leftOvers);
+			 }
+			
+			 for(var pelletAdditions = 0; pelletAdditions < (Math.floor( Math.random()*18)+10); pelletAdditions++){
+				 var addPellets = true;
+				 var first = Math.floor(Math.random()*115), second =-1;
+				 
+				 while(first == -1 || first == 31 || first == 35 || first == 91 || first == 84){
+					 first = Math.floor(Math.random()*115);
+				 }
+				 
+				 while(second == -1 || second == 31 || second == 35 || second == 91 || second == 84)
+					 second = mapNodes[first].Connectednodes[ Math.floor( Math.random()*mapNodes[ first ].Connectednodes.length ) ];
+				 
+				 var pel = {first:first, second:second};
+				 creationList.push (pel);
+				 
+				 for(var x = 0; creationList != undefined && x < creationList.length-1 && addPellets; x++)
+					 if((creationList[x].first == first && creationList[x].second == second) || (creationList[x].first == second && creationList[x].second == first)){
+						 addPellets = false;
+						 creationList.splice(creationList.length-1,1);
+					 }
+					
+				 if(addPellets)
+					 addPacItems(first,second);
+				 else
+					 pelletAdditions--;
+			}
+		 
+	 }
+	  
 	 //Randomly Select Fruit for Insertion
 	 function fruitSelection( fruit ){
 		 //Fruits are split into 3 categories
@@ -1416,6 +1485,29 @@ PacMania.on('connection',function(socket){
 					 Pac.speed = 1.5;
 					 Pac.effectTime = 375;
 					 Pac.fruitEffect = "Drunk";
+				 }
+				 else if(pacItems[pel].type == "Strawberry"){
+					 ghostsStatus = "Chase";
+					 Pac.fruitEffect = "Strawberry";
+					 ghostsCountDown = 1250;
+					 
+					 
+					 //Change All the Ghost Targets..... 50~66% will attack the person who at the strawberry!!!
+					 for(var ghostNo = 0; ghostNo < ghostsArray.length; ghostNo++){
+						 var randNumber = Math.ceil(Math.random()*pacArray.length*1.5);
+					 
+						 //Additionally if the randomNode is equal to or greater than the pacArray,length then this Pac is targeted as well
+						 /** For an explanation lets use Player 1 with the index 0.
+							 If there is two people playing then: ceiling(2*1.5) = 3 --> so if the number 0 or 2 then chase P1 (2/3 of being chased)
+							 If there is three people playing then:  ceiling(3*1.5) = 5 --> so if the number 0 or 3,4 then chase P1 (3/5 of being chased)
+							 If there is four people playing then:  ceiling(4*1.5) = 6 --> so if the number 0 or 4,5 then chase P1 (1/2 of being chased)
+						 **/
+						 if(randNumber>=pacArray.length)
+							 randNumber = Pac.playerID;
+						 
+						 ghostsArray[ghostNo].targetPlayer = randNumber;
+					 }
+					 
 				 }
 				 else if(pacItems[pel].type == "Super Pellet"){
 					 Pac.speed = 1.25;
@@ -1583,22 +1675,16 @@ PacMania.on('connection',function(socket){
 			 }
 			 else if(ghostsStatus == "Scatter"){
 				 ghostsCountDown = 250+Math.floor(Math.random()*350);
-			 
-				 //Count Down to Ghost Creation
-				 if(ghostsArray.length <= 2)
-					 ghostCreationCountDown = 0;
-				 else if(ghostsArray.length <= 4)
-					 ghostCreationCountDown -= 2;
-				 else if(ghostsArray.length <= 8)
-					 ghostCreationCountDown--;
-			 
-			 
+				 
+				 ghostCreationCountDown--;
+					
+				 //When this hits zero Add a random ghost into the mix
 				  if(ghostCreationCountDown <= 0){
 					 addGhost("Random");
-					 ghostCreationCountDown = Math.floor(Math.random()*6)+3;
+					 ghostCreationCountDown = Math.floor(Math.random()*4)+3;
 					 console.log("A Ghost Appeared!!! ("+ghostsArray[ghostsArray.length-1].type+")");
 					 
-					 if(ghostCreationList.length<=2){
+					 if(ghostCreationList.length<=1){
 						 ghostCreationList.push("Blinky");
 						 ghostCreationList.push("Blinky");
 						 ghostCreationList.push("Pinky");
@@ -2529,7 +2615,7 @@ PacMania.on('connection',function(socket){
 		 clearInterval(countDownInterval);
 		 countDownInterval = null;
 		 ghostsArray = [];
-		 ghostCreationCountDown = 4;
+		 ghostCreationCountDown = 2;
 		 ghostCreationList=[];
 		 ghostsStatus = "Scatter";
 		 ghostsCountDown=200;

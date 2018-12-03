@@ -15,7 +15,7 @@ var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
 var bgButton, tempGhost, tempFruit, startButton, backgroundState = 'Original', joinButton; //Background functions
 var gameOver,king, winner,fallenKing,sorry, playAgainButton;
 var aboutButton, howToPlayButton, creditButton, closeButton, titleSectionText, returnButton, textBox, displayBox, displayArray=[];
-var creditDisplayArray = [], sourceLinkButton, rightArrowButton, leftArrowButton, sceneNumber=0, htpTextArray =[];
+var creditDisplayArray = [], sourceLinkButton, rightArrowButton, leftArrowButton, sceneNumber=0, htpTextArray =[], aboutText = "...";
 var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [], DeadGhostTexture=[];
 var PlayerTexture=[], resultsTitle;
 var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture = [];
@@ -26,6 +26,9 @@ var pelletTexture, appleTexture, bananaTexture, cherryTexture, orangeTexture, pe
 //For the Waiting Screen
 var gameSettingsOptions=[], countDown;
 //For the Game Settings
+
+//For the Controllers
+var controllerDirection = "";
 
 function init() {
 	 // create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -53,9 +56,12 @@ function init() {
 	 }
 	 **/
 	 Width = window.innerWidth*0.75;
-	 Height = Width * 1.2;
-	 if(Height > window.innerHeight*.8)
-		 Height = window.innerHeight*.8;
+		 Height = Width * 1.2;
+		 if(Height > window.innerHeight*.8){
+			 Height = window.innerHeight*.81;
+			 Width = window.innerHeight*0.75;
+		 }
+	
 	
 	 renderer.setSize(Width, Height);
 	 camera.aspect = window.innerWidth/window.innerHeight;
@@ -514,6 +520,126 @@ function init() {
 	 window.addEventListener('resize', onWindowResize, false);
 	 //https://stackoverflow.com/questions/20290402/three-js-resizing-canvas?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
 	  
+	 //Game Controller
+	 var gamepad = new Gamepad();
+		
+	 gamepad.bind(Gamepad.Event.CONNECTED, function(device) {
+		 // a new gamepad connected
+		 console.log("connected");
+	 });
+	
+	 gamepad.bind(Gamepad.Event.DISCONNECTED, function(device) {
+		 // gamepad disconnected
+	 });
+
+	 gamepad.bind(Gamepad.Event.UNSUPPORTED, function(device) {
+		 // an unsupported gamepad connected (add new mapping)
+	 });
+
+	 gamepad.bind(Gamepad.Event.BUTTON_DOWN, function(e) {
+		 // e.control of gamepad e.gamepad pressed down
+		 if(e.control == "DPAD_UP" && controllerDirection != "North"){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "North";
+				 var data = { direction: "North"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+		 else if(e.control == "DPAD_RIGHT" && controllerDirection != "East"){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "East";
+				 var data = { direction: "East"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+		 else if(e.control == "DPAD_DOWN" && controllerDirection != "South"){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "South";
+				 var data = { direction: "South"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+		 else if(e.control == "DPAD_LEFT" && controllerDirection != "West"){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "West";
+				 var data = { direction: "West"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+	 });
+	 
+	 gamepad.bind(Gamepad.Event.AXIS_CHANGED, function(e) {
+		 // e.axis changed to value e.value for gamepad e.gamepad
+		
+		 if(e.axis == "LEFT_STICK_X" && e.value == -1 && controllerDirection != "West"){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "West";
+				 var data = { direction: "West"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+		 else if(e.axis == "LEFT_STICK_X" && e.value == 1  && controllerDirection != "East"){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "East";
+				 var data = { direction: "East"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+		 else if(e.axis == "LEFT_STICK_Y" && e.value == -1  && controllerDirection != "North"){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "North";
+				 var data = { direction: "North"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+		 else if(e.axis == "LEFT_STICK_Y" && e.value == 1  && controllerDirection != "South"){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "South";
+				 var data = { direction: "South"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+		 else if(e.axis == "RIGHT_STICK_X" && e.value == -1){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "West";
+				 var data = { direction: "West"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+		 else if(e.axis == "RIGHT_STICK_X" && e.value == 1){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "East";
+				 var data = { direction: "East"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+		 else if(e.axis == "RIGHT_STICK_Y" && e.value == -1){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "North";
+				 var data = { direction: "North"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+		 else if(e.axis == "RIGHT_STICK_Y" && e.value == 1){
+			 if(Game_Status == "Active"){
+				 controllerDirection = "South";
+				 var data = { direction: "South"  };
+				 PacMania.emit('Move',data);				 
+			 }
+		 }
+	 });
+
+	 gamepad.bind(Gamepad.Event.TICK, function(gamepads) {
+		 // gamepads were updated (around 60 times a second)
+	 });
+	
+	 if (!gamepad.init()) {
+		 // Your browser does not support gamepads, get the latest Google Chrome or Firefox
+		console.log("no no no ");
+	 }
+	 else
+		 console.log("YES! ");
+	  
 	 //add the output of the renderer to the html element
 	 var displayCanvas = document.getElementById("WebGL-output").appendChild(renderer.domElement);
 	 var context = renderer.getContext('2d');
@@ -573,6 +699,7 @@ function init() {
 																				 removeButton(gsButton);
 																				 
 																				 Game_Status = "Waiting";
+																				 controllerDirection = "";
 																			 }
 																			 else if (event.object == bgButton){
 																				 if(backgroundState == "Original"){
@@ -3581,17 +3708,22 @@ function init() {
 		 titleSectionText.update();
 		 scene.add(titleSectionText);
 		 
-		 textBox.parameters.text= " Pac-Mania is my final project for the university that I graduated from. The foundation of this game is based on Namco's 'Pac-man Battle Royale' game. I had already decided that for my final project to create an online multi-player game for my friends to enjoy. Then after visiting Barcade in Downtown New Haven, I decided that Pac-man would be the basis for my project. However, I didn't want to simply recreate the classic Pac-man game, I wanted to put my own twist and style in the game. My own madness per se. So please enjoy this game of madness, chaos and ghosts frenzy... Pac-Mania.";
-		 textBox.parameters.font= "115px Arial";
+		 //textBox.parameters.text= " Pac-Mania is my final project for the university that I graduated from. The foundation of this game is based on Namco's 'Pac-man Battle Royale' game. I had already decided that for my final project to create an online multi-player game for my friends to enjoy. Then after visiting Barcade in Downtown New Haven, I decided that Pac-man would be the basis for my project. However, I didn't want to simply recreate the classic Pac-man game, I wanted to put my own twist and style in the game. My own madness per se. So please enjoy this game of madness, chaos and ghosts frenzy... Pac-Mania.";
+		 textBox.parameters.text= aboutText;
+		 textBox.parameters.font= "175px Helvetica";
 		 textBox.parameters.fillStyle= "#FF44c3";
-		 textBox.position.set(0,-6,5);		 		 
+		// textBox.parameters.fillStyle= "lightpink";
+		 textBox.position.set(0,-4.5,-2);		 		 
 		 textBox.material.shininess=10;
-		 textBox.parameters.lineHeight=0.105;
+		 //textBox.parameters.lineHeight=0.105;
+		 textBox.parameters.lineHeight=0.065;
 		 textBox.dynamicTexture.context.lineWidth=2.75;
 		 textBox.dynamicTexture.canvas.width = 4096;
+		 textBox.dynamicTexture.canvas.height = 4096;
 		 textBox.dynamicTexture.context.miterLimit=25;
+		 //textBox.parameters.lineHeight=0.8;
 		 textBox.parameters.margin=0.05;
-		 textBox.scale.set(42,21,1);
+		 textBox.scale.set(50,36,1);
 		 textBox.dynamicTexture.texture.wrapS = 1000;
 		 textBox.dynamicTexture.texture.wrapT = 1000;
 		 textBox.update();
@@ -3637,6 +3769,7 @@ function init() {
 		 textBox.parameters.lineHeight=0.15;
 		 textBox.dynamicTexture.context.lineWidth=2.5;
 		 textBox.dynamicTexture.canvas.width = 4096;
+		 textBox.dynamicTexture.canvas.height = 1024;
 		 textBox.dynamicTexture.context.miterLimit=25;
 		 textBox.parameters.margin=0.05;
 		 textBox.scale.set(45,15,1);
@@ -3689,8 +3822,12 @@ function init() {
 		 textBox.parameters.lineHeight=0.15;
 		 textBox.dynamicTexture.context.lineWidth=2.5;
 		 textBox.dynamicTexture.canvas.width = 4096;
+		 textBox.dynamicTexture.canvas.height = 1024;
 		 textBox.dynamicTexture.context.miterLimit=25;
 		 textBox.parameters.margin=0.05;
+		 
+		 
+		 
 		 textBox.scale.set(45,15,1);
 		 textBox.update();
 		 scene.add(textBox);
@@ -3769,6 +3906,19 @@ function init() {
 		 var loader = new THREE.TextureLoader();
 		 loader.crossOrigin = true;
 		 //---------- About --------------------------
+		 
+		 jQuery.get("About.txt", undefined, function(data) {
+			 //Prints the full data
+			 //console.log(data);
+			 aboutText = data;
+			 
+			 }, "html").done(function() {
+				 console.log("second success");
+			 }).fail(function(jqXHR, textStatus) {
+				 console.log(textStatus);
+			 }).always(function() {
+				 console.log("finished");
+		 });
 		 
 		 
 		 //---------- Credit --------------------------
@@ -3877,7 +4027,15 @@ function init() {
 		 //Upload the sorry Texture while I'm at it
 		 sorry =  new THREE.Sprite(pic);		
 		 sorry.name =  "Sorry... maybe next time";
-		 
+		 //xBox Controller
+		 var texture = loader.load( 'Images/Xbox-360-S-Controller.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 pic.text = "Got the image of the xBox controller from Wikipedia.";
+		 pic.url = "https://en.wikipedia.org/wiki/Xbox_360_controller";
+		 pic.scalingX = 18;
+		 pic.scalingY = 20;
+		 creditDisplayArray.push(pic);
 		 
 		 //---------- How To Play -----------------
 		 //Source: https://stackoverflow.com/questions/196498/how-do-i-load-the-contents-of-a-text-file-into-a-javascript-variable
@@ -3900,6 +4058,14 @@ function init() {
 		 htpTextArray.push(htp);
 		 //Controls Option 4
 		 texture = loader.load( 'Images/Controls4.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 htp.text =  "Didn't Load....";
+		 htp.scalingX = 20;
+		 htp.scalingY = 20;
+		 htpTextArray.push(htp);
+		 //Controls Option 5
+		 texture = loader.load( 'Images/Xbox-360-S-Controller.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 var htp = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
 		 htp.text =  "Didn't Load....";
