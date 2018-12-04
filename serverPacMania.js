@@ -85,7 +85,7 @@ var ghostsStatus = "Scatter", ghostsCountDown=200, ghostRandomModeGeneratorNumbe
 var mapNodes = [],nodesList, gameRender = null, step=0;
 var ghostCreationCountDown = 2, ghostCreationList=[];
 var pacGuidedTesting = [], rowSections = [], stepCounter=0;
-var pacManiaCountDown = 10, countDownInterval=null;
+var pacManiaCountDown = 1, countDownInterval=null;
 var pacManiaGameSetting =[];
 
 PacMania.on('connection',function(socket){
@@ -100,13 +100,14 @@ PacMania.on('connection',function(socket){
 		 addPac(socket.id);
 		 
 		 if(gameRender == null && countDownInterval == null){
-			 pacManiaCountDown = 10;
+			 pacManiaCountDown = 1;
 			 countDownInterval = setInterval( CountDown, 1000);
 			 console.log("Started the Countdown @ "+(new Date().toLocaleTimeString()));
 			 //Presetting the Game Settings 
 			 pacManiaGameSetting = [];
 			 
 			 var gameData ={
+				 maze : 1, 
 				 typeofGame : "Endless", 
 				 fruitsOccurance : "Usual Amount", 
 				 //fruitsOccuranceOdds: 35,
@@ -274,13 +275,12 @@ PacMania.on('connection',function(socket){
 		 
 		 //Broadcast the updated Game State
 		 pacManiaCountDown = Math.floor(pacManiaCountDown - 1);
-		 PacMania.emit('Countdown', data={	 Count : pacManiaCountDown});		
 			 
 		 //Stop the Count Down
 		 if(pacManiaCountDown <= 0){
 			 clearInterval(countDownInterval);
 			 countDownInterval = null;
-			 pacManiaCountDown = 10;
+			 pacManiaCountDown = 1;
 			 console.log("Started the Game State @ "+(new Date().toLocaleTimeString()));
 			 //gameRender = setInterval( UpdateGameState, 35);
 			 gameRender = setInterval( UpdateGameState, 20);
@@ -298,12 +298,6 @@ PacMania.on('connection',function(socket){
 			 console.log(pacManiaGameSetting[0].fruitsOccurance);
 			 console.log(pacManiaGameSetting[0].typeofFruits);			 
 			 PacMania.emit('Setup Board', data={ Maze : 1});	
-		 }
-		 else if(pacManiaCountDown == 2){
-			 
-			  
-		 
-			 
 		 }
 		 
 	 }
@@ -403,10 +397,10 @@ PacMania.on('connection',function(socket){
 					 if(ghostsArray[ghostCount].status == "Dead"){
 						 // Proceed to the next path
 						 ghostsArray[ghostCount].nextNode = ghostsArray[ghostCount].returnPath.shift();
-						 if(ghostsArray[ghostCount].returnPath.length <=0){
+						 //Returns to Normal
+						 if(ghostsArray[ghostCount].returnPath.length <=0 && ghostsArray[ghostCount].nextNode == 50)
 							 ghostsArray[ghostCount].status = null;
-							 
-						 }
+						 
 					 }
 					 else if(ghostsStatus == "Scatter"){
 						 if(ghostsArray[ghostCount].returnPath.length > 0 )
@@ -1449,10 +1443,18 @@ PacMania.on('connection',function(socket){
 				 if(ghostsArray[ghostNo].status != "Dead" && Pac.fruitEffect == "Super PAC-MAN"){
 					 ghostsArray[ghostNo].status = "Dead";
 					 Pac.score += 200;
-					 //Ghost will run to graveyard
+					 //Ghost will run to Graveyard
 					 ghostsArray[ghostNo].returnPath = loadAstarNode(ghostsArray[ghostNo].oldNode, ghostsArray[ghostNo].lastNode ,50);
-					 ghostsArray[ghostNo].returnPath.push(128);
-					 ghostsArray[ghostNo].returnPath.push(125);
+					 
+					 //In case the Ghost was killed too close to the Graveyard
+					 if(ghostsArray[ghostNo].returnPath.length <= 5){
+						 ghostsArray[ghostNo].returnPath = [];
+						 ghostsArray[ghostNo].returnPath = loadAstarNode(ghostsArray[ghostNo].oldNode, ghostsArray[ghostNo].lastNode ,ghostsArray[ghostNo].home);
+						 ghostsArray[ghostNo].returnPath = loadAstarNode(ghostsArray[ghostNo].returnPath[ghostsArray[ghostNo].returnPath.length-2], ghostsArray[ghostNo].returnPath[ghostsArray[ghostNo].returnPath.length-1] ,50);
+					 }
+					 
+					 //To give it a minute to comeback
+					 ghostsArray[ghostNo].returnPath.push(127);
 				 }
 				 else if(ghostsArray[ghostNo].status != "Dead"){
 					 Pac.status = "Dead";
@@ -1681,7 +1683,7 @@ PacMania.on('connection',function(socket){
 				 //When this hits zero Add a random ghost into the mix
 				  if(ghostCreationCountDown <= 0){
 					 addGhost("Random");
-					 ghostCreationCountDown = Math.floor(Math.random()*4)+3;
+					 ghostCreationCountDown = Math.floor(Math.random()*3)+1;
 					 console.log("A Ghost Appeared!!! ("+ghostsArray[ghostsArray.length-1].type+")");
 					 
 					 if(ghostCreationList.length<=1){

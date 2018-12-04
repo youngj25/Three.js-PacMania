@@ -80,15 +80,6 @@ function init() {
 	 socket = io.connect('http://localhost:9000');
 	 //socket = io.connect('ec2-34-205-146-82.compute-1.amazonaws.com:9000');
 	
-	 //CountDown
-	 PacMania.on('Countdown', function(data){
-		 if(Game_Status == "Waiting"){
-			 //Update the Countdown
-			 countDown.parameters.text= "Count Down: "+data.Count;
-			 countDown.update();
-		 }
-	 });
-	
 	 //Set up the Board
 	 PacMania.on('Setup Board', function(data){
 		 if(Game_Status == "Waiting"){
@@ -100,14 +91,16 @@ function init() {
 			 //Addition of the Screen Bottoms and Background Button
 			 load_Touch_Screen_Controls();
 			 
-			 countDown.parameters.text= "Count Down: 10";
-			 countDown.update();
 			 scene.remove(countDown);
 			 scene.remove(tempGhost);
 			 scene.remove(tempFruit);
 			 
-			 if(data.Maze == 1)
-				 load_Game_Maze_1();
+			load_Maze();
+			
+				 /**
+					 color scheme should go here!!
+				 **/
+
 		 }
 	 });
 	 	
@@ -640,8 +633,6 @@ function init() {
 		 // Your browser does not support gamepads, get the latest Google Chrome or Firefox
 		console.log("no no no ");
 	 }
-	 else
-		 console.log("YES! ");
 	  
 	 //add the output of the renderer to the html element
 	 var displayCanvas = document.getElementById("WebGL-output").appendChild(renderer.domElement);
@@ -684,25 +675,23 @@ function init() {
 		 var dragControls  = new THREE.DragControls( objects, camera, renderer.domElement );
 				
 			 dragControls.addEventListener( 'dragstart', function(event) {
-																			 if (event.object == startButton && startButton.visble == true){
-																				
+																			 if (event.object == startButton){
 																				 PacMania.emit('Start Countdown',gameSettingsOptions[0]);
-																				 //load_Wait_Screen();
-																				 addButton(countDown);
-
+																				 remove_Game_Settings_Screen();
+																				 removeButton(returnButton);
+																				 controllerDirection = "";
+																				 
+																				 
+																			 }
+																			 else  if (event.object == gameButton){
 																				 //Rescale and Reposition the Title
 																				 Title1.position.set(0,22.95,-2);
-																				 Title1.scale.set(24.5,4.5,1);																				 
-																				 
-																				 //Removal of the start Screen Buttons
-																				 removeButton(startButton);
-																				 removeButton(howToPlayButton);
-																				 removeButton(creditButton);
-																				 removeButton(aboutButton);
-																				 removeButton(gsButton);
-																				 
+																				 Title1.scale.set(24.5,4.5,1);
+																				 //Remove Buttons
+																				 remove_Start_Screen();
 																				 Game_Status = "Waiting";
-																				 controllerDirection = "";
+																				 //Load Game Settings Start
+																				 load_Game_Settings_Screen();
 																			 }
 																			 else if (event.object == bgButton){
 																				 if(backgroundState == "Original"){
@@ -869,22 +858,14 @@ function init() {
 																					 P1SCORE = P2SCORE = P3SCORE = P4SCORE = 0;
 																					 
 																				 }
-																				 else if(Game_Status == "Game Settings"){
+																				 else if(Game_Status == "Waiting"){
 																					 //Remove the Settings
-																					 var len = gameSettingsOptions.length;
-																					 
-																					 //Goes through the gameSettingsOptions Array and adds the text to the scene and turn the items set as buttons into buttons
-																					 for(var x=0; x< len; x++){
-																						 if(gameSettingsOptions[x].displayType != "Button")
-																							 scene.remove(gameSettingsOptions[x]);				
-																						 else
-																							 removeButton(gameSettingsOptions[x])
-																					 } 
+																					 remove_Game_Settings_Screen();
 																				 }
 																				
 																				 return_to_Start_Screen();
 																			
-																			 }// sourceLinkButton.position.set(15,-18.5,5);
+																			 }
 																			 else if (event.object == sourceLinkButton){
 																				 //Opens the Url to the Source
 																				 window.open(sourceLinkButton.url, '_blank');
@@ -1095,6 +1076,17 @@ function init() {
 																				 
 																				 //Sets the Game Setting
 																				 gameSettingsOptions[0].typesOfFruits= gameSettingsOptions[9].parameters.text;
+																				 
+																				  for(var x = 0; x< gameMaze.length; x++)
+																					 if(gameMaze[x].type == "Portal")
+																						 gameMaze[x].block.material.color.setHex(0xff0000);
+																					 else if(gameMaze[x].type == "Ghost Yard")
+																						 gameMaze[x].block.material.color.setHex(0x113511);
+																					 else
+																						 gameMaze[x].block.material.color.setHex(0x11aaff);
+																				
+																				 console.log("done")
+																				 
 																			 }
 																			 else if (event.object == gameSettingsOptions[10]){ //Even Mix of Fruits
 																				 //Updates Animation
@@ -1122,7 +1114,7 @@ function init() {
 																				 //Sets the Game Setting
 																				 gameSettingsOptions[0].typesOfFruits= gameSettingsOptions[11].parameters.text;
 																			 }
-																			 
+																			 // Game Rules
 																			 
 																			 //console.log("lol start of drag: ");
 																		 });
@@ -1130,6 +1122,8 @@ function init() {
 			 dragControls.addEventListener( 'drag', function(event)   {
 																			 if (event.object == startButton)
 																				 startButton.position.set(startButton.posX, startButton.posY, startButton.posZ);
+																			 else if (event.object == gameButton)
+																				 gameButton.position.set(gameButton.posX, gameButton.posY, gameButton.posZ);
 																			 else if (event.object == bgButton)
 																				 bgButton.position.set(bgButton.posX, bgButton.posY, bgButton.posZ);
 																			 else if (event.object == NorthButton)
@@ -2234,12 +2228,11 @@ function init() {
 		 loader.crossOrigin = true;
 		 
 		 //Change Background Button
-		 //bgButton.parameters.text= "Change Sprites";
 		 T = loader.load( 'Images/bgButton.png' );
 		 T.minFilter = THREE.LinearFilter;
 		 var T1 =  new THREE.SpriteMaterial( { map: T, color: 0xffffff } );
 		 bgButton = new THREE.Sprite(T1);	
-		 bgButton.posX = 19.5;
+		 bgButton.posX = 19.25;
 		 bgButton.posY =  22.95;
 		 bgButton.posZ = -2;
 		 bgButton.position.set(bgButton.posX, bgButton.posY, bgButton.posZ);
@@ -2249,20 +2242,38 @@ function init() {
 		 //Start Button
 		 startButton = new THREEx.DynamicText2DObject()
 		 startButton.parameters.text= "Start Game";
-		 startButton.parameters.font= "135px Arial";
-		 startButton.parameters.fillStyle= "#FF0000";
+		 startButton.parameters.font= "155px Arial";
+		 startButton.parameters.fillStyle= "#DD2222";
 		 startButton.parameters.align = "center";
 		 startButton.dynamicTexture.canvas.width = 1024;
 		 startButton.dynamicTexture.canvas.height = 256;
 		 startButton.posX = 0;
-		 startButton.posY = -3;
+		 startButton.posY = 14;
 		 startButton.posZ = 5;
 		 startButton.position.set(startButton.posX, startButton.posY, startButton.posZ);
-		 startButton.scale.set(16,4,1);
+		 startButton.scale.set(18,7,1);
 		 startButton.parameters.lineHeight=0.6;
 		 startButton.update();
 		 startButton.name = "startButton";
 		 startButton.visble = true;
+		 
+		 //Game Button
+		 gameButton = new THREEx.DynamicText2DObject()
+		 gameButton.parameters.text= "Game";
+		 gameButton.parameters.font= "155px Arial";
+		 gameButton.parameters.fillStyle= "#FF0000";
+		 gameButton.parameters.align = "center";
+		 gameButton.dynamicTexture.canvas.width = 1024;
+		 gameButton.dynamicTexture.canvas.height = 256;
+		 gameButton.posX = 0;
+		 gameButton.posY = -3;
+		 gameButton.posZ = 5;
+		 gameButton.position.set(gameButton.posX, gameButton.posY, gameButton.posZ);
+		 gameButton.scale.set(16,4,1);
+		 gameButton.parameters.lineHeight=0.6;
+		 gameButton.update();
+		 gameButton.name = "gameButton";
+		 gameButton.visble = true;
 		 
 		 //About Button
 		 aboutButton = new THREEx.DynamicText2DObject()
@@ -3133,11 +3144,16 @@ function init() {
 			 else
 				gameMaze[x].block = new THREE.Mesh(blockGeometry, blockMaterial);
 			
-			 scene.add(gameMaze[x].block);
 			 gameMaze[x].block.position.set(gameMaze[x].x*xMultiplier, gameMaze[x].y*yMultiplier+yShifter, -2);
 		 }
-		 
 	 }
+	 
+	 //Display the Game Maze
+	 function load_Maze(){
+		 for(var x = 0; x< gameMaze.length; x++)
+			 scene.add(gameMaze[x].block);
+	 }
+	 
 	 
 	 //Creates four hidden buttons that allow for the touch screen controls to operate normally
 	 function load_Touch_Screen_Controls(){
@@ -3328,8 +3344,8 @@ function init() {
 		 load_Buttons();  
 		 		 
 		 //Menu Buttons
-		 //Start Button
-		 addButton(startButton);
+		 //Game Button
+		 addButton(gameButton);
 		 
 		 //About Button
 		 addButton(aboutButton);	 
@@ -3365,7 +3381,7 @@ function init() {
 	 
      //Remove the Start, Credit, About, How To Play and Sprites Texture Button from the Scene and from the DragControls
 	 function remove_Start_Screen(){
-		 removeButton(startButton);
+		 removeButton(gameButton);
 		 removeButton(howToPlayButton);
 		 removeButton(creditButton);
 		 removeButton(aboutButton);
@@ -3426,11 +3442,10 @@ function init() {
 			 **/
 		}
 	
-		  //Add the Return Button
+		 //Add the Return Button
 		 addButton(returnButton);
-		 //Adjust the Title
-		 Title1.position.set(0,20.95,-2); 
-		 Game_Status="Game Settings";	
+		 //Add the Start Button
+		 addButton(startButton);
 	 }
 	 
 	 //Pre-Sets the Text for the Game Settings Screen
@@ -3444,24 +3459,7 @@ function init() {
 			 typesOfFruits : "Even Mix"
 		 }
 		 gameSettingsOptions.push(usersGameSettings);
-		 
-		 //GameSettingTitle
-		 var GameSettingTitle = new THREEx.DynamicText2DObject();
-		 GameSettingTitle.parameters.text= "Game Settings";
-		 GameSettingTitle.parameters.font= "125px Arial";
-		 GameSettingTitle.parameters.fillStyle= "Green";
-		 GameSettingTitle.parameters.align = "center";
-		 GameSettingTitle.dynamicTexture.canvas.width = 1024;
-		 GameSettingTitle.dynamicTexture.canvas.height = 256;
-		 GameSettingTitle.position.set(0,yShifter+15,-1);
-		 GameSettingTitle.scale.set(16,8,1);
-		 GameSettingTitle.parameters.lineHeight=0.6;
-		 GameSettingTitle.update();
-		 GameSettingTitle.displayType = "Button";
-		 GameSettingTitle.name = "GameSettingTitle";
-		 //gameSettingsOptions.push(GameSettingTitle)
-		 //scene.add(GameSettingTitle);		 
-		 
+		  
 		 var roundOne = yShifter+8.5;		 
 		 //typeOfGame
 		 var typeOfGame = new THREEx.DynamicText2DObject();
@@ -3477,7 +3475,6 @@ function init() {
 		 typeOfGame.update();
 		 typeOfGame.displayType = "Scene";
 		 gameSettingsOptions.push(typeOfGame)
-		 //scene.add(gameSettingsOptions[0]);
 		 
 		 //endless
 		 var endless = new THREEx.DynamicText2DObject();
@@ -3671,8 +3668,6 @@ function init() {
 		 gameSettingsOptions.push(moreGoodFruits)
 		 //addButton(moreGoodFruits);
 		 
-		 
-		 
 		 //highLight
 		 var planeGeometry = new THREE.PlaneBufferGeometry (16, 3,0);
 		 var planeMaterial = new THREE.MeshBasicMaterial({color: 0x222222}); //RGB
@@ -3693,7 +3688,62 @@ function init() {
 		 highLightThree.name = "HighLights-RowThree";
 		 highLightThree.position.set(gameSettingsOptions[10].posX,roundThree-4.25, -1);
 		 gameSettingsOptions.push(highLightThree);
-		 //scene.add(highLightThree);
+		 
+		 //Rules
+		 var rules = new THREEx.DynamicText2DObject();
+		 rules.parameters.text= "Rules";
+		 rules.parameters.font= "125px Arial";
+		 rules.parameters.fillStyle= "#FF001F";
+		 rules.parameters.align = "center";
+		 rules.dynamicTexture.canvas.width = 1024;
+		 rules.dynamicTexture.canvas.height = 256;
+		 rules.posX = 10;
+		 rules.posY = roundOne+7;
+		 rules.posZ = 1;
+		 rules.position.set(rules.posX,rules.posY,rules.posZ);
+		 rules.scale.set(24,7.5,1);
+		 rules.parameters.lineHeight=0.5;
+		 rules.update();
+		 rules.displayType = "Scene";
+		 //gameSettingsOptions.push(rules)
+		 
+		 //Color Scheme
+		 var colorScheme = new THREEx.DynamicText2DObject();
+		 colorScheme.parameters.text= "Color Scheme";
+		 colorScheme.parameters.font= "125px Arial";
+		 colorScheme.parameters.fillStyle= "#FF001F";
+		 colorScheme.parameters.align = "center";
+		 colorScheme.dynamicTexture.canvas.width = 1024;
+		 colorScheme.dynamicTexture.canvas.height = 256;
+		 colorScheme.posX = -10;
+		 colorScheme.posY = roundOne+7;
+		 colorScheme.posZ = 1;
+		 colorScheme.position.set(colorScheme.posX,colorScheme.posY,colorScheme.posZ);
+		 colorScheme.position.set(10,roundOne+7,1);
+		 colorScheme.scale.set(24,7.5,1);
+		 colorScheme.parameters.lineHeight=0.5;
+		 colorScheme.update();
+		 colorScheme.displayType = "Scene";
+		 //gameSettingsOptions.push(colorScheme)
+		 
+	 }
+	 
+	 //Remove Game Setting Screen(){
+	 function remove_Game_Settings_Screen(){
+		  //Remove the Settings
+		 var len = gameSettingsOptions.length;
+		 
+		 //Remove Start button
+		 removeButton(startButton);
+		 
+		 //Goes through the gameSettingsOptions Array and adds the text to the scene and turn the items set as buttons into buttons
+		 for(var x=0; x< len; x++){
+			 if(gameSettingsOptions[x].displayType != "Button")
+				 scene.remove(gameSettingsOptions[x]);				
+			 else
+				 removeButton(gameSettingsOptions[x])
+		 } 
+		 
 	 }
 	 
 	 //Loads the About Page of the Game
@@ -3882,7 +3932,7 @@ function init() {
 			 scene.remove(leftArrowButton);
 		 
 		 //Add back the buttons
-		 addButton(startButton);
+		 addButton(gameButton);
 		 addButton(howToPlayButton);
 		 addButton(creditButton);
 		 addButton(aboutButton);
@@ -3914,11 +3964,11 @@ function init() {
 			 aboutText = data;
 			 
 			 }, "html").done(function() {
-				 console.log("second success");
+				 //console.log("second success");
 			 }).fail(function(jqXHR, textStatus) {
 				 console.log(textStatus);
 			 }).always(function() {
-				 console.log("finished");
+				 //console.log("finished");
 		 });
 		 
 		 
@@ -4218,11 +4268,11 @@ function init() {
 			 }
 			 
 			 }, "html").done(function() {
-				 console.log("second success");
+				 //console.log("second success");
 			 }).fail(function(jqXHR, textStatus) {
 				 console.log(textStatus);
 			 }).always(function() {
-				 console.log("finished");
+				 //console.log("finished");
 		 });
 		 
 		 
