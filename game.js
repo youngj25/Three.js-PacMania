@@ -82,30 +82,33 @@ function init() {
 	
 	 //CountDown
 	 PacMania.on('Countdown', function(data){
-		 //Update the Countdown
-		 countDown.parameters.text= "Count Down: "+data.Count;
-		 countDown.update();
+		 if(Game_Status == "Waiting"){
+			 //Update the Countdown
+			 countDown.parameters.text= "Count Down: "+data.Count;
+			 countDown.update();
+		 }
 	 });
 	
 	 //Set up the Board
 	 PacMania.on('Setup Board', function(data){
-		 //Load the Text and the Board
-		 load_Text();
-		 load_Board();
-		 //Set the Game_Status to Active 
-		 Game_Status = "Active"; 
-		 //Addition of the Screen Bottoms and Background Button
-		 load_Touch_Screen_Controls();
-		 
-		 countDown.parameters.text= "Count Down: 10";
-		 countDown.update();
-		 scene.remove(countDown);
-		 scene.remove(tempGhost);
-		 scene.remove(tempFruit);
-		 
-		 if(data.Maze == 1)
-			 load_Game_Maze_1();
+		 if(Game_Status == "Waiting"){
+			 //Load the Text and the Board
+			 load_Text();
+			 load_Board();
+			 //Set the Game_Status to Active 
+			 Game_Status = "Active"; 
+			 //Addition of the Screen Bottoms and Background Button
+			 load_Touch_Screen_Controls();
 			 
+			 countDown.parameters.text= "Count Down: 10";
+			 countDown.update();
+			 scene.remove(countDown);
+			 scene.remove(tempGhost);
+			 scene.remove(tempFruit);
+			 
+			 if(data.Maze == 1)
+				 load_Game_Maze_1();
+		 }
 	 });
 	 	
 	 //Update the Game State
@@ -3176,8 +3179,6 @@ function init() {
 		 SouthButton.posY =  yShifter+1.25;
 		 SouthButton.posZ = zPosition;
 		 SouthButton.position.set(SouthButton.posX, SouthButton.posY, SouthButton.posZ);				 
-		 scene.add(SouthButton);
-		 objects.push(SouthButton);
 		 addButton(SouthButton);
 		 
 		 //West Touch Screen Button
