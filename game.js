@@ -25,8 +25,8 @@ var NorthButton, SouthButton, EastButton, WestButton;
 var pelletTexture, appleTexture, bananaTexture, cherryTexture, orangeTexture, pearTexture, pretzelTexture, strawberryTexture, grapeTexture;
 //For the Waiting Screen
 var gameSettingsOptions=[], countDown;
-//For the Game Settings
-
+//For the Color Scheme in Additional Game Settings
+var colorExampleMaze=[], colorThemes= [];
 //For the Controllers
 var controllerDirection = "";
 
@@ -95,7 +95,7 @@ function init() {
 			 scene.remove(tempGhost);
 			 scene.remove(tempFruit);
 			 
-			load_Maze();
+			 load_Maze();
 			
 				 /**
 					 color scheme should go here!!
@@ -658,6 +658,7 @@ function init() {
 	 loadItems();
 	 load_Display_Pictures();
 	 preset_Game_Settings_Screen();
+	 preset_Additional_Game_Settings_Screen();
 	
 	 //Render the Scenes
 	 function renderScene(){
@@ -681,9 +682,9 @@ function init() {
 																				 removeButton(returnButton);
 																				 controllerDirection = "";
 																				 
-																				 
+																				 load_Game_Maze_1();
 																			 }
-																			 else  if (event.object == gameButton){
+																			 else if (event.object == gameButton){
 																				 //Rescale and Reposition the Title
 																				 Title1.position.set(0,22.95,-2);
 																				 Title1.scale.set(24.5,4.5,1);
@@ -765,18 +766,14 @@ function init() {
 																				  tempFruit.material = appleTexture;
 																			 }
 																			 else if (event.object == gsButton){
-																				 load_Game_Settings_Screen();
+																				 //Remove Buttons
+																				 remove_Start_Screen();
+																				 load_Additional_Game_Settings_Screen();
 																			 }
 																			 else if (event.object == countDown){
 																				 PacMania.emit('CountDown Pressed');
 																			 }
-																			 else if (event.object == joinButton && joinButton.visble == true){
-																				 PacMania.emit('Add Player');
-																				 console.log("Join the Game!!!!");	
-																				 joinButton.position.set(12,-22.75,5);
-																				 scene.remove(joinButton);
-																				 joinButton.visble = false;
-																			 }
+																			 //Screen Buttons
 																			 else if (event.object == NorthButton){
 																				 var data = { direction: "North"  };
 																				 PacMania.emit('Move',data);
@@ -861,6 +858,13 @@ function init() {
 																				 else if(Game_Status == "Waiting"){
 																					 //Remove the Settings
 																					 remove_Game_Settings_Screen();
+																				 }
+																				 else if(Game_Status == "Additional Game Setting"){
+																					 for(var x = 1; x<colorThemes.length; x++)
+																						 removeButton(colorThemes[x]);
+																					 
+																					 for(var x = 0; x<colorExampleMaze.length; x++)
+																						 scene.remove(colorExampleMaze[x].block);
 																				 }
 																				
 																				 return_to_Start_Screen();
@@ -1076,17 +1080,6 @@ function init() {
 																				 
 																				 //Sets the Game Setting
 																				 gameSettingsOptions[0].typesOfFruits= gameSettingsOptions[9].parameters.text;
-																				 
-																				  for(var x = 0; x< gameMaze.length; x++)
-																					 if(gameMaze[x].type == "Portal")
-																						 gameMaze[x].block.material.color.setHex(0xff0000);
-																					 else if(gameMaze[x].type == "Ghost Yard")
-																						 gameMaze[x].block.material.color.setHex(0x113511);
-																					 else
-																						 gameMaze[x].block.material.color.setHex(0x11aaff);
-																				
-																				 console.log("done")
-																				 
 																			 }
 																			 else if (event.object == gameSettingsOptions[10]){ //Even Mix of Fruits
 																				 //Updates Animation
@@ -1116,6 +1109,66 @@ function init() {
 																			 }
 																			 // Game Rules
 																			 
+																			 //For the Color Scheme
+																			 else if(event.object == colorThemes[1]){
+																				 colorThemes[0].ghostYardColor = colorThemes[1].ghostYardColor;
+																				 colorThemes[0].portalColor = colorThemes[1].portalColor;
+																				 colorThemes[0].wallColor = colorThemes[1].wallColor;
+																				 colorThemes[1].parameters.fillStyle= "Gold";
+																				 colorThemes[2].parameters.fillStyle= "Grey";
+																				 colorThemes[3].parameters.fillStyle= "Grey";
+																				 colorThemes[1].update();
+																				 colorThemes[2].update();
+																				 colorThemes[3].update();
+																				 
+																				 //Recolors the Maze
+																				 for(var x = 0; x< colorExampleMaze.length; x++)																					 
+																					 if(colorExampleMaze[x].type == "Portal")
+																						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].portalColor);
+																					 else if(colorExampleMaze[x].type == "Ghost Yard")
+																						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].ghostYardColor);
+																					 else
+																						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].wallColor);
+																			 }
+																			 else if(event.object == colorThemes[2]){
+																				 colorThemes[0].ghostYardColor = colorThemes[2].ghostYardColor;
+																				 colorThemes[0].portalColor = colorThemes[2].portalColor;
+																				 colorThemes[0].wallColor = colorThemes[2].wallColor;
+																				 colorThemes[1].parameters.fillStyle= "Grey";
+																				 colorThemes[2].parameters.fillStyle= "Gold";
+																				 colorThemes[3].parameters.fillStyle= "Grey";
+																				 colorThemes[1].update();
+																				 colorThemes[2].update();
+																				 colorThemes[3].update();
+																				 //Recolors the Maze
+																				 for(var x = 0; x< colorExampleMaze.length; x++)																					 
+																					 if(colorExampleMaze[x].type == "Portal")
+																						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].portalColor);
+																					 else if(colorExampleMaze[x].type == "Ghost Yard")
+																						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].ghostYardColor);
+																					 else
+																						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].wallColor);
+																			 } 
+																			 else if(event.object == colorThemes[3]){
+																				 colorThemes[0].ghostYardColor = colorThemes[3].ghostYardColor;
+																				 colorThemes[0].portalColor = colorThemes[3].portalColor;
+																				 colorThemes[0].wallColor = colorThemes[3].wallColor;
+																				 colorThemes[1].parameters.fillStyle= "Grey";
+																				 colorThemes[2].parameters.fillStyle= "Grey";
+																				 colorThemes[3].parameters.fillStyle= "Gold";
+																				 colorThemes[1].update();
+																				 colorThemes[2].update();
+																				 colorThemes[3].update();
+																				 //Recolors the Maze
+																				 for(var x = 0; x< colorExampleMaze.length; x++)																					 
+																					 if(colorExampleMaze[x].type == "Portal")
+																						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].portalColor);
+																					 else if(colorExampleMaze[x].type == "Ghost Yard")
+																						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].ghostYardColor);
+																					 else
+																						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].wallColor);
+																			 } 
+																			 //else console.log(event.object);
 																			 //console.log("lol start of drag: ");
 																		 });
 																		 
@@ -1165,7 +1218,13 @@ function init() {
 																				 gameSettingsOptions[10].position.set(gameSettingsOptions[10].posX, gameSettingsOptions[10].posY, gameSettingsOptions[10].posZ);
 																			 else if (event.object == gameSettingsOptions[11])
 																				 gameSettingsOptions[11].position.set(gameSettingsOptions[11].posX, gameSettingsOptions[11].posY, gameSettingsOptions[11].posZ);
-
+																			 //Additional Game Settings
+																			 else if(event.object == colorThemes[1])
+																				 colorThemes[1].position.set(colorThemes[1].posX, colorThemes[1].posY, colorThemes[1].posZ);
+																			 else if(event.object == colorThemes[2])
+																				 colorThemes[2].position.set(colorThemes[2].posX, colorThemes[2].posY, colorThemes[2].posZ);
+																			 else if(event.object == colorThemes[3])
+																				 colorThemes[3].position.set(colorThemes[3].posX, colorThemes[3].posY, colorThemes[3].posZ);
 																		});
 																		
 			 dragControls.addEventListener( 'dragend', function(event)   {});
@@ -1826,7 +1885,11 @@ function init() {
 		 Style3Texture.push(ClydeText);
 		 
 		 //Now that everything is set...
-		 //Ima set tempGhost for the startscreen
+		 //Ima set tempGhost for the Additional Game Settings/Waiting Screen
+		 tempGhost = new THREE.Sprite();		
+		 tempGhost.name= "tempGhost";
+		 tempGhost.position.set(19,18,-2); 
+		 tempGhost.scale.set(1.75,1.75,1);
 		 tempGhost.material = BlinkyTexture[5];
 	 }
 	
@@ -2143,6 +2206,10 @@ function init() {
 		 Style2Texture.push(t);
 		 
 		 //---------------- temp fruit -----------------------
+		 tempFruit = new THREE.Sprite();		
+		 tempFruit.name= "tempFruit";
+		 tempFruit.position.set(22,18,-2); 
+		 tempFruit.scale.set(1.75,1.75,1);	 
 		 tempFruit.material = appleTexture;
 	 }
 	
@@ -3150,11 +3217,21 @@ function init() {
 	 
 	 //Display the Game Maze
 	 function load_Maze(){
-		 for(var x = 0; x< gameMaze.length; x++)
+		 for(var x = 0; x< gameMaze.length; x++){
+			 
+			 //Recolors the Maze
+			 if(gameMaze[x].type == "Portal")
+				 gameMaze[x].block.material.color.setHex(colorThemes[0].portalColor);
+			 else if(gameMaze[x].type == "Ghost Yard")
+				 gameMaze[x].block.material.color.setHex(colorThemes[0].ghostYardColor);
+			 else
+				 gameMaze[x].block.material.color.setHex(colorThemes[0].wallColor);
+			 
+			 //Adds the Maze to the scene
 			 scene.add(gameMaze[x].block);
+		 }
 	 }
-	 
-	 
+	  
 	 //Creates four hidden buttons that allow for the touch screen controls to operate normally
 	 function load_Touch_Screen_Controls(){
 		 var rectShape, zPosition = -3.5;
@@ -3358,25 +3435,6 @@ function init() {
 
 		 //Game Settings Button
 		 addButton(gsButton);
-		 
-		 //BackgroundButton
-		 if(scene.getObjectByName('bgButton') == null)
-			 addButton(bgButton);
-		 
-		 if(scene.getObjectByName('tempGhost') == null){
-			 tempGhost = new THREE.Sprite();		
-			 tempGhost.name= "tempGhost";
-			 tempGhost.position.set(19,18,-2); 
-			 tempGhost.scale.set(2,2,2);		 
-			 scene.add(tempGhost);
-		 }
-		 if(scene.getObjectByName('tempFruit') == null){
-			 tempFruit = new THREE.Sprite();		
-			 tempFruit.name= "tempFruit";
-			 tempFruit.position.set(22,18,-2); 
-			 tempFruit.scale.set(2,2,2);		 
-			 scene.add(tempFruit);
-		 }
 	 }
 	 
      //Remove the Start, Credit, About, How To Play and Sprites Texture Button from the Scene and from the DragControls
@@ -3727,7 +3785,325 @@ function init() {
 		 //gameSettingsOptions.push(colorScheme)
 		 
 	 }
+	  
+	 //Load the Additional Game Settings and change the colors and sorts
+	 function load_Additional_Game_Settings_Screen(){
+		 //colorExampleMaze=[], colorThemes= [];
+		 
+		 for(var x = 1; x<colorThemes.length; x++)
+			 addButton(colorThemes[x]);
+		 
+		 for(var x = 0; x< colorExampleMaze.length; x++){
+			 //Recolors the Maze
+			 if(colorExampleMaze[x].type == "Portal")
+				 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].portalColor);
+			 else if(colorExampleMaze[x].type == "Ghost Yard")
+				 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].ghostYardColor);
+			 else
+				 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].wallColor);
+			 
+			 //Adds the Maze to the scene
+			 scene.add(colorExampleMaze[x].block);
+		 }
+		 
+		 addButton(bgButton);
+		 
+		 tempGhost.position.set(19,18,-2); 
+		 tempGhost.position.set(4*xMultiplier, 2*yMultiplier+yShifter, -2);
+		 scene.add(tempGhost);
+		 
+		 //tempFruit.position.set(22,18,-2); 
+		 tempFruit.position.set(8*xMultiplier, -1*yMultiplier+yShifter, -2);
+		 scene.add(tempFruit);
+		 
+		 
+		 
+		 //Add the Return Button
+		 addButton(returnButton);
+		 //Adjust the Title
+		 Title1.position.set(0,20.95,-2); 
+		 Game_Status="Additional Game Setting";
+	 }
 	 
+	 //Pre-Sets the Additional Game Settings
+	 function preset_Additional_Game_Settings_Screen(){
+		 //colorExampleMaze=[], colorThemes= [];
+		 colorThemes = [];
+		 
+		 //The Scheme that will be used for the Maze will always be colorThemes[0], but we can write over them to change colors
+		 var defaultColorsLoaded = {
+			 wallColor : "0x2252df",
+			 portalColor : "0xff528f",
+			 ghostYardColor : "0x55ff5f"
+		 };
+		 colorThemes.push(defaultColorsLoaded);
+		 
+		 //The Users Default Game Color Scheme		 
+		 var basic = new THREEx.DynamicText2DObject();
+		 basic.parameters.text= "01 - Basic";
+		 basic.parameters.font= "155px Arial";
+		 basic.parameters.fillStyle= "Gold";
+		 basic.dynamicTexture.canvas.width = 1024;
+		 basic.dynamicTexture.canvas.height = 128;
+		 basic.posX = -16;
+		 basic.posY = 2;
+		 basic.posZ = 1;
+		 basic.position.set(basic.posX, basic.posY, basic.posZ);
+		 basic.scale.set(14,2,1);
+		 basic.parameters.lineHeight=0.8;
+		 basic.update();
+		 basic.ghostYardColor = "0x55ff5f";
+		 basic.portalColor= "0xff528f";
+		 basic.wallColor ="0x2252df";		 
+		 colorThemes.push(basic);
+		 
+		 //Purple Theme
+		 var purple = new THREEx.DynamicText2DObject();
+		 purple.parameters.text= "02 - Purple";
+		 purple.parameters.font= "155px Arial";
+		 purple.parameters.fillStyle= "Grey";
+		 purple.dynamicTexture.canvas.width = 1024;
+		 purple.dynamicTexture.canvas.height = 128;
+		 purple.posX = -16;
+		 purple.posY = -2;
+		 purple.posZ = 1;
+		 purple.position.set(purple.posX, purple.posY, purple.posZ);
+		 purple.scale.set(14,2,1);
+		 purple.parameters.lineHeight=0.8;
+		 purple.update();
+		 purple.ghostYardColor = "0x2D2D7B";
+		 purple.portalColor = "0xE18CAA";
+		 purple.wallColor = "0x6D0091";
+		 colorThemes.push(purple);
+		 
+		 
+		 //rgb(45,45,123)
+		 
+		 //Winter Theme
+		 var winter = new THREEx.DynamicText2DObject();
+		 winter.parameters.text= "03 - Winter";
+		 winter.parameters.font= "155px Arial";
+		 winter.parameters.fillStyle= "Grey";
+		 winter.dynamicTexture.canvas.width = 1024;
+		 winter.dynamicTexture.canvas.height = 128;
+		 winter.posX = -16;
+		 winter.posY = -6;
+		 winter.posZ = 1;
+		 winter.position.set(winter.posX, winter.posY, winter.posZ);
+		 winter.scale.set(14,2,1);
+		 winter.parameters.lineHeight=0.8;
+		 winter.update();
+		 winter.ghostYardColor = "0x118811";
+		 winter.portalColor = "0xff2222";
+		 winter.wallColor = "0x2299ff";
+		 colorThemes.push(winter);
+		 
+		 //Sprites 1 Styles
+		 var sprite1 = new THREEx.DynamicText2DObject();
+		 sprite1.parameters.text= "Sprite 1";
+		 sprite1.parameters.font= "155px Arial";
+		 sprite1.parameters.fillStyle= "#393939";
+		 //sprite1.parameters.fillStyle= "Dark Grey";
+		 sprite1.dynamicTexture.canvas.width = 1024;
+		 sprite1.dynamicTexture.canvas.height = 128;
+		 sprite1.posX = -13;
+		 sprite1.posY = 10;
+		 sprite1.posZ = 1;
+		 sprite1.position.set(sprite1.posX, sprite1.posY, sprite1.posZ);
+		 sprite1.scale.set(14,2,1);
+		 sprite1.parameters.lineHeight=0.8;
+		 sprite1.update();
+		 colorThemes.push(sprite1);
+		 
+		 //Sprites 2 Styles
+		 var sprite2 = new THREEx.DynamicText2DObject();
+		 sprite2.parameters.text= "Sprite 2";
+		 sprite2.parameters.font= "155px Arial";
+		 sprite2.parameters.fillStyle= "#593999";
+		 sprite2.dynamicTexture.canvas.width = 1024;
+		 sprite2.dynamicTexture.canvas.height = 128;
+		 sprite2.posX = -4;
+		 sprite2.posY = 10;
+		 sprite2.posZ = 1;
+		 sprite2.position.set(sprite2.posX, sprite2.posY, sprite2.posZ);
+		 sprite2.scale.set(14,2,1);
+		 sprite2.parameters.lineHeight=0.8;
+		 sprite2.update();
+		 colorThemes.push(sprite2);
+		 
+		 
+		 /**
+			 wallColor = "0x2299ff";
+			 portalColor = "0xff2222";
+			 ghostYardColor = "0x118811"; 
+		 **/
+		 //Example Maze
+		 colorExampleMaze = [];
+		 
+		 //Blocks
+		 //Block 1
+		 b = { x: 3, y: 4, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 2
+		 b = { x: 5, y: 4, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 3
+		 b = { x: 8, y: 4, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 4
+		 b = { x: 11, y: 4, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 5
+		 b = { x: 1, y: 3, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 6
+		 b = { x: 5, y: 3, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 7
+		 b = { x: 7, y: 3, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 8
+		 b = { x: 8, y: 3, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 9
+		 b = { x: 9, y: 3, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 10
+		 b = { x: 3, y: 2, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 11
+		 b = { x: 11, y: 2, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 12
+		 b = { x: 1, y: 1, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 13
+		 b = { x: 9, y: 1, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 14
+		 b = { x: 1, y: 0, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 15
+		 b = { x: 3, y: 0, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 16
+		 b = { x: 9, y: 0, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 17
+		 b = { x: 11, y: 0, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 18
+		 b = { x: 1, y: -1, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 19
+		 b = { x: 3, y: -1, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 20
+		 b = { x: 1, y: -2, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 21
+		 b = { x: 2, y: -2, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 22
+		 b = { x: 3, y: -2, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 23
+		 b = { x: 9, y: -2, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 24
+		 b = { x: 10, y: -2, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 25
+		 b = { x: 11, y: -2, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 26
+		 b = { x: 5, y: -3, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 27
+		 b = { x: 7, y: -3, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 28
+		 b = { x: 9, y: -3, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 29
+		 b = { x: 11, y: -3, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 30
+		 b = { x: 3, y: -4, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 31
+		 b = { x: 4, y: -4, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 32
+		 b = { x: 5, y: -4, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 33
+		 b = { x: 7, y: -4, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 34
+		 b = { x: 9, y: -4, type:"Block", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 35
+		 b = { x: 11, y: -4, type:"Block", block: null }
+		 colorExampleMaze.push(b);		 
+		 
+		 // Portal
+		 //Block 36 - Portal
+		 b = { x: 2, y: -1, type:"Portal", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 37 - Portal
+		 b = { x: 10, y: -3, type:"Portal", block: null }
+		 colorExampleMaze.push(b);
+		 
+		 // Ghost Yard
+		 //Block 38 - Yard
+		 b = { x: 5, y: 1, type:"Ghost Yard", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 39 - Yard
+		 b = { x: 6, y: 1, type:"Ghost Yard", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 40 - Yard
+		 b = { x: 7, y: 1, type:"Ghost Yard", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 41 - Yard
+		 b = { x: 5, y: 0, type:"Ghost Yard", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 42 - Yard
+		 b = { x: 6, y: 0, type:"Ghost Yard", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 43 - Yard
+		 b = { x: 7, y: 0, type:"Ghost Yard", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 44 - Yard
+		 b = { x: 5, y: -1, type:"Ghost Yard", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 45 - Yard
+		 b = { x: 6, y: -1, type:"Ghost Yard", block: null }
+		 colorExampleMaze.push(b);
+		 //Block 46 - Yard
+		 b = { x: 7, y: -1, type:"Ghost Yard", block: null }
+		 colorExampleMaze.push(b);		 
+		 
+		 var blockGeometry = new THREE.PlaneBufferGeometry (1.5, 1.5,0);
+		 var blockMaterial = new THREE.MeshBasicMaterial({color: 0x2252df}); //RGB
+		 var portalMaterial = new THREE.MeshBasicMaterial({color: 0xff528f}); //RGB
+		 var yardMaterial = new THREE.MeshBasicMaterial({color: 0x55ff5f}); //RGB
+		 
+		 for(var x = 0; x< colorExampleMaze.length; x++){
+			 if(colorExampleMaze[x].type == "Portal")
+				 colorExampleMaze[x].block = new THREE.Mesh(blockGeometry, portalMaterial);
+			 else if(colorExampleMaze[x].type == "Ghost Yard")
+				 colorExampleMaze[x].block = new THREE.Mesh(blockGeometry, yardMaterial);
+			 else
+				colorExampleMaze[x].block = new THREE.Mesh(blockGeometry, blockMaterial);
+			
+			 colorExampleMaze[x].block.position.set(colorExampleMaze[x].x*xMultiplier-3, colorExampleMaze[x].y*yMultiplier+yShifter-2, -2);
+		 }
+		 
+		 
+		 
+	 }
+	  
 	 //Remove Game Setting Screen(){
 	 function remove_Game_Settings_Screen(){
 		  //Remove the Settings
@@ -3910,6 +4286,13 @@ function init() {
 		 //Remove the Section Title
 		 scene.remove(titleSectionText);
 		 
+		 
+		 if(scene.getObjectByName('tempGhost') != null)
+			 scene.remove(tempGhost);
+		 
+		 if(scene.getObjectByName('tempFruit') != null)
+			 scene.remove(tempFruit);
+		 
 		 //Remove the link Source
 		 if(scene.getObjectByName('sourceLinkButton') != null)
 			 removeButton(sourceLinkButton);
@@ -3937,9 +4320,6 @@ function init() {
 		 addButton(creditButton);
 		 addButton(aboutButton);
 		 addButton(gsButton);
-		 addButton(bgButton);
-		 scene.add(tempGhost);
-		 scene.add(tempFruit);		 
 		 
 		 //Readjust the Title
 		 Title1.position.set(0,15.95,-2); 

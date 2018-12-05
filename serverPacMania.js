@@ -1439,7 +1439,7 @@ PacMania.on('connection',function(socket){
 	 //Pac-man Encounter Ghost!!
 	 function didPacEncounterGhost(Pac){
 		 for(var ghostNo = 0; ghostNo < ghostsArray.length; ghostNo++)
-			 if(Math.abs(ghostsArray[ghostNo].x - Pac.x)<=0.35 && Math.abs(ghostsArray[ghostNo].y - Pac.y)<=0.35){
+			 if(Math.abs(ghostsArray[ghostNo].x - Pac.x)<=encounterDistance && Math.abs(ghostsArray[ghostNo].y - Pac.y)<=encounterDistance){
 				 if(ghostsArray[ghostNo].status != "Dead" && Pac.fruitEffect == "Super PAC-MAN"){
 					 ghostsArray[ghostNo].status = "Dead";
 					 Pac.score += 200;
@@ -1454,7 +1454,8 @@ PacMania.on('connection',function(socket){
 					 }
 					 
 					 //To give it a minute to comeback
-					 ghostsArray[ghostNo].returnPath.push(127);
+					 ghostsArray[ghostNo].returnPath.push(128);
+					 ghostsArray[ghostNo].returnPath.push(50);
 				 }
 				 else if(ghostsArray[ghostNo].status != "Dead"){
 					 Pac.status = "Dead";
@@ -1467,8 +1468,8 @@ PacMania.on('connection',function(socket){
 	 function didPacEncounterItem(Pac){
 		 //When the Pacman are in the same location as pellet, near a pellet
 		 for(var pel = 0; pel < pacItems.length; pel++){
-			 var pelletRadius =0.35;
-			 if( Math.abs(Pac.x - pacItems[pel].x)<=pelletRadius && Math.abs(Pac.y - pacItems[pel].y)<=pelletRadius){
+			 var pelletRadius =encounterDistance;
+			 if( Math.abs(Pac.x - pacItems[pel].x)<=encounterDistance && Math.abs(Pac.y - pacItems[pel].y)<=encounterDistance){
 				 
 				 
 				 if(pacItems[pel].type == "Banana"){
@@ -1529,7 +1530,7 @@ PacMania.on('connection',function(socket){
 		 var densityKnockBackVariable = 50;
 		 for(var pacCount = 0; pacCount < pacArray.length; pacCount++){
 			 if(Pac.id != pacArray[pacCount].id){
-				 if(Math.abs(pacArray[pacCount].x - Pac.x)<=0.35 && Math.abs(pacArray[pacCount].y - Pac.y)<=0.35){
+				 if(Math.abs(pacArray[pacCount].x - Pac.x)<=encounterDistance && Math.abs(pacArray[pacCount].y - Pac.y)<=encounterDistance){
 					 
 					 //Set Push Back Time
 					 //Equations is densityKnockBackVariable - (Your Density - Their Density) x densityKnockBackVariable x 0.8
@@ -1683,7 +1684,7 @@ PacMania.on('connection',function(socket){
 				 //When this hits zero Add a random ghost into the mix
 				  if(ghostCreationCountDown <= 0){
 					 addGhost("Random");
-					 ghostCreationCountDown = Math.floor(Math.random()*3)+1;
+					 ghostCreationCountDown = Math.floor(Math.random()*(ghostsArray.length-2)+(ghostsArray.length/2));
 					 console.log("A Ghost Appeared!!! ("+ghostsArray[ghostsArray.length-1].type+")");
 					 
 					 if(ghostCreationList.length<=1){
@@ -2647,3 +2648,5 @@ PacMania.on('connection',function(socket){
     });
  
 });
+
+
