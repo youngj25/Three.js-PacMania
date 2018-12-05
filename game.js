@@ -3520,53 +3520,38 @@ function init() {
 		  
 		 var roundOne = yShifter+8.5;		 
 		 //typeOfGame
-		 var typeOfGame = new THREEx.DynamicText2DObject();
-		 typeOfGame.parameters.text= "Type of Game:";
+		 var typeOfGame = new text_creation("Type of Game:", 1, 3, 0.5 );
 		 typeOfGame.parameters.font= "125px Arial";
 		 typeOfGame.parameters.fillStyle= "#FF001F";
-		 typeOfGame.parameters.align = "center";
-		 typeOfGame.dynamicTexture.canvas.width = 1024;
-		 typeOfGame.dynamicTexture.canvas.height = 256;
 		 typeOfGame.position.set(0,roundOne,1);
 		 typeOfGame.scale.set(24,7.5,1);
-		 typeOfGame.parameters.lineHeight=0.5;
 		 typeOfGame.update();
 		 typeOfGame.displayType = "Scene";
 		 gameSettingsOptions.push(typeOfGame)
 		 
 		 //endless
-		 var endless = new THREEx.DynamicText2DObject();
-		 endless.parameters.text= "Endless";
+		 var endless = text_creation("Endless", 0, 2, 0.5 );
 		 endless.parameters.font= "105px Arial";
 		 endless.parameters.fillStyle= "Crimson";
-		 endless.parameters.align = "center";
-		 endless.dynamicTexture.canvas.width = 512;
-		 endless.dynamicTexture.canvas.height = 128;
 		 endless.posX = -16;
 		 endless.posY = roundOne-4;
 		 endless.posZ = 1;
 		 endless.position.set(endless.posX, endless.posY, endless.posZ);
 		 endless.scale.set(10,3,1);
-		 endless.parameters.lineHeight=0.5;
 		 endless.update();
 		 endless.displayType = "Button";
 		 gameSettingsOptions.push(endless)
 		 //addButton(endless);
 		 
 		 //lastManStanding
-		 var lastManStanding = new THREEx.DynamicText2DObject();
-		 lastManStanding.parameters.text= "Last Man Standing";
+		 var lastManStanding = new text_creation("Last Man Standing", 0, 3, 0.5 );
 		 lastManStanding.parameters.font= "105px Arial";
 		 lastManStanding.parameters.fillStyle= "darkred";
-		 lastManStanding.parameters.align = "center";
-		 lastManStanding.dynamicTexture.canvas.width = 1024;
-		 lastManStanding.dynamicTexture.canvas.height = 128;
 		 lastManStanding.posX = 16;
 		 lastManStanding.posY = roundOne-4;
 		 lastManStanding.posZ = 1;
 		 lastManStanding.position.set(lastManStanding.posX, lastManStanding.posY, lastManStanding.posZ);
 		 lastManStanding.scale.set(16,3,1);
-		 lastManStanding.parameters.lineHeight=0.5;
 		 lastManStanding.update();
 		 lastManStanding.displayType = "Button";
 		 gameSettingsOptions.push(lastManStanding)
@@ -3575,73 +3560,53 @@ function init() {
 		 
 		 var roundTwo = yShifter-1;
 		 //fruitOccurance
-		 var fruitOccurance = new THREEx.DynamicText2DObject();
-		 fruitOccurance.parameters.text= "Fruits Occurance:";
+		 var fruitOccurance = new text_creation("Fruits Occurance:", 1, 3, 0.5 );
 		 fruitOccurance.parameters.font= "113px Arial";
 		 fruitOccurance.parameters.fillStyle= "#8D4CF6";
-		 fruitOccurance.parameters.align = "center";
-		 fruitOccurance.dynamicTexture.canvas.width = 1024;
-		 fruitOccurance.dynamicTexture.canvas.height = 256;
 		 fruitOccurance.position.set(0,roundTwo,1);
 		 fruitOccurance.scale.set(24,7.5,1);
-		 fruitOccurance.parameters.lineHeight=0.5;
 		 fruitOccurance.update();
 		 fruitOccurance.displayType = "Scene";
 		 gameSettingsOptions.push(fruitOccurance)
 		 //scene.add(gameSettingsOptions[1]);
 		 
 		 //noFruits
-		 var noFruits = new THREEx.DynamicText2DObject();
-		 noFruits.parameters.text= "No Fruits";
+		 var noFruits = new text_creation("No Fruits", 0, 2, 0.6 );
 		 noFruits.parameters.font= "105px Arial";
 		 noFruits.parameters.fillStyle= "Indigo";
-		 noFruits.parameters.align = "center";
-		 noFruits.dynamicTexture.canvas.width = 512;
-		 noFruits.dynamicTexture.canvas.height = 128;
 		 noFruits.posX = -16;
 		 noFruits.posY = roundTwo-4;
 		 noFruits.posZ = 1;
 		 noFruits.position.set(noFruits.posX, noFruits.posY, noFruits.posZ);
 		 noFruits.scale.set(10,3,1);
-		 noFruits.parameters.lineHeight=0.6;
 		 noFruits.update();
 		 noFruits.displayType = "Button";
 		 gameSettingsOptions.push(noFruits)
 		 //addButton(noFruits);
 		 
 		 //usualAmount
-		 var usualAmount = new THREEx.DynamicText2DObject();
-		 usualAmount.parameters.text= "Usual Amount";
+		 var usualAmount = new text_creation("Usual Amount", 0, 3, 0.6 );
 		 usualAmount.parameters.font= "115px Arial";
 		 usualAmount.parameters.fillStyle= "#8D4CF6";
-		 usualAmount.parameters.align = "center";
-		 usualAmount.dynamicTexture.canvas.width = 1024;
-		 usualAmount.dynamicTexture.canvas.height = 128;
 		 usualAmount.posX = 0;
 		 usualAmount.posY = roundTwo-4;
 		 usualAmount.posZ = 1;
 		 usualAmount.position.set(usualAmount.posX, usualAmount.posY, usualAmount.posZ);
 		 usualAmount.scale.set(16,3,1);
-		 usualAmount.parameters.lineHeight=0.6;
 		 usualAmount.update();
 		 usualAmount.displayType = "Button";
 		 gameSettingsOptions.push(usualAmount)
 		 //addButton(usualAmount);
 		 
 		 //moreFruits
-		 var moreFruits = new THREEx.DynamicText2DObject();
-		 moreFruits.parameters.text= "More Fruits";
+		 var moreFruits = new text_creation("More Fruits", 0, 3, 0.6 );
 		 moreFruits.parameters.font= "115px Arial";
 		 moreFruits.parameters.fillStyle= "Indigo";
-		 moreFruits.parameters.align = "center";
-		 moreFruits.dynamicTexture.canvas.width = 1024;
-		 moreFruits.dynamicTexture.canvas.height = 128;
 		 moreFruits.posX = 16;
 		 moreFruits.posY = roundTwo-4;
 		 moreFruits.posZ = 1;
 		 moreFruits.position.set(moreFruits.posX, moreFruits.posY, moreFruits.posZ);
 		 moreFruits.scale.set(16,3,1);
-		 moreFruits.parameters.lineHeight=0.6;
 		 moreFruits.update();
 		 moreFruits.displayType = "Button";
 		 gameSettingsOptions.push(moreFruits)
@@ -3649,16 +3614,11 @@ function init() {
 		 
 		 var roundThree = yShifter-11;
 		 //typesOfFruits
-		 var typesOfFruits = new THREEx.DynamicText2DObject();
-		 typesOfFruits.parameters.text= "Types of Fruits:";
+		 var typesOfFruits = new text_creation("Types of Fruits:", 1, 3, 0.5 );
 		 typesOfFruits.parameters.font= "115px Arial";
 		 typesOfFruits.parameters.fillStyle= "#0365FA";
-		 typesOfFruits.parameters.align = "center";
-		 typesOfFruits.dynamicTexture.canvas.width = 1024;
-		 typesOfFruits.dynamicTexture.canvas.height = 256;
 		 typesOfFruits.position.set(0,roundThree,1);
 		 typesOfFruits.scale.set(24,7.5,1);
-		 typesOfFruits.parameters.lineHeight=0.5;
 		 typesOfFruits.update();
 		 typesOfFruits.displayType = "Scene";
 		 typesOfFruits.name = "typesOfFruits";
@@ -3666,19 +3626,14 @@ function init() {
 		 //scene.add(gameSettingsOptions[2]);
 		 
 		 //moreBadFruits
-		 var moreBadFruits = new THREEx.DynamicText2DObject();
-		 moreBadFruits.parameters.text= "More Bad Fruits";
+		 var moreBadFruits = new text_creation("More Bad Fruits", 0, 3, 0.6 );
 		 moreBadFruits.parameters.font= "115px Arial";
 		 moreBadFruits.parameters.fillStyle= "Midnightblue";
-		 moreBadFruits.parameters.align = "center";
-		 moreBadFruits.dynamicTexture.canvas.width = 1024;
-		 moreBadFruits.dynamicTexture.canvas.height = 128;
 		 moreBadFruits.posX = -16;
 		 moreBadFruits.posY = roundThree-4;
 		 moreBadFruits.posZ = 1;
 		 moreBadFruits.position.set(moreBadFruits.posX, moreBadFruits.posY, moreBadFruits.posZ);
 		 moreBadFruits.scale.set(16,3,1);
-		 moreBadFruits.parameters.lineHeight=0.6;
 		 moreBadFruits.update();
 		 moreBadFruits.displayType = "Button";
 		 moreBadFruits.name = "moreBadFruits";
@@ -3686,20 +3641,15 @@ function init() {
 		 //addButton(moreBadFruits);
 		 
 		 //evenMix
-		 var evenMix = new THREEx.DynamicText2DObject();
-		 evenMix.parameters.text= "Even Mix";
+		 var evenMix = new text_creation("Even Mix", 0, 3, 0.6 );
 		 evenMix.parameters.font= "115px Arial";
 		 evenMix.parameters.fillStyle= "#0365FA";
-		 evenMix.parameters.align = "center";
-		 evenMix.dynamicTexture.canvas.width = 1024;
-		 evenMix.dynamicTexture.canvas.height = 128;
 		 evenMix.posX = 0;
 		 evenMix.posY = roundThree-4;
 		 evenMix.posZ = 1;
 		 evenMix.position.set(evenMix.posX, evenMix.posY, evenMix.posZ);
 		 evenMix.position.set(0,roundThree-4,1);
 		 evenMix.scale.set(18,3,1);
-		 evenMix.parameters.lineHeight=0.6;
 		 evenMix.update();
 		 evenMix.displayType = "Button";
 		 evenMix.name = "evenMix";
@@ -3707,19 +3657,14 @@ function init() {
 		 //addButton(evenMix);
 		 
 		 //moreGoodFruits
-		 moreGoodFruits = new THREEx.DynamicText2DObject();
-		 moreGoodFruits.parameters.text= "More Good Fruits";
+		 moreGoodFruits = new text_creation("More Good Fruits", 0, 3, 0.6 );
 		 moreGoodFruits.parameters.font= "115px Arial";
 		 moreGoodFruits.parameters.fillStyle= "Midnightblue";
-		 moreGoodFruits.parameters.align = "center";
-		 moreGoodFruits.dynamicTexture.canvas.width = 1024;
-		 moreGoodFruits.dynamicTexture.canvas.height = 128;
 		 moreGoodFruits.posX = 16;
 		 moreGoodFruits.posY = roundThree-4;
 		 moreGoodFruits.posZ = 1;
 		 moreGoodFruits.position.set(moreGoodFruits.posX, moreGoodFruits.posY, moreGoodFruits.posZ);
 		 moreGoodFruits.scale.set(16,3,1);
-		 moreGoodFruits.parameters.lineHeight=0.6;
 		 moreGoodFruits.update();
 		 moreGoodFruits.displayType = "Button";
 		 moreGoodFruits.name = "moreGoodFruits";
@@ -3748,42 +3693,31 @@ function init() {
 		 gameSettingsOptions.push(highLightThree);
 		 
 		 //Rules
-		 var rules = new THREEx.DynamicText2DObject();
-		 rules.parameters.text= "Rules";
+		 var rules = new text_creation("Rules", 1, 3, 0.5 );
 		 rules.parameters.font= "125px Arial";
 		 rules.parameters.fillStyle= "#FF001F";
-		 rules.parameters.align = "center";
-		 rules.dynamicTexture.canvas.width = 1024;
-		 rules.dynamicTexture.canvas.height = 256;
 		 rules.posX = 10;
 		 rules.posY = roundOne+7;
 		 rules.posZ = 1;
 		 rules.position.set(rules.posX,rules.posY,rules.posZ);
 		 rules.scale.set(24,7.5,1);
-		 rules.parameters.lineHeight=0.5;
 		 rules.update();
 		 rules.displayType = "Scene";
 		 //gameSettingsOptions.push(rules)
 		 
 		 //Color Scheme
-		 var colorScheme = new THREEx.DynamicText2DObject();
-		 colorScheme.parameters.text= "Color Scheme";
+		 var colorScheme = new text_creation("Color Scheme", 1, 3, 0.5 );
 		 colorScheme.parameters.font= "125px Arial";
 		 colorScheme.parameters.fillStyle= "#FF001F";
-		 colorScheme.parameters.align = "center";
-		 colorScheme.dynamicTexture.canvas.width = 1024;
-		 colorScheme.dynamicTexture.canvas.height = 256;
 		 colorScheme.posX = -10;
 		 colorScheme.posY = roundOne+7;
 		 colorScheme.posZ = 1;
 		 colorScheme.position.set(colorScheme.posX,colorScheme.posY,colorScheme.posZ);
 		 colorScheme.position.set(10,roundOne+7,1);
 		 colorScheme.scale.set(24,7.5,1);
-		 colorScheme.parameters.lineHeight=0.5;
 		 colorScheme.update();
 		 colorScheme.displayType = "Scene";
-		 //gameSettingsOptions.push(colorScheme)
-		 
+		 //gameSettingsOptions.push(colorScheme);
 	 }
 	  
 	 //Load the Additional Game Settings and change the colors and sorts
@@ -3806,14 +3740,12 @@ function init() {
 			 scene.add(colorExampleMaze[x].block);
 		 }
 		 
-		 addButton(bgButton);
-		 
 		 tempGhost.position.set(19,18,-2); 
-		 tempGhost.position.set(4*xMultiplier, 2*yMultiplier+yShifter, -2);
+		 tempGhost.position.set(4*xMultiplier-3, 2*yMultiplier+yShifter-2, -2);
 		 scene.add(tempGhost);
 		 
 		 //tempFruit.position.set(22,18,-2); 
-		 tempFruit.position.set(8*xMultiplier, -1*yMultiplier+yShifter, -2);
+		 tempFruit.position.set(8*xMultiplier-3, -1*yMultiplier+yShifter-2, -2);
 		 scene.add(tempFruit);
 		 
 		 
@@ -3839,18 +3771,14 @@ function init() {
 		 colorThemes.push(defaultColorsLoaded);
 		 
 		 //The Users Default Game Color Scheme		 
-		 var basic = new THREEx.DynamicText2DObject();
-		 basic.parameters.text= "01 - Basic";
-		 basic.parameters.font= "155px Arial";
+		 var basic = new text_creation("01 - Basic", 0, 3, 0.8 );
+		 basic.parameters.font = "155px Arial";
 		 basic.parameters.fillStyle= "Gold";
-		 basic.dynamicTexture.canvas.width = 1024;
-		 basic.dynamicTexture.canvas.height = 128;
 		 basic.posX = -16;
 		 basic.posY = 2;
 		 basic.posZ = 1;
 		 basic.position.set(basic.posX, basic.posY, basic.posZ);
 		 basic.scale.set(14,2,1);
-		 basic.parameters.lineHeight=0.8;
 		 basic.update();
 		 basic.ghostYardColor = "0x55ff5f";
 		 basic.portalColor= "0xff528f";
@@ -3858,40 +3786,31 @@ function init() {
 		 colorThemes.push(basic);
 		 
 		 //Purple Theme
-		 var purple = new THREEx.DynamicText2DObject();
-		 purple.parameters.text= "02 - Purple";
+		 var purple = new text_creation("02 - Purple", 0, 3, 0.8 );
 		 purple.parameters.font= "155px Arial";
 		 purple.parameters.fillStyle= "Grey";
-		 purple.dynamicTexture.canvas.width = 1024;
-		 purple.dynamicTexture.canvas.height = 128;
 		 purple.posX = -16;
 		 purple.posY = -2;
 		 purple.posZ = 1;
 		 purple.position.set(purple.posX, purple.posY, purple.posZ);
 		 purple.scale.set(14,2,1);
-		 purple.parameters.lineHeight=0.8;
 		 purple.update();
 		 purple.ghostYardColor = "0x2D2D7B";
 		 purple.portalColor = "0xE18CAA";
 		 purple.wallColor = "0x6D0091";
 		 colorThemes.push(purple);
 		 
-		 
 		 //rgb(45,45,123)
 		 
 		 //Winter Theme
-		 var winter = new THREEx.DynamicText2DObject();
-		 winter.parameters.text= "03 - Winter";
+		 var winter = new text_creation("03 - Winter", 0, 3, 0.8 );
 		 winter.parameters.font= "155px Arial";
 		 winter.parameters.fillStyle= "Grey";
-		 winter.dynamicTexture.canvas.width = 1024;
-		 winter.dynamicTexture.canvas.height = 128;
 		 winter.posX = -16;
 		 winter.posY = -6;
 		 winter.posZ = 1;
 		 winter.position.set(winter.posX, winter.posY, winter.posZ);
 		 winter.scale.set(14,2,1);
-		 winter.parameters.lineHeight=0.8;
 		 winter.update();
 		 winter.ghostYardColor = "0x118811";
 		 winter.portalColor = "0xff2222";
@@ -3899,35 +3818,27 @@ function init() {
 		 colorThemes.push(winter);
 		 
 		 //Sprites 1 Styles
-		 var sprite1 = new THREEx.DynamicText2DObject();
+		 var sprite1 = new text_creation("Sprite 1", 0, 3, 0.8 );
 		 sprite1.parameters.text= "Sprite 1";
 		 sprite1.parameters.font= "155px Arial";
 		 sprite1.parameters.fillStyle= "#393939";
-		 //sprite1.parameters.fillStyle= "Dark Grey";
-		 sprite1.dynamicTexture.canvas.width = 1024;
-		 sprite1.dynamicTexture.canvas.height = 128;
 		 sprite1.posX = -13;
 		 sprite1.posY = 10;
 		 sprite1.posZ = 1;
 		 sprite1.position.set(sprite1.posX, sprite1.posY, sprite1.posZ);
 		 sprite1.scale.set(14,2,1);
-		 sprite1.parameters.lineHeight=0.8;
 		 sprite1.update();
 		 colorThemes.push(sprite1);
 		 
 		 //Sprites 2 Styles
-		 var sprite2 = new THREEx.DynamicText2DObject();
-		 sprite2.parameters.text= "Sprite 2";
+		 var sprite2 = new text_creation("Sprite 2", 0, 3, 0.8 );
 		 sprite2.parameters.font= "155px Arial";
-		 sprite2.parameters.fillStyle= "#593999";
-		 sprite2.dynamicTexture.canvas.width = 1024;
-		 sprite2.dynamicTexture.canvas.height = 128;
+		 sprite2.parameters.fillStyle= "#393939";
 		 sprite2.posX = -4;
 		 sprite2.posY = 10;
 		 sprite2.posZ = 1;
 		 sprite2.position.set(sprite2.posX, sprite2.posY, sprite2.posZ);
 		 sprite2.scale.set(14,2,1);
-		 sprite2.parameters.lineHeight=0.8;
 		 sprite2.update();
 		 colorThemes.push(sprite2);
 		 
@@ -4680,6 +4591,46 @@ function init() {
 		 leftArrowButton.position.set(leftArrowButton.posX, leftArrowButton.posY, leftArrowButton.posZ);
 		 leftArrowButton.scale.set(6,6,1);
 		 leftArrowButton.name = "leftArrowButton";
+	 }
+	 
+	 //Text Creation Function
+	 //Since this is used more than 10 times throughout the code
+	 //I created this function to cut down on the length and effort
+	 function text_creation(textValue, heightPower, widthPower, lineHeight ){
+		 
+		 var texts = new THREEx.DynamicText2DObject();
+		 texts.parameters.text = textValue;
+		 
+		 var calc = Math.pow(2, 7+heightPower);		 
+		 //HeightPower
+		 //The HeightPower works in the power of two and starts with 2^7 = 128
+		 //The height for the canvas works like this  = 2^(7+heightPower); 
+		 texts.dynamicTexture.canvas.height = calc;	
+		 
+		 calc = Math.pow(2, 7+widthPower);	
+		 
+		 //WidthPower
+		 //The WidthPower works in the power of two and starts with 2^7 = 128
+		 //The width for the canvas works like this  = 2^(7+widthPower); 
+		 texts.dynamicTexture.canvas.width = calc;	
+		 
+		 /** Powers of 2
+				 2^(7) = 128
+				 2^(8) = 256
+				 2^(9) = 512
+				 2^(10) = 1024
+				 2^(11) = 2048
+				 2^(12) = 4096
+		 **/
+		 
+		 //Line Height
+		 //The higher the value the higher gap
+		 texts.parameters.lineHeight= lineHeight;
+		 
+		 texts.parameters.align = "center";
+		 
+		 texts.update();
+		 return texts;
 	 }
 	 
 }
