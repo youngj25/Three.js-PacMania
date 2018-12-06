@@ -22,9 +22,9 @@ The Plump Dense Orange fills you up and slows you down. The Pac-mans character s
 
 The Pear/Melon gives you 50 points but the fruit effect is TBD.
 
-The Pretzel gives you 50 points but the fruit effect is TBD.
+The Pretzel gives you 50 points and the some strange reason Ghosts run home once a player eats this salty treat. Even when they are in chase mode, they stay away from this player and chance other players.
 
-The Sweet Strawberry gives you 150 points, however this fruit's aroma attracts ghosts as well. When a player eats this fruits, many ghosts all over the board will immediately chase down the said player. 
+The Sweet Strawberry gives you 350 points, however this fruit's aroma attracts ghosts as well. When a player eats this fruits, many ghosts all over the board will immediately chase down the said player. 
 
 The Results' Guide
 

@@ -980,8 +980,8 @@ function init() {
 																			 else if (event.object == gameSettingsOptions[2]){ //Endless Settings is chosen for Type of Game
 																				 //Updates Animation
 																				 gameSettingsOptions[gameSettingsOptions.length-3].position.x= gameSettingsOptions[2].posX;
-																				 gameSettingsOptions[2].parameters.fillStyle= "Crimson";
-																				 gameSettingsOptions[3].parameters.fillStyle= "darkred";
+																				 gameSettingsOptions[2].parameters.fillStyle= "#0365FA";
+																				 gameSettingsOptions[3].parameters.fillStyle= "Midnightblue";
 																				 gameSettingsOptions[2].update();
 																				 gameSettingsOptions[3].update();
 																				 //Sets the Game Setting
@@ -990,8 +990,8 @@ function init() {
 																			 else if (event.object == gameSettingsOptions[3]){ //Last Man Standing Settings is chosen for Type of Game
 																				 //Updates Animation
 																				 gameSettingsOptions[gameSettingsOptions.length-3].position.x= gameSettingsOptions[3].posX;
-																				 gameSettingsOptions[3].parameters.fillStyle= "Crimson";
-																				 gameSettingsOptions[2].parameters.fillStyle= "darkred";
+																				 gameSettingsOptions[3].parameters.fillStyle= "#0365FA";
+																				 gameSettingsOptions[2].parameters.fillStyle= "Midnightblue";
 																				 gameSettingsOptions[2].update();
 																				 gameSettingsOptions[3].update();																				 
 																				 //Sets the Game Setting
@@ -3613,7 +3613,14 @@ function init() {
 		 var usersGameSettings = {
 			 typeOfGame : "Endless",
 			 fruitOccurance : "Usual Amount",
-			 typesOfFruits : "Even Mix"
+			 apple : true,
+			 banana : true,
+			 cherry : true,
+			 grape : true,
+			 orange : true,
+			 pear : true,
+			 pretzel : true,
+			 strawberry : true
 		 }
 		 gameSettingsOptions.push(usersGameSettings);
 		  
@@ -3621,7 +3628,7 @@ function init() {
 		 //typeOfGame
 		 var typeOfGame = new text_creation("Type of Game:", 1, 3, 0.5 );
 		 typeOfGame.parameters.font= "125px Arial";
-		 typeOfGame.parameters.fillStyle= "#FF001F";
+		 typeOfGame.parameters.fillStyle= "#0365FA";
 		 typeOfGame.position.set(0,roundOne,1);
 		 typeOfGame.scale.set(24,7.5,1);
 		 typeOfGame.update();
@@ -3631,7 +3638,7 @@ function init() {
 		 //endless
 		 var endless = text_creation("Endless", 0, 2, 0.5 );
 		 endless.parameters.font= "105px Arial";
-		 endless.parameters.fillStyle= "Crimson";
+		 endless.parameters.fillStyle= "#0365FA";
 		 endless.posX = -16;
 		 endless.posY = roundOne-4;
 		 endless.posZ = 1;
@@ -3644,7 +3651,7 @@ function init() {
 		 //lastManStanding
 		 var lastManStanding = new text_creation("Last Man Standing", 0, 3, 0.5 );
 		 lastManStanding.parameters.font= "105px Arial";
-		 lastManStanding.parameters.fillStyle= "darkred";
+		 lastManStanding.parameters.fillStyle= "Midnightblue";
 		 lastManStanding.posX = 16;
 		 lastManStanding.posY = roundOne-4;
 		 lastManStanding.posZ = 1;
@@ -3721,8 +3728,9 @@ function init() {
 		 appleOption.name= "appleOption";
 		 appleOption.position.set(-21,roundThree-2.5,1);
 		 appleOption.scale.set(2.5,2.5,1);	 
-		 appleOption.displayType = "Scene";
-		 appleOption.material = appleTexture;
+		 appleOption.displayType = "Button";
+		 appleOption.material = appleTexture.clone();
+		 appleOption.material.color.set("#7f7f7f");
 		 gameSettingsOptions.push(appleOption);
 		 
 		 //Banana
@@ -3730,8 +3738,9 @@ function init() {
 		 bananaOption.name= "bananaOption";
 		 bananaOption.position.set(-15,roundThree-2.5,1);
 		 bananaOption.scale.set(2.5,2.5,1);	 
-		 bananaOption.displayType = "Scene";
-		 bananaOption.material = bananaTexture;
+		 bananaOption.displayType = "Button";
+		 bananaOption.material = bananaTexture.clone();
+		 bananaOption.material.color.set("#7f7f7f");
 		 gameSettingsOptions.push(bananaOption);
 		 
 		 //Cherry
@@ -3739,8 +3748,8 @@ function init() {
 		 cherryOption.name= "cherryOption";
 		 cherryOption.position.set(-9,roundThree-2.5,1);
 		 cherryOption.scale.set(2.5,2.5,1);	 
-		 cherryOption.displayType = "Scene";
-		 cherryOption.material = cherryTexture;
+		 cherryOption.displayType = "Button";
+		 cherryOption.material = cherryTexture.clone();
 		 gameSettingsOptions.push(cherryOption);
 		 
 		 //Grape
@@ -3748,8 +3757,9 @@ function init() {
 		 grapeOption.name= "grapeOption";
 		 grapeOption.position.set(-3,roundThree-2.5,1);
 		 grapeOption.scale.set(2.5, 2.5,1);	 
-		 grapeOption.displayType = "Scene";
-		 grapeOption.material = grapeTexture;
+		 grapeOption.displayType = "Button";
+		 grapeOption.material = grapeTexture.clone();
+		 grapeOption.material.color.set("#7f7f7f");
 		 gameSettingsOptions.push(grapeOption);
 		 
 		 //Orange
@@ -3757,8 +3767,8 @@ function init() {
 		 orangeOption.name= "orangeOption";
 		 orangeOption.position.set(3,roundThree-2.5,1);
 		 orangeOption.scale.set(2.5,2.5,1);	 
-		 orangeOption.displayType = "Scene";
-		 orangeOption.material = orangeTexture;
+		 orangeOption.displayType = "Button";
+		 orangeOption.material = orangeTexture.clone();
 		 gameSettingsOptions.push(orangeOption);
 		 
 		 //Pear
@@ -3766,8 +3776,8 @@ function init() {
 		 pearOption.name= "pearOption";
 		 pearOption.position.set(9,roundThree-2.5,1);
 		 pearOption.scale.set(2.5,2.5,1);	 
-		 pearOption.displayType = "Scene";
-		 pearOption.material = pearTexture;
+		 pearOption.displayType = "Button";
+		 pearOption.material = pearTexture.clone();
 		 gameSettingsOptions.push(pearOption);
 		 
 		 //Pretzel
@@ -3775,8 +3785,8 @@ function init() {
 		 pretzelOption.name= "pretzelOption";
 		 pretzelOption.position.set(15,roundThree-2.5,1);
 		 pretzelOption.scale.set(2.5,2.5,1);	 
-		 pretzelOption.displayType = "Scene";
-		 pretzelOption.material = pretzelTexture;
+		 pretzelOption.displayType = "Button";
+		 pretzelOption.material = pretzelTexture.clone();
 		 gameSettingsOptions.push(pretzelOption);
 		 
 		 //Strawberry
@@ -3784,38 +3794,9 @@ function init() {
 		 strawberryOption.name= "strawberryOption";
 		 strawberryOption.position.set(21,roundThree-2.5,1);
 		 strawberryOption.scale.set(2.5,2.5,1);	 
-		 strawberryOption.displayType = "Scene";
+		 strawberryOption.displayType = "Button";
 		 strawberryOption.material = strawberryTexture;
 		 gameSettingsOptions.push(strawberryOption);
-		 
-		 //moreBadFruits
-		 var moreBadFruits = new text_creation("More Bad Fruits", 0, 3, 0.6 );
-		 moreBadFruits.parameters.font= "115px Arial";
-		 moreBadFruits.parameters.fillStyle= "Midnightblue";
-		 moreBadFruits.posX = -16;
-		 moreBadFruits.posY = roundThree-4;
-		 moreBadFruits.posZ = 1;
-		 moreBadFruits.position.set(moreBadFruits.posX, moreBadFruits.posY, moreBadFruits.posZ);
-		 moreBadFruits.scale.set(16,3,1);
-		 moreBadFruits.update();
-		 moreBadFruits.displayType = "Button";
-		 moreBadFruits.name = "moreBadFruits";
-		 //gameSettingsOptions.push(moreBadFruits);
-		 
-		 //evenMix
-		 var evenMix = new text_creation("Even Mix", 0, 3, 0.6 );
-		 evenMix.parameters.font= "115px Arial";
-		 evenMix.parameters.fillStyle= "#0365FA";
-		 evenMix.posX = 0;
-		 evenMix.posY = roundThree-4;
-		 evenMix.posZ = 1;
-		 evenMix.position.set(evenMix.posX, evenMix.posY, evenMix.posZ);
-		 evenMix.position.set(0,roundThree-4,1);
-		 evenMix.scale.set(18,3,1);
-		 evenMix.update();
-		 evenMix.displayType = "Button";
-		 evenMix.name = "evenMix";
-		 //gameSettingsOptions.push(evenMix);
 		 
 		 //moreGoodFruits
 		 moreGoodFruits = new text_creation("More Good Fruits", 0, 3, 0.6 );
