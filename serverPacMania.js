@@ -269,7 +269,232 @@ PacMania.on('connection',function(socket){
 			 if(!found) console.log("Error occured");
 		 }
 	 });
-	
+	 
+	 //A new player has joined
+	 socket.on('Player has joined', function(data){
+		 //If the Player has joined and nothing has been set up as of yet
+		 if(gameRender == null && pacArray.length==0){
+			 addPac(socket.id);
+			 console.log("Game Setup @ "+(new Date().toLocaleTimeString()));
+			 //Presetting the Game Settings 
+			 pacManiaGameSetting = [];
+			 
+			 //Game Settings
+			 var gameData ={ //2520
+				 maze : 1, 
+				 typeofGame : "Endless", 
+				 fruitsOccurance : "Usual Amount",
+				 fruitsOccuranceOdds: 70,
+				 typeofFruits : 8,
+				 apple : true,
+				 appleOdds : 0,
+				 banana : true,
+				 bananaOdds : 0,
+				 cherry : true,
+				 cherryOdds : 0,
+				 grape : true,
+				 grapeOdds : 0,
+				 orange : true,
+				 orangeOdds : 0,
+				 pear : true,
+				 pearOdds : 0,
+				 pretzel : true,
+				 pretzelOdds : 0,
+				 strawberry : true,
+				 strawberryOdds : 0
+			 };
+			 //Settings for the Game
+			 pacManiaGameSetting.push(gameData);
+			 //Setting for Player 1
+			 //pacManiaGameSetting.push(gameData);
+			 //Setting for Player 2
+			 //pacManiaGameSetting.push(gameData);
+			 //Setting for Player 3
+			 //pacManiaGameSetting.push(gameData);
+			 //Setting for Player 4
+			 //pacManiaGameSetting.push(gameData);			 
+			 
+			 //Prep the Maze
+			 if(mapNodes.length <= 1)
+				 loadNodesMaze1();
+			 
+			 //Prep the Ghosts
+			 if(ghostsArray.length < 2){
+				 addGhost("Blinky");				 
+				 addGhost("Pinky");			 
+				 addGhost("Inky");			 
+				 addGhost("Clyde");
+				 ghostCreationList=[];
+				 ghostCreationList.push("Blinky");
+				 ghostCreationList.push("Blinky");
+				 ghostCreationList.push("Pinky");
+				 ghostCreationList.push("Pinky");
+				 ghostCreationList.push("Inky");
+				 ghostCreationList.push("Inky");
+				 ghostCreationList.push("Clyde");
+				 ghostCreationList.push("Clyde");
+			 }
+			
+			 //Settings to players 1 temporarily ****
+			 //Type of Game			 
+			 if(data.typeOfGame == "Endless"){
+				 pacManiaGameSetting[0].typeofGame = "Endless";
+			 }
+			 else if(data.typeOfGame == "Last Man Standing"){
+				 pacManiaGameSetting[0].typeofGame = "Last Man Standing";
+			 }
+			 //Fruit Occurance
+			 if(data.fruitOccurance == "Less Fruits"){
+				 pacManiaGameSetting[0].fruitsOccuranceOdds = 15;
+				 pacManiaGameSetting[0].fruitsOccurance = data.fruitOccurance;				 
+			 }
+			 else if(data.fruitOccurance == "Usual Amount"){
+				 pacManiaGameSetting[0].fruitsOccuranceOdds = 40;
+				 pacManiaGameSetting[0].fruitsOccurance = data.fruitOccurance;				 
+			 }
+			 else if(data.fruitOccurance == "More Fruits"){
+				 pacManiaGameSetting[0].fruitsOccuranceOdds = 90;
+				 pacManiaGameSetting[0].fruitsOccurance = data.fruitOccurance;				 
+			 }
+			 //Fruits Selections
+			 //Apple
+			 if(data.apple == true){
+				 pacManiaGameSetting[0].apple = true;
+			 }
+			 else{
+				 pacManiaGameSetting[0].apple = false;
+				 pacManiaGameSetting[0].appleOdds = 0;
+				 pacManiaGameSetting[0].typeofFruits --;
+			 }
+			 //Banana
+			 if(data.banana == true){
+				 pacManiaGameSetting[0].banana = true;
+			 }
+			 else{
+				 pacManiaGameSetting[0].banana = false;
+				 pacManiaGameSetting[0].typeofFruits --;
+			 }
+			 //Cherry
+			 if(data.cherry == true){
+				 pacManiaGameSetting[0].cherry = true;
+			 }
+			 else{
+				 pacManiaGameSetting[0].cherry = false;
+				 pacManiaGameSetting[0].typeofFruits --;
+			 }
+			 //Grape
+			 if(data.grape == true){
+				 pacManiaGameSetting[0].grape = true;
+			 }
+			 else{
+				 pacManiaGameSetting[0].grape = false;
+				 pacManiaGameSetting[0].typeofFruits --;
+			 }
+			 //Orange
+			 if(data.orange == true){
+				 pacManiaGameSetting[0].orange = true;
+			 }
+			 else{
+				 pacManiaGameSetting[0].orange = false;
+				 pacManiaGameSetting[0].typeofFruits --;
+			 }
+			 //Pear
+			 if(data.pear == true){
+				 pacManiaGameSetting[0].pear = true;
+			 }
+			 else{
+				 pacManiaGameSetting[0].pear = false;
+				 pacManiaGameSetting[0].typeofFruits --;
+			 }
+			 //Pretzel
+			 if(data.pretzel == true){
+				 pacManiaGameSetting[0].pretzel = true;
+			 }
+			 else{
+				 pacManiaGameSetting[0].pretzel = false;
+				 pacManiaGameSetting[0].typeofFruits --;
+			 }
+			 //Strawberry
+			 if(data.strawberry == true){
+				 pacManiaGameSetting[0].strawberry = true;
+			 }
+			 else{
+				 pacManiaGameSetting[0].strawberry = false;
+				 pacManiaGameSetting[0].typeofFruits --;
+			 }
+			  
+			 //Set up the odds for the fruits
+			 var odds = 0, count = pacManiaGameSetting[0].typeofFruits;
+			 if(pacManiaGameSetting[0].typeofFruits > 0)
+				 var odds = 840/pacManiaGameSetting[0].typeofFruits;
+			 
+			 //Going through the fruit finding out which ones are in the game
+			 for(var countingUp = 0; countingUp<8 && odds!=0; countingUp++){
+				 //Apple
+				 if(countingUp == 0 && pacManiaGameSetting[0].apple== true)
+					 pacManiaGameSetting[0].appleOdds = odds;
+				 //Banana
+				 if(countingUp == 1 && pacManiaGameSetting[0].banana== true)
+					 pacManiaGameSetting[0].bananaOdds = odds;
+				 //Cherry
+				 if(countingUp == 2 && pacManiaGameSetting[0].cherry== true)
+					 pacManiaGameSetting[0].cherryOdds = odds;
+				 //Grape
+				 if(countingUp == 3 && pacManiaGameSetting[0].grape== true)
+					 pacManiaGameSetting[0].grapeOdds = odds;
+				 //Orange
+				 if(countingUp == 4 && pacManiaGameSetting[0].orange== true)
+					 pacManiaGameSetting[0].orangeOdds = odds;
+				 //Pear
+				 if(countingUp == 5 && pacManiaGameSetting[0].pear== true)
+					 pacManiaGameSetting[0].pearOdds = odds;
+				 //Pretzel
+				 if(countingUp == 6 && pacManiaGameSetting[0].pretzel== true)
+					 pacManiaGameSetting[0].pretzelOdds = odds;
+				 //Strawberry
+				 if(countingUp == 7 && pacManiaGameSetting[0].strawberry== true)
+					 pacManiaGameSetting[0].strawberryOdds = odds;
+			 }
+			 
+			 
+			 
+			 console.log(data);
+			 console.log("-------------GameSetting on Server-----------------");
+			 console.log(pacManiaGameSetting[0]);
+			 
+			 //TEMP-------------------------------------------------------------------------------------------------------------
+			 gameRender = setInterval( UpdateGameState, 20);
+			 stepCounter=0;
+			 
+			 //If there's only one player change the Game type to endless
+			 if(pacArray.length==1)
+				 pacManiaGameSetting[0].typeofGame = "Endless";
+			 
+			 //Add Pellets to the gameboard-----------------------------
+			 fillWithPacItems();
+			 //-------------------- Print out the Game Settings
+			 console.log("---------------------------------------------------------");
+			 console.log(pacManiaGameSetting[0].typeofGame);
+			 console.log(pacManiaGameSetting[0].fruitsOccurance);
+			 console.log(pacManiaGameSetting[0].typeofFruits);			 
+			 PacMania.emit('Setup Board', data={ Maze : 1}); 
+		 }
+		 //If the Player has joined and everything is already set up
+		 else if(pacArray.length <= 3){
+			 addPac(socket.id);
+			 console.log("Game already in the process");		 
+		 }
+		 //If the game is full/running already and this player is not allowed to join
+		 else{
+			 console.log("Sorry, this game is already packed");
+		 }
+	 });
+	 
+	 
+	 
+	 //A player is ready!! If all players are ready start the game!
+	 
+	 
 	 //Countdown
 	 function CountDown(){
 		 
@@ -816,7 +1041,6 @@ PacMania.on('connection',function(socket){
 						 pacArray[pacCount].direction = 'West';
 						 pacArray[pacCount].directionPhase = 0;
 					 }
-				 //else pacArray[pacCount].directionPhase += 1;
 				  
 				 if(pacArray[pacCount].directionPhase % 15 == 0 && pacArray[pacCount].pushBackTime == 0)
 					 pacArray[pacCount].directionSprite=  (pacArray[pacCount].directionSprite+1)%2; 
@@ -1175,19 +1399,20 @@ PacMania.on('connection',function(socket){
 			 //PAC-MAN Object
 			 id:socket,
 			 playerID: pacArray.length,
-			 x : -8,
-			 y : -6,
-			 speed: 1.1,
-			 density:1,
-			 score: 0,
-			 lastNode : 89,
+			 x : -8, //X location
+			 y : -6, //Y location
+			 speed: 1.1, //Speed of the Pac-man
+			 density:1, //Density
+			 score: 0, //Score
+			 lastNode : 89, 
 			 nextNode : 90,
 			 oldNode : -1,
 			 direction : 'East',
 			 intendedDirection : 'North',
 			 directionPhase : 0,
 			 directionSprite : 0,
-			 status : null,
+			 status : null, //Player Status
+			 playerCountDown : 60, //Count Down
 			 fruitEffect: null,
 			 effectTime:0,
 			 pushBackTime:0,
@@ -1374,66 +1599,65 @@ PacMania.on('connection',function(socket){
 	  
 	 //Randomly Select Fruit for Insertion
 	 function fruitSelection( fruit ){
-		 //Fruits are split into 3 categories
-		 //Good - Banana, Pretzel
-		 //Neutral - Apple, Cherry, Pear
-		 //Bad - Grape, Orange, Strawberry
-		 //console.log("Fruity");
-		 //Out of a 100% set the ratio you would like for each fruit
-		 //Extra bits go to the Netural fruits by default
-		 var fruitNo = Math.floor(Math.random()*100);
-		 
-		 // If its a Good Fruit
-		 if(fruitNo < pacManiaGameSetting[0].goodFruitOdds){
-			 if(Math.floor(Math.random()*2)>0){ //Banana
-				 fruit.type = "Banana";
-				 fruit.worth = 10;				 
-			 }
-			 else{ //Pretzel
-				 fruit.type = "Pretzel";
-				 fruit.worth = 50;		
-			 }
+		 //Out of 840 - because 840 is divisble by 1->8 all the fruits possible outcomes
+		 //Since Fruit Selection can anywhere between 0->8 fruits, 
+		 var fruitNo = Math.floor(Math.random()*840);
+		 //Apples Odds
+		 if(fruitNo <pacManiaGameSetting[0].appleOdds){
+			 fruit.type = "Apple";
+			 fruit.worth = 50;	
 		 }
-		 // If its a Neutral Fruit
-		 else if(fruitNo < (pacManiaGameSetting[0].goodFruitOdds+pacManiaGameSetting[0].neutralFruitOdds)){
-			 var NeutralF = Math.floor(Math.random()*3);
-			 
-			 if(NeutralF == 0){ //Apple
-				 fruit.type = "Apple";
-				 fruit.worth = 50;						 
-			 }
-			 else if(NeutralF == 1){ //Cherry
-				 fruit.type = "Cherry";
-				 fruit.worth = 100;					 
-			 }
-			 else{ //Pear
-				 fruit.type = "Pear";
-				 fruit.worth = 50;	
-				 
-			 }
+		 //Banana Odds
+		 else if(fruitNo <(pacManiaGameSetting[0].appleOdds+pacManiaGameSetting[0].bananaOdds)){
+			 fruit.type = "Banana";
+			 fruit.worth = 10;		
 		 }
-		 // If its a Bad Fruit
+		 //Cherry Odds
+		 else if(fruitNo <(pacManiaGameSetting[0].appleOdds+pacManiaGameSetting[0].bananaOdds+
+								 pacManiaGameSetting[0].cherryOdds)){
+			 fruit.type = "Cherry";
+			 fruit.worth = 100;
+		 }
+		 //Grape Odds
+		 else if(fruitNo <(pacManiaGameSetting[0].appleOdds+pacManiaGameSetting[0].bananaOdds+
+								 pacManiaGameSetting[0].cherryOdds+pacManiaGameSetting[0].grapeOdds)){
+			 fruit.type = "Grape";
+			 fruit.worth = 200;			
+		 }
+		 //Orange Odds
+		 else if(fruitNo <(pacManiaGameSetting[0].appleOdds+pacManiaGameSetting[0].bananaOdds+
+								 pacManiaGameSetting[0].cherryOdds+pacManiaGameSetting[0].grapeOdds+
+								 pacManiaGameSetting[0].orangeOdds)){
+			 fruit.type = "Orange";
+			 fruit.worth = 275;		 	
+		 }
+		 //Pear Odds
+		 else if(fruitNo <(pacManiaGameSetting[0].appleOdds+pacManiaGameSetting[0].bananaOdds+
+								 pacManiaGameSetting[0].cherryOdds+pacManiaGameSetting[0].grapeOdds+
+								 pacManiaGameSetting[0].orangeOdds+pacManiaGameSetting[0].pearOdds)){
+			 fruit.type = "Pear";
+			 fruit.worth = 50;	 	
+		 }
+		 //Pretzel Odds
+		 else if(fruitNo <(pacManiaGameSetting[0].appleOdds+pacManiaGameSetting[0].bananaOdds+
+								 pacManiaGameSetting[0].cherryOdds+pacManiaGameSetting[0].grapeOdds+
+								 pacManiaGameSetting[0].orangeOdds+pacManiaGameSetting[0].pearOdds+
+								 pacManiaGameSetting[0].pretzelOdds)){
+			 fruit.type = "Pretzel";
+			 fruit.worth = 50;	 	
+		 }
+		 //Strawberry Odds
+		 else if(fruitNo <(pacManiaGameSetting[0].appleOdds+pacManiaGameSetting[0].bananaOdds+
+								 pacManiaGameSetting[0].cherryOdds+pacManiaGameSetting[0].grapeOdds+
+								 pacManiaGameSetting[0].orangeOdds+pacManiaGameSetting[0].pearOdds+
+								 pacManiaGameSetting[0].pretzelOdds+pacManiaGameSetting[0].strawberryOdds)){
+			 fruit.type = "Strawberry";
+			 fruit.worth = 350;	 	
+		 }
 		 else{
-			 var BadF = Math.floor(Math.random()*3);
-			 
-			  if(BadF == 0){ //Grape
-				 fruit.type = "Grape";
-				 fruit.worth = 200;						 
-			 }
-			 else if(BadF == 1){ //Orange
-				 fruit.type = "Orange";
-				 fruit.worth = 275;					 
-			 }
-			 else{ //Strawberry
-				 fruit.type = "Strawberry";
-				 fruit.worth = 350;	
-				 
-			 }
+			 fruit.type = "Super Pellet";
+			 fruit.worth = 0;	
 		 }
-		 
-		 
-		 //pacManiaGameSetting[0].typeofFruits;
-		 
 	 }
 	    
 	 //Pac-man Encounter Ghost!!

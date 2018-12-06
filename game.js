@@ -660,6 +660,22 @@ function init() {
 	 preset_Game_Settings_Screen();
 	 preset_Additional_Game_Settings_Screen();
 	
+	/**Finding a Number
+	 console.log("Finding a number");
+	 for(var xNum = 10; xNum<25000; xNum++){
+		 if(xNum%8==0 && xNum%7==0 && xNum%6==0 && xNum%5==0)
+			 console.log(xNum);
+	 }
+	 **/
+	 /** Results of Finding a number
+			 840
+			 1680
+			 2520
+			 3360
+			 ....
+	 **/
+	
+	
 	 //Render the Scenes
 	 function renderScene(){
 		 try{
@@ -677,7 +693,7 @@ function init() {
 				
 			 dragControls.addEventListener( 'dragstart', function(event) {
 																			 if (event.object == startButton){
-																				 PacMania.emit('Start Countdown',gameSettingsOptions[0]);
+																				 PacMania.emit('Player has joined',gameSettingsOptions[0]);
 																				 remove_Game_Settings_Screen();
 																				 removeButton(returnButton);
 																				 controllerDirection = "";
@@ -998,7 +1014,7 @@ function init() {
 																				 gameSettingsOptions[0].typeOfGame= gameSettingsOptions[3].parameters.text;
 																			 }
 																			 //Fruits Occurance
-																			 else if (event.object == gameSettingsOptions[5]){ //No Fruits Settings is chosen for Fruit Occurance
+																			 else if (event.object == gameSettingsOptions[5]){ //Less Fruits Settings is chosen for Fruit Occurance
 																				 //Updates Animation
 																				 gameSettingsOptions[gameSettingsOptions.length-1].position.x= gameSettingsOptions[5].posX;
 																				 gameSettingsOptions[5].parameters.fillStyle= gameSettingsOptions[4].parameters.fillStyle;
@@ -2565,7 +2581,7 @@ function init() {
 		 startButton.parameters.font= "155px Arial";
 		 startButton.parameters.fillStyle= "#DD2222";
 		 startButton.posX = 0;
-		 startButton.posY = 14;
+		 startButton.posY = 11;
 		 startButton.posZ = 5;
 		 startButton.position.set(startButton.posX, startButton.posY, startButton.posZ);
 		 startButton.scale.set(18,7,1);
@@ -3720,7 +3736,7 @@ function init() {
 		 }
 		 gameSettingsOptions.push(usersGameSettings);
 		  
-		 var roundOne = yShifter+8.5;		 
+		 var roundOne = yShifter+6.5;		 
 		 //typeOfGame
 		 var typeOfGame = new text_creation("Type of Game:", 1, 3, 0.5 );
 		 typeOfGame.parameters.font= "125px Arial";
@@ -3768,18 +3784,18 @@ function init() {
 		 fruitOccurance.displayType = "Scene";
 		 gameSettingsOptions.push(fruitOccurance);
 		 
-		 //noFruits
-		 var noFruits = new text_creation("No Fruits", 0, 2, 0.6 );
-		 noFruits.parameters.font= "105px Arial";
-		 noFruits.parameters.fillStyle= "Indigo";
-		 noFruits.posX = -16;
-		 noFruits.posY = roundTwo-4;
-		 noFruits.posZ = 1;
-		 noFruits.position.set(noFruits.posX, noFruits.posY, noFruits.posZ);
-		 noFruits.scale.set(10,3,1);
-		 noFruits.update();
-		 noFruits.displayType = "Button";
-		 gameSettingsOptions.push(noFruits);
+		 //lessFruits
+		 var lessFruits = new text_creation("Less Fruits", 0, 3, 0.6 );
+		 lessFruits.parameters.font= "115px Arial";
+		 lessFruits.parameters.fillStyle= "Indigo";
+		 lessFruits.posX = -16;
+		 lessFruits.posY = roundTwo-4;
+		 lessFruits.posZ = 1;
+		 lessFruits.position.set(lessFruits.posX, lessFruits.posY, lessFruits.posZ);
+		 lessFruits.scale.set(16,3,1);
+		 lessFruits.update();
+		 lessFruits.displayType = "Button";
+		 gameSettingsOptions.push(lessFruits);
 		 
 		 //usualAmount
 		 var usualAmount = new text_creation("Usual Amount", 0, 3, 0.6 );
