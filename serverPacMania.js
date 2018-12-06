@@ -86,7 +86,7 @@ var mapNodes = [],nodesList, gameRender = null, step=0;
 var ghostCreationCountDown = 2, ghostCreationList=[];
 var pacGuidedTesting = [], rowSections = [], stepCounter=0;
 var pacManiaCountDown = 1, countDownInterval=null;
-var pacManiaGameSetting =[];
+var pacManiaGameSetting =[], encounterDistance = 0.55;
 
 PacMania.on('connection',function(socket){
 	 console.log("Pac-Mania Served has been accessed");
@@ -165,7 +165,7 @@ PacMania.on('connection',function(socket){
 				 pacManiaGameSetting[0].fruitsOccurance = data.fruitOccurance;				 
 			 }
 			 else if(data.fruitOccurance == "More Fruits"){
-				 pacManiaGameSetting[0].fruitsOccuranceOdds = 85;
+				 pacManiaGameSetting[0].fruitsOccuranceOdds = 90;
 				 pacManiaGameSetting[0].fruitsOccurance = data.fruitOccurance;				 
 			 }
 			 //Types of Fruits
@@ -1344,7 +1344,7 @@ PacMania.on('connection',function(socket){
 				 creationList.push (leftOvers);
 			 }
 			
-			 for(var pelletAdditions = 0; pelletAdditions < (Math.floor( Math.random()*18)+10); pelletAdditions++){
+			 for(var pelletAdditions = 0; pelletAdditions < (Math.floor( Math.random()*10)+25); pelletAdditions++){
 				 var addPellets = true;
 				 var first = Math.floor(Math.random()*115), second =-1;
 				 
@@ -1378,7 +1378,7 @@ PacMania.on('connection',function(socket){
 		 //Good - Banana, Pretzel
 		 //Neutral - Apple, Cherry, Pear
 		 //Bad - Grape, Orange, Strawberry
-		 console.log("Fruity");
+		 //console.log("Fruity");
 		 //Out of a 100% set the ratio you would like for each fruit
 		 //Extra bits go to the Netural fruits by default
 		 var fruitNo = Math.floor(Math.random()*100);
@@ -1422,11 +1422,11 @@ PacMania.on('connection',function(socket){
 			 }
 			 else if(BadF == 1){ //Orange
 				 fruit.type = "Orange";
-				 fruit.worth = 250;					 
+				 fruit.worth = 275;					 
 			 }
 			 else{ //Strawberry
 				 fruit.type = "Strawberry";
-				 fruit.worth = 150;	
+				 fruit.worth = 350;	
 				 
 			 }
 		 }
@@ -1468,7 +1468,7 @@ PacMania.on('connection',function(socket){
 	 function didPacEncounterItem(Pac){
 		 //When the Pacman are in the same location as pellet, near a pellet
 		 for(var pel = 0; pel < pacItems.length; pel++){
-			 var pelletRadius =encounterDistance;
+			 var pelletRadius =encounterDistance/2;
 			 if( Math.abs(Pac.x - pacItems[pel].x)<=encounterDistance && Math.abs(Pac.y - pacItems[pel].y)<=encounterDistance){
 				 
 				 
@@ -1478,16 +1478,22 @@ PacMania.on('connection',function(socket){
 					 Pac.effectTime = 500;
 					 Pac.fruitEffect = "Speed 200%";
 				 }
+				 else if(pacItems[pel].type == "Grape"){
+					 Pac.speed = 1.5;
+					 Pac.effectTime = 255;
+					 Pac.fruitEffect = "Drunk";
+				 }
 				 else if(pacItems[pel].type == "Orange"){
 					 Pac.speed = 0.6;
 					 Pac.density = 1.5;
 					 Pac.effectTime = 500;
 					 Pac.fruitEffect = "Speed 60%";
 				 }
-				 else if(pacItems[pel].type == "Grape"){
-					 Pac.speed = 1.5;
-					 Pac.effectTime = 375;
-					 Pac.fruitEffect = "Drunk";
+				 else if(pacItems[pel].type == "Pretzel"){
+					 
+					 //This is meant sole for one player modes
+					 ghostsStatus = "Home";
+					 ghostsCountDown = 1000;
 				 }
 				 else if(pacItems[pel].type == "Strawberry"){
 					 ghostsStatus = "Chase";

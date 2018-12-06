@@ -979,7 +979,7 @@ function init() {
 																			 //Type of Game
 																			 else if (event.object == gameSettingsOptions[2]){ //Endless Settings is chosen for Type of Game
 																				 //Updates Animation
-																				 gameSettingsOptions[gameSettingsOptions.length-3].position.x= gameSettingsOptions[2].posX;
+																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[2].posX;
 																				 gameSettingsOptions[2].parameters.fillStyle= "#0365FA";
 																				 gameSettingsOptions[3].parameters.fillStyle= "Midnightblue";
 																				 gameSettingsOptions[2].update();
@@ -989,7 +989,7 @@ function init() {
 																			 }
 																			 else if (event.object == gameSettingsOptions[3]){ //Last Man Standing Settings is chosen for Type of Game
 																				 //Updates Animation
-																				 gameSettingsOptions[gameSettingsOptions.length-3].position.x= gameSettingsOptions[3].posX;
+																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[3].posX;
 																				 gameSettingsOptions[3].parameters.fillStyle= "#0365FA";
 																				 gameSettingsOptions[2].parameters.fillStyle= "Midnightblue";
 																				 gameSettingsOptions[2].update();
@@ -1000,31 +1000,20 @@ function init() {
 																			 //Fruits Occurance
 																			 else if (event.object == gameSettingsOptions[5]){ //No Fruits Settings is chosen for Fruit Occurance
 																				 //Updates Animation
-																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[5].posX;
+																				 gameSettingsOptions[gameSettingsOptions.length-1].position.x= gameSettingsOptions[5].posX;
 																				 gameSettingsOptions[5].parameters.fillStyle= gameSettingsOptions[4].parameters.fillStyle;
 																				 gameSettingsOptions[6].parameters.fillStyle= "Indigo";
 																				 gameSettingsOptions[7].parameters.fillStyle= "Indigo";
 																				 gameSettingsOptions[5].update();
 																				 gameSettingsOptions[6].update();
 																				 gameSettingsOptions[7].update();
-																				 /**
-																				 if(scene.getObjectByName('typesOfFruits') != null)
-																					 scene.remove(gameSettingsOptions[8]);
-																				 if(scene.getObjectByName('moreBadFruits') != null)
-																					 removeButton(gameSettingsOptions[9]);
-																				 if(scene.getObjectByName('evenMix') != null)
-																					 removeButton(gameSettingsOptions[10]);
-																				 if(scene.getObjectByName('moreGoodFruits') != null)
-																					 removeButton(gameSettingsOptions[11]);
-																				 if(scene.getObjectByName('HighLights-RowThree') != null)
-																					 scene.remove(gameSettingsOptions[gameSettingsOptions.length-1]);
-																				 **/
+																				 
 																				 //Sets the Game Setting
 																				 gameSettingsOptions[0].fruitOccurance= gameSettingsOptions[5].parameters.text;
 																			 }
 																			 else if (event.object == gameSettingsOptions[6]){ //Usual Amount is chosen for Fruit Occurance
 																				 //Updates Animation
-																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[6].posX;
+																				 gameSettingsOptions[gameSettingsOptions.length-1].position.x= gameSettingsOptions[6].posX;
 																				 gameSettingsOptions[5].parameters.fillStyle= "Indigo";
 																				 gameSettingsOptions[6].parameters.fillStyle= gameSettingsOptions[4].parameters.fillStyle;
 																				 gameSettingsOptions[7].parameters.fillStyle= "Indigo";
@@ -1050,7 +1039,7 @@ function init() {
 																			 }
 																			 else if (event.object == gameSettingsOptions[7]){ //More Fruits Settings is chosen for Fruit Occurance
 																				 //Updates Animation
-																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[7].posX;
+																				 gameSettingsOptions[gameSettingsOptions.length-1].position.x= gameSettingsOptions[7].posX;
 																				 gameSettingsOptions[5].parameters.fillStyle= "Indigo";
 																				 gameSettingsOptions[6].parameters.fillStyle= "Indigo";
 																				 gameSettingsOptions[7].parameters.fillStyle= gameSettingsOptions[4].parameters.fillStyle;
@@ -1075,8 +1064,102 @@ function init() {
 																				 gameSettingsOptions[0].fruitOccurance= gameSettingsOptions[7].parameters.text;
 																			 }
 																			 //Fruits
-																			 
-																			 
+																			 //Apple selection																 
+																			 else if (event.object == gameSettingsOptions[9]){
+																				 //Updates Animation
+																				 if(gameSettingsOptions[0].apple){
+																					 gameSettingsOptions[9].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[0].apple = false;
+																				 }
+																				 else{
+																					 gameSettingsOptions[9].material.color.set("#ffffff");
+																					 gameSettingsOptions[0].apple = true;
+																				 }
+																			 }
+																			 //Banana selection																 
+																			 else if (event.object == gameSettingsOptions[10]){
+																				 //Updates Animation
+																				 if(gameSettingsOptions[0].banana){
+																					 gameSettingsOptions[10].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[0].banana = false;
+																				 }
+																				 else{
+																					 gameSettingsOptions[10].material.color.set("#ffffff");
+																					 gameSettingsOptions[0].banana = true;
+																				 }
+																			 }
+																			 //Cherry selection																 
+																			 else if (event.object == gameSettingsOptions[11]){
+																				 //Updates Animation
+																				 if(gameSettingsOptions[0].cherry){
+																					 gameSettingsOptions[11].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[0].cherry = false;
+																				 }
+																				 else{
+																					 gameSettingsOptions[11].material.color.set("#ffffff");
+																					 gameSettingsOptions[0].cherry = true;
+																				 }
+																			 }
+																			 //Grape selection																 
+																			 else if (event.object == gameSettingsOptions[12]){
+																				 //Updates Animation
+																				 if(gameSettingsOptions[0].grape){
+																					 gameSettingsOptions[12].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[0].grape = false;
+																				 }
+																				 else{
+																					 gameSettingsOptions[12].material.color.set("#ffffff");
+																					 gameSettingsOptions[0].grape = true;
+																				 }
+																			 }
+																			 //Orange selection																 
+																			 else if (event.object == gameSettingsOptions[13]){
+																				 //Updates Animation
+																				 if(gameSettingsOptions[0].orange){
+																					 gameSettingsOptions[13].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[0].orange = false;
+																				 }
+																				 else{
+																					 gameSettingsOptions[13].material.color.set("#ffffff");
+																					 gameSettingsOptions[0].orange = true;
+																				 }
+																			 }
+																			 //Pear selection																 
+																			 else if (event.object == gameSettingsOptions[14]){
+																				 //Updates Animation
+																				 if(gameSettingsOptions[0].pear){
+																					 gameSettingsOptions[14].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[0].pear = false;
+																				 }
+																				 else{
+																					 gameSettingsOptions[14].material.color.set("#ffffff");
+																					 gameSettingsOptions[0].pear = true;
+																				 }
+																			 }
+																			 //Pretzel selection																 
+																			 else if (event.object == gameSettingsOptions[15]){
+																				 //Updates Animation
+																				 if(gameSettingsOptions[0].pretzel){
+																					 gameSettingsOptions[15].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[0].pretzel = false;
+																				 }
+																				 else{
+																					 gameSettingsOptions[15].material.color.set("#ffffff");
+																					 gameSettingsOptions[0].pretzel = true;
+																				 }
+																			 }
+																			 //Strawberry selection																 
+																			 else if (event.object == gameSettingsOptions[16]){
+																				 //Updates Animation
+																				 if(gameSettingsOptions[0].strawberry){
+																					 gameSettingsOptions[16].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[0].strawberry = false;
+																				 }
+																				 else{
+																					 gameSettingsOptions[16].material.color.set("#ffffff");
+																					 gameSettingsOptions[0].strawberry = true;
+																				 }
+																			 }
 																			 
 																			 // Game Rules
 																			 
@@ -1376,12 +1459,25 @@ function init() {
 																				 gameSettingsOptions[6].position.set(gameSettingsOptions[6].posX, gameSettingsOptions[6].posY, gameSettingsOptions[6].posZ);
 																			 else if (event.object == gameSettingsOptions[7])
 																				 gameSettingsOptions[7].position.set(gameSettingsOptions[7].posX, gameSettingsOptions[7].posY, gameSettingsOptions[7].posZ);
+																			 //Fruits
 																			 else if (event.object == gameSettingsOptions[9])
 																				 gameSettingsOptions[9].position.set(gameSettingsOptions[9].posX, gameSettingsOptions[9].posY, gameSettingsOptions[9].posZ);
 																			 else if (event.object == gameSettingsOptions[10])
 																				 gameSettingsOptions[10].position.set(gameSettingsOptions[10].posX, gameSettingsOptions[10].posY, gameSettingsOptions[10].posZ);
 																			 else if (event.object == gameSettingsOptions[11])
 																				 gameSettingsOptions[11].position.set(gameSettingsOptions[11].posX, gameSettingsOptions[11].posY, gameSettingsOptions[11].posZ);
+																			 else if(event.object == gameSettingsOptions[12])
+																				 gameSettingsOptions[12].position.set(gameSettingsOptions[12].posX, gameSettingsOptions[12].posY, gameSettingsOptions[12].posZ);
+																			 else if(event.object == gameSettingsOptions[13])
+																				 gameSettingsOptions[13].position.set(gameSettingsOptions[13].posX, gameSettingsOptions[13].posY, gameSettingsOptions[13].posZ);
+																			 else if(event.object == gameSettingsOptions[14])
+																				 gameSettingsOptions[14].position.set(gameSettingsOptions[14].posX, gameSettingsOptions[14].posY, gameSettingsOptions[14].posZ);
+																			 else if(event.object == gameSettingsOptions[15])
+																				 gameSettingsOptions[15].position.set(gameSettingsOptions[15].posX, gameSettingsOptions[15].posY, gameSettingsOptions[15].posZ);
+																			 else if(event.object == gameSettingsOptions[16])
+																				 gameSettingsOptions[16].position.set(gameSettingsOptions[16].posX, gameSettingsOptions[16].posY, gameSettingsOptions[16].posZ);
+																			 
+																			 
 																			 //Additional Game Settings
 																			 // Color Scheme
 																			 else if(event.object == colorThemes[2])
@@ -3712,90 +3808,119 @@ function init() {
 		 gameSettingsOptions.push(moreFruits);
 		 
 		 var roundThree = yShifter-11;
-		 //typesOfFruits
-		 var typesOfFruits = new text_creation("Types of Fruits:", 1, 3, 0.5 );
-		 typesOfFruits.parameters.font= "115px Arial";
-		 typesOfFruits.parameters.fillStyle= "#0365FA";
-		 typesOfFruits.position.set(0,roundThree+1,1);
-		 typesOfFruits.scale.set(24,7.5,1);
-		 typesOfFruits.update();
-		 typesOfFruits.displayType = "Scene";
-		 typesOfFruits.name = "typesOfFruits";
-		 gameSettingsOptions.push(typesOfFruits);
+		 //Fruits Selection
+		 var fruitsSelection = new text_creation("Fruits Selection:", 1, 3, 0.5 );
+		 fruitsSelection.parameters.font= "115px Arial";
+		 fruitsSelection.parameters.fillStyle= "Lime";
+		 fruitsSelection.position.set(0,roundThree+1,1);
+		 fruitsSelection.scale.set(24,7.5,1);
+		 fruitsSelection.update();
+		 fruitsSelection.displayType = "Scene";
+		 fruitsSelection.name = "fruitsSelection";
+		 gameSettingsOptions.push(fruitsSelection);
 		 
 		 //Apple
 		 var appleOption = new THREE.Sprite();		
 		 appleOption.name= "appleOption";
-		 appleOption.position.set(-21,roundThree-2.5,1);
 		 appleOption.scale.set(2.5,2.5,1);	 
 		 appleOption.displayType = "Button";
+		 appleOption.posX = -21;
+		 appleOption.posY = roundThree-2.5;
+		 appleOption.posZ = 1;
+		 appleOption.position.set(appleOption.posX, appleOption.posY, appleOption.posZ);
 		 appleOption.material = appleTexture.clone();
-		 appleOption.material.color.set("#7f7f7f");
+		 appleOption.material.color.set("#ffffff");
 		 gameSettingsOptions.push(appleOption);
 		 
 		 //Banana
 		 var bananaOption = new THREE.Sprite();		
 		 bananaOption.name= "bananaOption";
-		 bananaOption.position.set(-15,roundThree-2.5,1);
 		 bananaOption.scale.set(2.5,2.5,1);	 
 		 bananaOption.displayType = "Button";
+		 bananaOption.posX = -15;
+		 bananaOption.posY = roundThree-2.5;
+		 bananaOption.posZ = 1;
+		 bananaOption.position.set(bananaOption.posX, bananaOption.posY, bananaOption.posZ);
 		 bananaOption.material = bananaTexture.clone();
-		 bananaOption.material.color.set("#7f7f7f");
+		 bananaOption.material.color.set("#ffffff");
 		 gameSettingsOptions.push(bananaOption);
 		 
 		 //Cherry
 		 var cherryOption = new THREE.Sprite();		
 		 cherryOption.name= "cherryOption";
-		 cherryOption.position.set(-9,roundThree-2.5,1);
-		 cherryOption.scale.set(2.5,2.5,1);	 
+		 cherryOption.scale.set(2.5,2.5,1);
 		 cherryOption.displayType = "Button";
+		 cherryOption.posX = -9;
+		 cherryOption.posY = roundThree-2.5;
+		 cherryOption.posZ = 1;
+		 cherryOption.position.set(cherryOption.posX, cherryOption.posY, cherryOption.posZ);
 		 cherryOption.material = cherryTexture.clone();
+		 cherryOption.material.color.set("#ffffff");
 		 gameSettingsOptions.push(cherryOption);
 		 
 		 //Grape
 		 var grapeOption = new THREE.Sprite();		
 		 grapeOption.name= "grapeOption";
-		 grapeOption.position.set(-3,roundThree-2.5,1);
 		 grapeOption.scale.set(2.5, 2.5,1);	 
 		 grapeOption.displayType = "Button";
+		 grapeOption.posX = -3;
+		 grapeOption.posY = roundThree-2.5;
+		 grapeOption.posZ = 1;
+		 grapeOption.position.set(grapeOption.posX, grapeOption.posY, grapeOption.posZ);
 		 grapeOption.material = grapeTexture.clone();
-		 grapeOption.material.color.set("#7f7f7f");
+		 grapeOption.material.color.set("#ffffff");
 		 gameSettingsOptions.push(grapeOption);
 		 
 		 //Orange
 		 var orangeOption = new THREE.Sprite();		
 		 orangeOption.name= "orangeOption";
-		 orangeOption.position.set(3,roundThree-2.5,1);
 		 orangeOption.scale.set(2.5,2.5,1);	 
 		 orangeOption.displayType = "Button";
+		 orangeOption.posX = 3;
+		 orangeOption.posY = roundThree-2.5;
+		 orangeOption.posZ = 1;
+		 orangeOption.position.set(orangeOption.posX, orangeOption.posY, orangeOption.posZ);
 		 orangeOption.material = orangeTexture.clone();
+		 orangeOption.material.color.set("#ffffff");
 		 gameSettingsOptions.push(orangeOption);
 		 
 		 //Pear
 		 var pearOption = new THREE.Sprite();		
 		 pearOption.name= "pearOption";
-		 pearOption.position.set(9,roundThree-2.5,1);
 		 pearOption.scale.set(2.5,2.5,1);	 
 		 pearOption.displayType = "Button";
+		 pearOption.posX = 9;
+		 pearOption.posY = roundThree-2.5;
+		 pearOption.posZ = 1;
+		 pearOption.position.set(pearOption.posX, pearOption.posY, pearOption.posZ);
 		 pearOption.material = pearTexture.clone();
+		 pearOption.material.color.set("#ffffff");
 		 gameSettingsOptions.push(pearOption);
 		 
 		 //Pretzel
 		 var pretzelOption = new THREE.Sprite();		
 		 pretzelOption.name= "pretzelOption";
-		 pretzelOption.position.set(15,roundThree-2.5,1);
 		 pretzelOption.scale.set(2.5,2.5,1);	 
 		 pretzelOption.displayType = "Button";
+		 pretzelOption.posX = 15;
+		 pretzelOption.posY = roundThree-2.5;
+		 pretzelOption.posZ = 1;
+		 pretzelOption.position.set(pretzelOption.posX, pretzelOption.posY, pretzelOption.posZ);
 		 pretzelOption.material = pretzelTexture.clone();
+		 pretzelOption.material.color.set("#ffffff");
 		 gameSettingsOptions.push(pretzelOption);
 		 
 		 //Strawberry
 		 var strawberryOption = new THREE.Sprite();		
 		 strawberryOption.name= "strawberryOption";
-		 strawberryOption.position.set(21,roundThree-2.5,1);
 		 strawberryOption.scale.set(2.5,2.5,1);	 
 		 strawberryOption.displayType = "Button";
+		 strawberryOption.posX = 21;
+		 strawberryOption.posY = roundThree-2.5;
+		 strawberryOption.posZ = 1;
+		 strawberryOption.position.set(strawberryOption.posX, strawberryOption.posY, strawberryOption.posZ);
 		 strawberryOption.material = strawberryTexture;
+		 strawberryOption.material.color.set("#ffffff");
 		 gameSettingsOptions.push(strawberryOption);
 		 
 		 //moreGoodFruits
@@ -3815,6 +3940,7 @@ function init() {
 		 //highLight
 		 var planeGeometry = new THREE.PlaneBufferGeometry (16, 3,0);
 		 var planeMaterial = new THREE.MeshBasicMaterial({color: 0x222222}); //RGB
+
 		 var highLightOne = new THREE.Mesh(planeGeometry, planeMaterial);
 		 highLightOne.position.set(gameSettingsOptions[2].posX,roundOne-3.5, -1);
 		 highLightOne.displayType = "HighLights-RowOne";
@@ -3826,12 +3952,6 @@ function init() {
 		 highLightTwo.name = "HighLights-RowTwo";
 		 highLightTwo.position.set(gameSettingsOptions[6].posX,roundTwo-4, -1);
 		 gameSettingsOptions.push(highLightTwo);
-		 
-		 var highLightThree = new THREE.Mesh(planeGeometry, planeMaterial);
-		 highLightThree.displayType = "HighLights-RowThree";
-		 highLightThree.name = "HighLights-RowThree";
-		 highLightThree.position.set(gameSettingsOptions[10].posX,roundThree-4.25, -1);
-		 gameSettingsOptions.push(highLightThree);
 		 
 		 //Rules
 		 var rules = new text_creation("Rules", 1, 3, 0.5 );
