@@ -1,34 +1,44 @@
 var socket, PacMania = io('/pacMania', {forceNew:true});
-var player=-1;
 var Game_Status="Ready",camera;
-var objects = [];
-//Start Game
-var mouse = new THREE.Vector2(), raycaster = new THREE.Raycaster(), pos = new THREE.Vector3();
-//Text
-var clickable = [];
 
-//PacMania
-var TextFileLog;
-var Outline, Board, gameMaze = [], pellets=[], PacList=[], GhostList=[];
-var Width = 0, Height = 0;
-var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
-var bgButton, tempGhost, tempFruit, startButton, backgroundState = 'Original', joinButton; //Background functions
-var gameOver,king, winner,fallenKing,sorry, playAgainButton;
-var aboutButton, howToPlayButton, creditButton, closeButton, titleSectionText, returnButton, textBox, displayBox, displayArray=[];
-var creditDisplayArray = [], sourceLinkButton, rightArrowButton, leftArrowButton, sceneNumber=0, htpTextArray =[], aboutText = "...";
-var Texture, BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [], DeadGhostTexture=[];
+////------------------PacMania------------------------
+//Buttons
+var objects = [];
+var bgButton, tempGhost, tempFruit, startButton, backgroundState = 'Original'; //Background functions
+var aboutButton, howToPlayButton, creditButton, titleSectionText, returnButton, playAgainButton;
+var gameSettingsOptions=[], countDown,occuranceBar, occuranceCircle;//For the Waiting Screen
+
+//For Players Controls
+var NorthButton, SouthButton, EastButton, WestButton; //FOR THE TOUCH SCREENS CONtrols The four buttons
+var controllerDirection = "", SectionHighlight;
+
+//Text
+var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE BOARD
+var textBox, displayBox, displayArray=[];
+
+//Textures
+var BlinkyTexture = [], PinkyTexture = [], InkyTexture = [], ClydeTexture = [], DeadGhostTexture=[];
 var PlayerTexture=[], resultsTitle;
 var OriginalTexture = [], Style1Texture = [], Style2Texture = [], Style3Texture = [];
-var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE BOARD
-//FOR THE TOUCH SCREENS CONtrols The four buttons
-var NorthButton, SouthButton, EastButton, WestButton;
-var pelletTexture, appleTexture, bananaTexture, cherryTexture, orangeTexture, pearTexture, pretzelTexture, strawberryTexture, grapeTexture;
-//For the Waiting Screen
-var gameSettingsOptions=[], countDown;
-//For the Color Scheme in Additional Game Settings
+var Outline, Board, gameMaze = [], pellets=[], PacList=[], GhostList=[];
+
 var colorExampleMaze=[], colorThemes= [], textureBox, colorSchemeBox;
+var pelletTexture, appleTexture, bananaTexture, cherryTexture, orangeTexture, pearTexture, pretzelTexture, strawberryTexture, grapeTexture;
+//Result Images
+var gameOver, king, winner, fallenKing, sorry;
+
+var Width = 0, Height = 0;
+var xMultiplier  = 1.9, yMultiplier=1.9, yShifter = -2.25,ySpriteShifter= 0.21;
+
+var creditDisplayArray = [], sourceLinkButton, rightArrowButton, leftArrowButton, sceneNumber=0, htpTextArray =[], aboutText = "...";
+
+
+//For the Color Scheme in Additional Game Settings
+
 //For the Controllers
-var controllerDirection = "";
+
+//IDK YET
+//var Texture;
 
 function init() {
 	 // create a scene, that will hold all our elements such as objects, cameras and lights.
@@ -38,23 +48,11 @@ function init() {
 	 camera = new THREE.PerspectiveCamera(50, 500/ 500, 0.1, 1000);
 	 camera.position.set(0,0,53);
 	 scene.add(camera);
-	 
+	 scene.background = new THREE.Color( 0x0a0a0a );
+	 console.log(scene);
 	 // create a render and set the size
 	 var renderer = new THREE.WebGLRenderer({ antialias: true} );
 	 renderer.setClearColor(new THREE.Color(0x000000, 0.0));
-	 /**
-	 for ( var x=0; Width+Height == 0; x++){
-		 if((window.innerWidth*0.75) <= x*20 || (window.innerHeight*0.75)<= x*21){
-			 Width = x*20;			
-			 Height = x*21;	
-			 console.log("Width:"+Width+"	Height:"+Height);
-		 }	
-		 else if( x >= 50){
-			 Width = window.innerWidth*0.55;
-			 Height = window.innerHeight*0.55;
-		 }
-	 }
-	 **/
 	 Width = window.innerWidth*0.75;
 	 Height = Width * 1.2;
 	 if(Height > window.innerHeight*.8){
@@ -562,66 +560,189 @@ function init() {
 				 PacMania.emit('Move',data);				 
 			 }
 		 }
+		 else if(Game_Status == "Ready" && e.control == "FACE_1"){
+				 
+			 if(SectionHighlight.button == gameButton.name){
+				 //Rescale and Reposition the Title
+				 Title1.position.set(0,22.95,-2);
+				 Title1.scale.set(24.5,4.5,1);
+				 console.log("1");
+				 //Remove Buttons
+				 remove_Start_Screen();
+				 console.log("1")
+				 Game_Status = "Waiting";
+				 //Load Game Settings Start
+				 load_Game_Settings_Screen();
+				 console.log("1");
+				 scene.remove(SectionHighlight);
+			 }
+			 else if(SectionHighlight.button == aboutButton.name){
+				 load_About_Screen();
+				 scene.remove(SectionHighlight);
+			 }
+			 else if(SectionHighlight.button == howToPlayButton.name){
+				 load_How_to_Play_Screen();
+				 scene.remove(SectionHighlight);
+			 }
+			 else if(SectionHighlight.button == creditButton.name){
+				 load_Credit_Screen();
+				 scene.remove(SectionHighlight);
+			 }
+			 
+			 
+		 }
+		 else if((Game_Status == "About" || Game_Status == "Credit" || Game_Status == "How to Play") && e.control == "FACE_2"){
+			 return_to_Start_Screen();
+		 }
+		 //return_to_Start_Screen();
+		 else console.log(e.control);
 	 });
 	 
 	 gamepad.bind(Gamepad.Event.AXIS_CHANGED, function(e) {
 		 // e.axis changed to value e.value for gamepad e.gamepad
-		
-		 if(e.axis == "LEFT_STICK_X" && e.value == -1 && controllerDirection != "West"){
-			 if(Game_Status == "Active"){
+		 if(Game_Status == "Active"){
+			 //Controls when the game is active
+			 if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X") && e.value == -1 && controllerDirection != "West"){
 				 controllerDirection = "West";
 				 var data = { direction: "West"  };
-				 PacMania.emit('Move',data);				 
+				 PacMania.emit('Move',data);		
 			 }
-		 }
-		 else if(e.axis == "LEFT_STICK_X" && e.value == 1  && controllerDirection != "East"){
-			 if(Game_Status == "Active"){
+			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X") && e.value == 1  && controllerDirection != "East"){
 				 controllerDirection = "East";
 				 var data = { direction: "East"  };
-				 PacMania.emit('Move',data);				 
+				 PacMania.emit('Move',data);		
 			 }
-		 }
-		 else if(e.axis == "LEFT_STICK_Y" && e.value == -1  && controllerDirection != "North"){
-			 if(Game_Status == "Active"){
+			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == -1  && controllerDirection != "North"){
 				 controllerDirection = "North";
 				 var data = { direction: "North"  };
-				 PacMania.emit('Move',data);				 
+				 PacMania.emit('Move',data);	
 			 }
-		 }
-		 else if(e.axis == "LEFT_STICK_Y" && e.value == 1  && controllerDirection != "South"){
-			 if(Game_Status == "Active"){
+			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == 1  && controllerDirection != "South"){
 				 controllerDirection = "South";
 				 var data = { direction: "South"  };
-				 PacMania.emit('Move',data);				 
+				 PacMania.emit('Move',data);		
 			 }
 		 }
-		 else if(e.axis == "RIGHT_STICK_X" && e.value == -1){
-			 if(Game_Status == "Active"){
-				 controllerDirection = "West";
-				 var data = { direction: "West"  };
-				 PacMania.emit('Move',data);				 
+		 else if(Game_Status == "Ready"){
+			 //Ensure that the 'SectionHighlight' is there first
+			 if(scene.getObjectByName('SectionHighlight') == null){
+				 SectionHighlight.position.set(gameButton.position.x,gameButton.position.y-.5, -1);
+				 SectionHighlight.button = gameButton.name;
+				 scene.add(SectionHighlight);
 			 }
+			 //Above Credits Button going Leftwards
+			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X")  && e.value == -1 && SectionHighlight.button != gsButton.name){
+				 SectionHighlight.position.set(aboutButton.position.x-.5,aboutButton.position.y-1, -1);	
+				 SectionHighlight.button = aboutButton.name;
+			 }
+			 //Above Credits Button going Rightwards
+			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X")  && e.value == 1 && SectionHighlight.button != gsButton.name){
+				 SectionHighlight.position.set(howToPlayButton.position.x+1,howToPlayButton.position.y-1, -1);
+				 SectionHighlight.button = howToPlayButton.name;
+			 }
+			 //Above Credit Button going Upwards
+			 else if(e.axis == "LEFT_STICK_Y" && e.value == -1 && SectionHighlight.button != gsButton.name){
+				 SectionHighlight.position.set(gameButton.position.x,gameButton.position.y-.5, -1);
+				 SectionHighlight.button = gameButton.name;
+			 }
+			 //Above Credit Button going Downwards
+			 else if(e.axis == "LEFT_STICK_Y" && e.value == 1 && SectionHighlight.button != gsButton.name && SectionHighlight.button != creditButton.name){
+				 SectionHighlight.position.set(creditButton.position.x,creditButton.position.y-1.5, -1);
+				 SectionHighlight.button = creditButton.name;
+			 }
+			 //At Credit Button going Downwards
+			 else if(e.axis == "LEFT_STICK_Y" && e.value == 1 && SectionHighlight.button != gsButton.name){
+				 SectionHighlight.position.set(gsButton.position.x,gsButton.position.y, -2);
+				 SectionHighlight.button = gsButton.name;
+				 console.log("down");
+			 } 
+			 //At Game Setting Button going Upwards
+			 else if(e.axis == "LEFT_STICK_Y" && e.value == -1 && SectionHighlight.button == gsButton.name){
+				 SectionHighlight.position.set(creditButton.position.x,creditButton.position.y-1.5, -1);
+				 SectionHighlight.button = creditButton.name;
+			 }
+			 
+		 
+		 
+		 
 		 }
-		 else if(e.axis == "RIGHT_STICK_X" && e.value == 1){
-			 if(Game_Status == "Active"){
-				 controllerDirection = "East";
-				 var data = { direction: "East"  };
-				 PacMania.emit('Move',data);				 
+		 else if(Game_Status == "Credit" && (e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X")){
+			 //Leftwards
+			 if(e.value == -1 && sceneNumber > 0){
+				 sceneNumber--;
+				 textBox.parameters.text=  creditDisplayArray[sceneNumber].text;
+				 textBox.update();
+				 
+				 if(sceneNumber == 0)
+					 leftArrowButton.material.color  = new THREE.Color("rgb( 50, 50,50)");
+				 else
+					 leftArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+				 
+				 //Automatically you can now move to the right
+				 rightArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
 			 }
+			
+			 //Rightwards
+			 else if(e.value == 1 && sceneNumber < creditDisplayArray.length-1){
+				 sceneNumber++;
+				 textBox.parameters.text=  creditDisplayArray[sceneNumber].text;
+				 textBox.update();			
+			 
+				 if(sceneNumber == creditDisplayArray.length-1)
+					 rightArrowButton.material.color  = new THREE.Color("rgb( 50, 50,50)");
+				 else
+					 rightArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+				 
+				 //Automatically you can now move to the left
+				 leftArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+			 }																		 
+				 
+			 //Display Box Updates and Scaling
+			 displayBox.material =  creditDisplayArray[sceneNumber];
+			 displayBox.scale.x  = creditDisplayArray[sceneNumber].scalingX;
+			 displayBox.scale.y  = creditDisplayArray[sceneNumber].scalingY;
+			 
+			 //Update Source :Link
+			 sourceLinkButton.url = creditDisplayArray[sceneNumber].url;
 		 }
-		 else if(e.axis == "RIGHT_STICK_Y" && e.value == -1){
-			 if(Game_Status == "Active"){
-				 controllerDirection = "North";
-				 var data = { direction: "North"  };
-				 PacMania.emit('Move',data);				 
+		 else if(Game_Status == "How to Play" && (e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X")){
+			 //Leftwards
+			 if(e.value == -1 && sceneNumber > 0){
+				 sceneNumber--;
+				 textBox.parameters.text=  htpTextArray[sceneNumber].text;
+				 textBox.update();
+				 
+				 if(sceneNumber == 0)
+					 leftArrowButton.material.color  = new THREE.Color("rgb( 50, 50,50)");
+				 else
+					 leftArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+				 
+				 //Automatically you can now move to the right
+				 rightArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
 			 }
-		 }
-		 else if(e.axis == "RIGHT_STICK_Y" && e.value == 1){
-			 if(Game_Status == "Active"){
-				 controllerDirection = "South";
-				 var data = { direction: "South"  };
-				 PacMania.emit('Move',data);				 
-			 }
+			
+			 //Rightwards
+			 else if(e.value == 1 && sceneNumber < htpTextArray.length-1){
+				 sceneNumber++;
+				 textBox.parameters.text=  htpTextArray[sceneNumber].text;
+				 textBox.update();			
+			 
+				 if(sceneNumber == htpTextArray.length-1)
+					 rightArrowButton.material.color  = new THREE.Color("rgb( 50, 50,50)");
+				 else
+					 rightArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+				 
+				 //Automatically you can now move to the left
+				 leftArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
+			 }																		 
+				 
+			 //Display Box Updates and Scaling
+			 displayBox.material =  htpTextArray[sceneNumber];
+			 displayBox.scale.x  = htpTextArray[sceneNumber].scalingX;
+			 displayBox.scale.y  = htpTextArray[sceneNumber].scalingY;
+			 
+			 //Update Source :Link
+			 sourceLinkButton.url = htpTextArray[sceneNumber].url;
 		 }
 	 });
 
@@ -633,6 +754,15 @@ function init() {
 		 // Your browser does not support gamepads, get the latest Google Chrome or Firefox
 		console.log("no no no ");
 	 }
+	 
+	 //Setup SectionHighlight for Controllers
+	 //highLight
+	 var planeGeometry = new THREE.PlaneBufferGeometry (18, 4,0);
+	 var planeMaterial = new THREE.MeshBasicMaterial({color: 0x222222});
+	 SectionHighlight = new THREE.Mesh(planeGeometry, planeMaterial);
+	 SectionHighlight.position.set(0,0, -1);
+	 SectionHighlight.button="game";
+	 SectionHighlight.name = "SectionHighlight";
 	  
 	 //add the output of the renderer to the html element
 	 var displayCanvas = document.getElementById("WebGL-output").appendChild(renderer.domElement);
@@ -674,8 +804,7 @@ function init() {
 			 3360
 			 ....
 	 **/
-	
-	
+		
 	 //Render the Scenes
 	 function renderScene(){
 		 try{
@@ -697,7 +826,8 @@ function init() {
 																				 remove_Game_Settings_Screen();
 																				 removeButton(returnButton);
 																				 controllerDirection = "";
-																				 
+																				 scene.remove(occuranceBar);		 
+																				 scene.remove( occuranceCircle );
 																				 load_Game_Maze_1();
 																			 }
 																			 else if (event.object == gameButton){
@@ -894,11 +1024,7 @@ function init() {
 																				 window.open(sourceLinkButton.url, '_blank');
 																			 }
 																			 else if (event.object == rightArrowButton){
-																				 if( Game_Status == "About"){
-																					 
-																					 
-																				 }
-																				 else  if( Game_Status == "Credit" && sceneNumber < creditDisplayArray.length-1){
+																				 if( Game_Status == "Credit" && sceneNumber < creditDisplayArray.length-1){
 																					 sceneNumber++;
 																					 textBox.parameters.text=  creditDisplayArray[sceneNumber].text;
 																					 textBox.update();																					 
@@ -939,9 +1065,6 @@ function init() {
 																					 
 																					 //Automatically you can now move to the left
 																					 leftArrowButton.material.color  = new THREE.Color("rgb( 255, 255,255)");
-																					 
-																					 //Update Source :Link
-																					 //sourceLinkButton.url = htpTextArray[sceneNumber].url;
 																				 }
 																			 }
 																			 else if (event.object == leftArrowButton){
@@ -993,7 +1116,7 @@ function init() {
 																				 }
 																			 }
 																			 //Type of Game
-																			 else if (event.object == gameSettingsOptions[2]){ //Endless Settings is chosen for Type of Game
+																			 else if (event.object.name == "endless"){ //Endless Settings is chosen for Type of Game
 																				 //Updates Animation
 																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[2].posX;
 																				 gameSettingsOptions[2].parameters.fillStyle= "#0365FA";
@@ -1003,7 +1126,7 @@ function init() {
 																				 //Sets the Game Setting
 																				 gameSettingsOptions[0].typeOfGame= gameSettingsOptions[2].parameters.text;
 																			 }
-																			 else if (event.object == gameSettingsOptions[3]){ //Last Man Standing Settings is chosen for Type of Game
+																			 else if (event.object.name == "lastManStanding"){ //Last Man Standing Settings is chosen for Type of Game
 																				 //Updates Animation
 																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[3].posX;
 																				 gameSettingsOptions[3].parameters.fillStyle= "#0365FA";
@@ -1081,7 +1204,7 @@ function init() {
 																			 }
 																			 //Fruits
 																			 //Apple selection																 
-																			 else if (event.object == gameSettingsOptions[9]){
+																			 else if (event.object.name == "appleOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].apple){
 																					 gameSettingsOptions[9].material.color.set("#7f7f7f");
@@ -1093,7 +1216,7 @@ function init() {
 																				 }
 																			 }
 																			 //Banana selection																 
-																			 else if (event.object == gameSettingsOptions[10]){
+																			 else if (event.object.name == "bananaOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].banana){
 																					 gameSettingsOptions[10].material.color.set("#7f7f7f");
@@ -1105,7 +1228,7 @@ function init() {
 																				 }
 																			 }
 																			 //Cherry selection																 
-																			 else if (event.object == gameSettingsOptions[11]){
+																			 else if (event.object.name == "cherryOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].cherry){
 																					 gameSettingsOptions[11].material.color.set("#7f7f7f");
@@ -1117,7 +1240,7 @@ function init() {
 																				 }
 																			 }
 																			 //Grape selection																 
-																			 else if (event.object == gameSettingsOptions[12]){
+																			 else if (event.object.name == "grapeOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].grape){
 																					 gameSettingsOptions[12].material.color.set("#7f7f7f");
@@ -1129,7 +1252,7 @@ function init() {
 																				 }
 																			 }
 																			 //Orange selection																 
-																			 else if (event.object == gameSettingsOptions[13]){
+																			 else if (event.object.name == "orangeOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].orange){
 																					 gameSettingsOptions[13].material.color.set("#7f7f7f");
@@ -1141,7 +1264,7 @@ function init() {
 																				 }
 																			 }
 																			 //Pear selection																 
-																			 else if (event.object == gameSettingsOptions[14]){
+																			 else if (event.object.name == "pearOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].pear){
 																					 gameSettingsOptions[14].material.color.set("#7f7f7f");
@@ -1153,7 +1276,7 @@ function init() {
 																				 }
 																			 }
 																			 //Pretzel selection																 
-																			 else if (event.object == gameSettingsOptions[15]){
+																			 else if (event.object.name == "pretzelOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].pretzel){
 																					 gameSettingsOptions[15].material.color.set("#7f7f7f");
@@ -1165,7 +1288,7 @@ function init() {
 																				 }
 																			 }
 																			 //Strawberry selection																 
-																			 else if (event.object == gameSettingsOptions[16]){
+																			 else if (event.object.name == "strawberryOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].strawberry){
 																					 gameSettingsOptions[16].material.color.set("#7f7f7f");
@@ -1442,6 +1565,8 @@ function init() {
 																				 gameButton.position.set(gameButton.posX, gameButton.posY, gameButton.posZ);
 																			 else if (event.object == bgButton)
 																				 bgButton.position.set(bgButton.posX, bgButton.posY, bgButton.posZ);
+																			else if (event.object == gsButton)
+																				 gsButton.position.set(gsButton.posX, gsButton.posY, gsButton.posZ);
 																			 else if (event.object == NorthButton)
 																				 NorthButton.position.set(NorthButton.posX, NorthButton.posY, NorthButton.posZ);
 																			 else if (event.object == SouthButton)
@@ -2022,7 +2147,7 @@ function init() {
 		 ClydeText =  new THREE.SpriteMaterial( { map: Texture, color: 0xffffff } );
 		 Style2Texture.push(ClydeText);
 		 
-		 //---------------------Style 3 Ghost Human!!!---------------------
+		 //---------------------Style 3 Ghost Humanoid!!!---------------------
 		 
 		 //Blinky North
 		 Texture = loader.load( 'Images/Style3/Ghosts/Blinky/BlinkyU1.png' );
@@ -2553,7 +2678,7 @@ function init() {
 		 //P4Text
 		 P4Text = new text_creation("P4: 0", 0, 3, 0.8 );
 		 P4Text.parameters.font= "155px Arial";
-		 P4Text.parameters.fillStyle= "DarkOrchid ";
+		 P4Text.parameters.fillStyle= "DarkOrchid";
 		 P4Text.position.set(16,20,-3);
 		 P4Text.scale.set(16,2,1);
 		 P4Text.update();
@@ -3664,6 +3789,10 @@ function init() {
 		 
 		 var len = gameSettingsOptions.length;
 		 
+		 
+		// scene.add(occuranceBar);		 
+		 //scene.add( occuranceCircle );
+		  
 		 //Goes through the gameSettingsOptions Array and adds the text to the scene and turn the items set as buttons into buttons
 		 for(var x=1; x< len; x++){
 			 
@@ -3745,6 +3874,7 @@ function init() {
 		 typeOfGame.scale.set(24,7.5,1);
 		 typeOfGame.update();
 		 typeOfGame.displayType = "Scene";
+		 typeOfGame.name = "typeOfGame";
 		 gameSettingsOptions.push(typeOfGame);
 		 
 		 //endless
@@ -3758,6 +3888,7 @@ function init() {
 		 endless.scale.set(10,3,1);
 		 endless.update();
 		 endless.displayType = "Button";
+		 endless.name = "endless";
 		 gameSettingsOptions.push(endless);
 		 
 		 //lastManStanding
@@ -3771,6 +3902,7 @@ function init() {
 		 lastManStanding.scale.set(16,3,1);
 		 lastManStanding.update();
 		 lastManStanding.displayType = "Button";
+		 lastManStanding.name = "lastManStanding";
 		 gameSettingsOptions.push(lastManStanding);
 		 
 		 var roundTwo = yShifter-1;
@@ -3782,8 +3914,25 @@ function init() {
 		 fruitOccurance.scale.set(24,7.5,1);
 		 fruitOccurance.update();
 		 fruitOccurance.displayType = "Scene";
+		 fruitOccurance.name = "fruitOccurance";
 		 gameSettingsOptions.push(fruitOccurance);
 		 
+		 //Less Button
+		 
+		 //Outline
+		// var OutlineGeometry = new THREE.PlaneBufferGeometry (40, 3,0);
+		// var OutlineMaterial = new THREE.MeshBasicMaterial({color: 0x050538}); //RGB
+		// occuranceBar = new THREE.Mesh(OutlineGeometry, OutlineMaterial);
+		// occuranceBar.position.set(0, roundTwo-4, 0); 
+		  
+		 
+		// var geometry = new THREE.CircleGeometry( 5, 32 );
+		 //var material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+		 //occuranceCircle = new THREE.Mesh( geometry, material );
+		
+		  
+		 
+		  
 		 //lessFruits
 		 var lessFruits = new text_creation("Less Fruits", 0, 3, 0.6 );
 		 lessFruits.parameters.font= "115px Arial";
@@ -3846,6 +3995,7 @@ function init() {
 		 appleOption.position.set(appleOption.posX, appleOption.posY, appleOption.posZ);
 		 appleOption.material = appleTexture.clone();
 		 appleOption.material.color.set("#ffffff");
+		 appleOption.name = "appleOption";
 		 gameSettingsOptions.push(appleOption);
 		 
 		 //Banana
@@ -3859,6 +4009,7 @@ function init() {
 		 bananaOption.position.set(bananaOption.posX, bananaOption.posY, bananaOption.posZ);
 		 bananaOption.material = bananaTexture.clone();
 		 bananaOption.material.color.set("#ffffff");
+		 bananaOption.name = "bananaOption";
 		 gameSettingsOptions.push(bananaOption);
 		 
 		 //Cherry
@@ -3872,6 +4023,7 @@ function init() {
 		 cherryOption.position.set(cherryOption.posX, cherryOption.posY, cherryOption.posZ);
 		 cherryOption.material = cherryTexture.clone();
 		 cherryOption.material.color.set("#ffffff");
+		 cherryOption.name = "cherryOption";
 		 gameSettingsOptions.push(cherryOption);
 		 
 		 //Grape
@@ -3885,6 +4037,7 @@ function init() {
 		 grapeOption.position.set(grapeOption.posX, grapeOption.posY, grapeOption.posZ);
 		 grapeOption.material = grapeTexture.clone();
 		 grapeOption.material.color.set("#ffffff");
+		 grapeOption.name = "grapeOption";
 		 gameSettingsOptions.push(grapeOption);
 		 
 		 //Orange
@@ -3898,6 +4051,7 @@ function init() {
 		 orangeOption.position.set(orangeOption.posX, orangeOption.posY, orangeOption.posZ);
 		 orangeOption.material = orangeTexture.clone();
 		 orangeOption.material.color.set("#ffffff");
+		 orangeOption.name = "orangeOption";
 		 gameSettingsOptions.push(orangeOption);
 		 
 		 //Pear
@@ -3911,6 +4065,7 @@ function init() {
 		 pearOption.position.set(pearOption.posX, pearOption.posY, pearOption.posZ);
 		 pearOption.material = pearTexture.clone();
 		 pearOption.material.color.set("#ffffff");
+		 pearOption.name = "pearOption";
 		 gameSettingsOptions.push(pearOption);
 		 
 		 //Pretzel
@@ -3924,6 +4079,7 @@ function init() {
 		 pretzelOption.position.set(pretzelOption.posX, pretzelOption.posY, pretzelOption.posZ);
 		 pretzelOption.material = pretzelTexture.clone();
 		 pretzelOption.material.color.set("#ffffff");
+		 pretzelOption.name = "pretzelOption";
 		 gameSettingsOptions.push(pretzelOption);
 		 
 		 //Strawberry
@@ -3937,6 +4093,7 @@ function init() {
 		 strawberryOption.position.set(strawberryOption.posX, strawberryOption.posY, strawberryOption.posZ);
 		 strawberryOption.material = strawberryTexture;
 		 strawberryOption.material.color.set("#ffffff");
+		 strawberryOption.name = "strawberryOption";
 		 gameSettingsOptions.push(strawberryOption);
 		 
 		 //moreGoodFruits
@@ -4383,9 +4540,8 @@ function init() {
 			 colorExampleMaze[x].block.position.set(colorExampleMaze[x].x*xMultiplier-4, colorExampleMaze[x].y*yMultiplier+yShifter-3, -2);
 		 }
 		 
-		 //
-		 // textureBox, colorSchemeBox, exampleBox;
-		 //
+		 
+		 // textureBox, colorSchemeBox
 		 
 		 var outlineGeometry = new THREE.PlaneBufferGeometry (15, 30,0);
 		 var outlineMaterial = new THREE.MeshBasicMaterial( { color: 0x111111} ); 
@@ -4396,20 +4552,6 @@ function init() {
 		 var outlineMaterial = new THREE.MeshBasicMaterial( { color: 0x0f0f0f} ); 
 		 textureBox = new THREE.Mesh(outlineGeometry, outlineMaterial);
 		 textureBox.position.set(0.5, 11.5,-5);
-		 
-		 //Load Board
-		 //var planeGeometry = new THREE.PlaneBufferGeometry (40.5, 40,0);
-		 //var planeMaterial = new THREE.MeshBasicMaterial({color: 0x000000}); //RGB
-		 //Board = new THREE.Mesh(planeGeometry, planeMaterial);
-		 //Board.position.set(0,yShifter,-2.4); //xyz
-		 //scene.add(Board);
-
-		 //Outline
-		 //var OutlineGeometry = new THREE.PlaneBufferGeometry (49, 42,0);
-		 //var OutlineMaterial = new THREE.MeshBasicMaterial({color: 0x050538}); //RGB
-		 //Outline = new THREE.Mesh(OutlineGeometry, OutlineMaterial);
-		 //Outline.position.set(0,yShifter,-2.5); //xyz
-		 //scene.add(Outline);
 	 }
 	  
 	 //Remove Game Setting Screen(){
@@ -4670,7 +4812,7 @@ function init() {
 		 var texture = loader.load( 'Images/OriginalSprites/Sprite.gif' );
 		 texture.minFilter = THREE.LinearFilter;
 		 var pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 pic.text = "The default Sprites Sheet of the Ghost and the fruits      (Not including the Grapes).";
+		 pic.text = "The default Sprites Sheet of the Ghost and the fruits (Not including the Grapes).";
 		 pic.url = "https://pixshark.com/ms-pacman-pixel.htm";
 		 pic.scalingX = 20;
 		 pic.scalingY = 20;
@@ -4688,8 +4830,17 @@ function init() {
 		 texture = loader.load( 'Images/Style2/103599.png' );
 		 texture.minFilter = THREE.LinearFilter;
 		 pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
-		 pic.text = "The Style 2 Sprites Sheet has the same sprite              source as Style 1.";
+		 pic.text = "The Style 2 Sprites Sheet has the same sprite source as Style 1.";
 		 pic.url = "https://www.spriters-resource.com/pc_computer/pacmanchampionshipeditiondx/";
+		 pic.scalingX = 23;
+		 pic.scalingY = 23;
+		 creditDisplayArray.push(pic);
+		 //Style Sheet 3
+		 texture = loader.load( 'Images/Style3/Ghosts/custom_mlss___ghost_gang_by_karaszkun.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 pic.text = "The Style 3 Sprites Sheet source is from eKarasz on Deviantart. (If you click on the source, I'm 'youngj25').";
+		 pic.url = "https://www.deviantart.com/ekarasz/art/Custom-MLSS-Ghost-Gang-111332137";
 		 pic.scalingX = 23;
 		 pic.scalingY = 23;
 		 creditDisplayArray.push(pic);
@@ -5022,6 +5173,7 @@ function init() {
 		 texts.update();
 		 return texts;
 	 }
+	 
 	 
 }
 
