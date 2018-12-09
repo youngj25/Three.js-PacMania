@@ -762,32 +762,281 @@ function init() {
 			 sourceLinkButton.url = htpTextArray[sceneNumber].url;
 		 }
 		 else if(Game_Status == "Additional Game Setting"){
-			 
-			 colorThemes[0].ghostYardColor = colorThemes[2].ghostYardColor;
-			 colorThemes[0].portalColor = colorThemes[2].portalColor;
-			 colorThemes[0].wallColor = colorThemes[2].wallColor;
-			 
-			 colorThemes[2].parameters.fillStyle= "Gold";
-			 colorThemes[3].parameters.fillStyle= "Grey";
-			 colorThemes[4].parameters.fillStyle= "Grey";
-			 colorThemes[5].parameters.fillStyle= "Grey";
-			 colorThemes[6].parameters.fillStyle= "Grey";
-			 
-			 colorThemes[2].update();
-			 colorThemes[3].update();
-			 colorThemes[4].update();
-			 colorThemes[5].update();
-			 colorThemes[6].update();
-			 
-			 //Recolors the Maze
-			 for(var x = 0; x< colorExampleMaze.length; x++)																					 
-				 if(colorExampleMaze[x].type == "Portal")
-					 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].portalColor);
-				 else if(colorExampleMaze[x].type == "Ghost Yard")
-					 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].ghostYardColor);
-				 else
-					 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].wallColor);
-		 
+			 // For The Color Scheme
+			 if(e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y"){ 
+				 //North
+				 if(e.value == -1){
+					 if(colorThemes[0].colorThemes == 3){
+						 colorThemes[2].parameters.fillStyle= "Gold";
+						 colorThemes[3].parameters.fillStyle= "Grey";
+						 colorThemes[4].parameters.fillStyle= "Grey";
+						 colorThemes[5].parameters.fillStyle= "Grey";
+						 colorThemes[6].parameters.fillStyle= "Grey";
+						 colorThemes[0].colorThemes = 2;
+					 }
+					 else if(colorThemes[0].colorThemes == 4){
+						 colorThemes[2].parameters.fillStyle= "Grey";
+						 colorThemes[3].parameters.fillStyle= "Gold";
+						 colorThemes[4].parameters.fillStyle= "Grey";
+						 colorThemes[5].parameters.fillStyle= "Grey";
+						 colorThemes[6].parameters.fillStyle= "Grey";
+						 colorThemes[0].colorThemes = 3;
+					 }
+					 else if(colorThemes[0].colorThemes == 5){
+						 colorThemes[2].parameters.fillStyle= "Grey";
+						 colorThemes[3].parameters.fillStyle= "Grey";
+						 colorThemes[4].parameters.fillStyle= "Gold";
+						 colorThemes[5].parameters.fillStyle= "Grey";
+						 colorThemes[6].parameters.fillStyle= "Grey";
+						 colorThemes[0].colorThemes = 4;
+					 }
+					 else if(colorThemes[0].colorThemes == 6){
+						 colorThemes[2].parameters.fillStyle= "Grey";
+						 colorThemes[3].parameters.fillStyle= "Grey";
+						 colorThemes[4].parameters.fillStyle= "Grey";
+						 colorThemes[5].parameters.fillStyle= "Gold";
+						 colorThemes[6].parameters.fillStyle= "Grey";
+						 colorThemes[0].colorThemes = 5;
+					 }
+					 
+				 }
+				 //South
+				 else if(e.value == 1){
+					 if(colorThemes[0].colorThemes == 2){
+						 colorThemes[2].parameters.fillStyle= "Grey";
+						 colorThemes[3].parameters.fillStyle= "Gold";
+						 colorThemes[4].parameters.fillStyle= "Grey";
+						 colorThemes[5].parameters.fillStyle= "Grey";
+						 colorThemes[6].parameters.fillStyle= "Grey";
+						 colorThemes[0].colorThemes = 3;
+					 }
+					 else if(colorThemes[0].colorThemes == 3){
+						 colorThemes[2].parameters.fillStyle= "Grey";
+						 colorThemes[3].parameters.fillStyle= "Grey";
+						 colorThemes[4].parameters.fillStyle= "Gold";
+						 colorThemes[5].parameters.fillStyle= "Grey";
+						 colorThemes[6].parameters.fillStyle= "Grey";
+						 colorThemes[0].colorThemes = 4;
+					 }
+					 else if(colorThemes[0].colorThemes == 4){
+						 colorThemes[2].parameters.fillStyle= "Grey";
+						 colorThemes[3].parameters.fillStyle= "Grey";
+						 colorThemes[4].parameters.fillStyle= "Grey";
+						 colorThemes[5].parameters.fillStyle= "Gold";
+						 colorThemes[6].parameters.fillStyle= "Grey";
+						 colorThemes[0].colorThemes = 5;
+					 }
+					 else if(colorThemes[0].colorThemes == 5){
+						 colorThemes[2].parameters.fillStyle= "Grey";
+						 colorThemes[3].parameters.fillStyle= "Grey";
+						 colorThemes[4].parameters.fillStyle= "Grey";
+						 colorThemes[5].parameters.fillStyle= "Grey";
+						 colorThemes[6].parameters.fillStyle= "Gold";
+						 colorThemes[0].colorThemes = 6;
+					 }
+					 
+				 }
+				 
+				 colorThemes[0].ghostYardColor = colorThemes[colorThemes[0].colorThemes].ghostYardColor;
+				 colorThemes[0].portalColor = colorThemes[colorThemes[0].colorThemes].portalColor;
+				 colorThemes[0].wallColor = colorThemes[colorThemes[0].colorThemes].wallColor;
+				 
+				 colorThemes[2].update();
+				 colorThemes[3].update();
+				 colorThemes[4].update();
+				 colorThemes[5].update();
+				 colorThemes[6].update();
+				 
+				 //Recolors the Maze
+				 for(var x = 0; x< colorExampleMaze.length; x++)																					 
+					 if(colorExampleMaze[x].type == "Portal")
+						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].portalColor);
+					 else if(colorExampleMaze[x].type == "Ghost Yard")
+						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].ghostYardColor);
+					 else
+						 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].wallColor);
+			 }
+			 // For The Sprite Textures
+			 else if(e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X"){
+				 //East
+				 if(e.value ==1){
+					 if(colorThemes[0].sprites == 8){
+						 colorThemes[0].sprites = 9;
+						 colorThemes[8].parameters.fillStyle= "#393939";
+						 colorThemes[9].parameters.fillStyle= "Gold";
+						 colorThemes[10].parameters.fillStyle= "#393939";
+						 colorThemes[11].parameters.fillStyle= "#393939";
+						 
+						 //Update Texture
+						 //Becomes Style 1
+						 BlinkyTexture = Style1Texture.slice(0, 8);
+						 PinkyTexture = Style1Texture.slice(8, 16);
+						 InkyTexture = Style1Texture.slice(16, 24);
+						 ClydeTexture = Style1Texture.slice(24, 32);
+						 
+						 //Fruits/Pellets
+						 pelletTexture = Style1Texture[Style1Texture.length-9];
+						 appleTexture = Style1Texture[Style1Texture.length-8];
+						 bananaTexture = Style1Texture[Style1Texture.length-7];
+						 cherryTexture = Style1Texture[Style1Texture.length-6];
+						 grapeTexture = Style1Texture[Style1Texture.length-5];
+						 orangeTexture = Style1Texture[Style1Texture.length-4];
+						 pearTexture = Style1Texture[Style1Texture.length-3];
+						 pretzelTexture = Style1Texture[Style1Texture.length-2];
+						 strawberryTexture = Style1Texture[Style1Texture.length-1];
+						 
+						 backgroundState ="Style 1";
+					 }
+					 else if(colorThemes[0].sprites == 9){
+						 colorThemes[0].sprites = 10;
+						 colorThemes[8].parameters.fillStyle= "#393939";
+						 colorThemes[9].parameters.fillStyle= "#393939";
+						 colorThemes[10].parameters.fillStyle= "Gold";
+						 colorThemes[11].parameters.fillStyle= "#393939";
+						 
+						 //Update Texture
+						 //Style 2
+						 BlinkyTexture = Style2Texture.slice(0, 8);
+						 PinkyTexture = Style2Texture.slice(8, 16);
+						 InkyTexture = Style2Texture.slice(16, 24);
+						 ClydeTexture = Style2Texture.slice(24, 32);
+						 
+						 //Fruits/Pellets
+						 pelletTexture = Style2Texture[Style2Texture.length-9];
+						 appleTexture = Style2Texture[Style2Texture.length-8];
+						 bananaTexture = Style2Texture[Style2Texture.length-7];
+						 cherryTexture = Style2Texture[Style2Texture.length-6];
+						 grapeTexture = Style2Texture[Style2Texture.length-5];
+						 orangeTexture = Style2Texture[Style2Texture.length-4];
+						 pearTexture = Style2Texture[Style2Texture.length-3];
+						 pretzelTexture = Style2Texture[Style2Texture.length-2];
+						 strawberryTexture = Style2Texture[Style2Texture.length-1];
+						 
+						 backgroundState ="Style 2";
+					 }
+					 else if(colorThemes[0].sprites == 10){
+						 colorThemes[8].parameters.fillStyle= "#393939";
+						 colorThemes[9].parameters.fillStyle= "#393939";
+						 colorThemes[10].parameters.fillStyle= "#393939";
+						 colorThemes[11].parameters.fillStyle= "Gold";
+						 colorThemes[0].sprites = 11;
+						 //Update Texture
+						 //Style 3
+						 BlinkyTexture = Style3Texture.slice(0, 8);
+						 PinkyTexture = Style3Texture.slice(8, 16);
+						 InkyTexture = Style3Texture.slice(16, 24);
+						 ClydeTexture = Style3Texture.slice(24, 32);
+						 
+						 //Fruits/Pellets
+						 pelletTexture = Style2Texture[Style2Texture.length-9];
+						 appleTexture = Style2Texture[Style2Texture.length-8];
+						 bananaTexture = Style2Texture[Style2Texture.length-7];
+						 cherryTexture = Style2Texture[Style2Texture.length-6];
+						 grapeTexture = Style2Texture[Style2Texture.length-5];
+						 orangeTexture = Style2Texture[Style2Texture.length-4];
+						 pearTexture = Style2Texture[Style2Texture.length-3];
+						 pretzelTexture = Style2Texture[Style2Texture.length-2];
+						 strawberryTexture = Style2Texture[Style2Texture.length-1];
+						 
+						 backgroundState ="Style 3";
+					 }
+				 }
+				 //West 
+				 else if(e.value == -1){
+					 if(colorThemes[0].sprites == 9){
+						 colorThemes[0].sprites = 8;
+						 colorThemes[8].parameters.fillStyle= "Gold";
+						 colorThemes[9].parameters.fillStyle= "#393939";
+						 colorThemes[10].parameters.fillStyle= "#393939";
+						 colorThemes[11].parameters.fillStyle= "#393939";
+						 
+						 //Update Texture
+						 //Becomes Default
+						 BlinkyTexture = OriginalTexture.slice(0, 8);
+						 PinkyTexture = OriginalTexture.slice(8, 16);
+						 InkyTexture = OriginalTexture.slice(16, 24);
+						 ClydeTexture = OriginalTexture.slice(24, 32);
+						 
+						 //Fruits/Pellets
+						 pelletTexture = OriginalTexture[OriginalTexture.length-9];
+						 appleTexture = OriginalTexture[OriginalTexture.length-8];
+						 bananaTexture = OriginalTexture[OriginalTexture.length-7];
+						 cherryTexture = OriginalTexture[OriginalTexture.length-6];
+						 grapeTexture = OriginalTexture[OriginalTexture.length-5];
+						 orangeTexture = OriginalTexture[OriginalTexture.length-4];
+						 pearTexture = OriginalTexture[OriginalTexture.length-3];
+						 pretzelTexture = OriginalTexture[OriginalTexture.length-2];
+						 strawberryTexture = OriginalTexture[OriginalTexture.length-1];
+						 
+						 backgroundState ="Original";
+					 }
+					 else if(colorThemes[0].sprites == 10){
+						 colorThemes[0].sprites = 9;
+						 colorThemes[8].parameters.fillStyle= "#393939";
+						 colorThemes[9].parameters.fillStyle= "Gold";
+						 colorThemes[10].parameters.fillStyle= "#393939";
+						 colorThemes[11].parameters.fillStyle= "#393939";
+						 
+						 //Update Texture
+						 //Becomes Style 1
+						 BlinkyTexture = Style1Texture.slice(0, 8);
+						 PinkyTexture = Style1Texture.slice(8, 16);
+						 InkyTexture = Style1Texture.slice(16, 24);
+						 ClydeTexture = Style1Texture.slice(24, 32);
+						 
+						 //Fruits/Pellets
+						 pelletTexture = Style1Texture[Style1Texture.length-9];
+						 appleTexture = Style1Texture[Style1Texture.length-8];
+						 bananaTexture = Style1Texture[Style1Texture.length-7];
+						 cherryTexture = Style1Texture[Style1Texture.length-6];
+						 grapeTexture = Style1Texture[Style1Texture.length-5];
+						 orangeTexture = Style1Texture[Style1Texture.length-4];
+						 pearTexture = Style1Texture[Style1Texture.length-3];
+						 pretzelTexture = Style1Texture[Style1Texture.length-2];
+						 strawberryTexture = Style1Texture[Style1Texture.length-1];
+						 
+						 backgroundState ="Style 1";
+					 }
+					 else if(colorThemes[0].sprites == 11){
+						 colorThemes[0].sprites = 10;
+						 colorThemes[8].parameters.fillStyle= "#393939";
+						 colorThemes[9].parameters.fillStyle= "#393939";
+						 colorThemes[10].parameters.fillStyle= "Gold";
+						 colorThemes[11].parameters.fillStyle= "#393939";
+						 
+						 //Update Texture
+						 //Style 2
+						 BlinkyTexture = Style2Texture.slice(0, 8);
+						 PinkyTexture = Style2Texture.slice(8, 16);
+						 InkyTexture = Style2Texture.slice(16, 24);
+						 ClydeTexture = Style2Texture.slice(24, 32);
+						 
+						 //Fruits/Pellets
+						 pelletTexture = Style2Texture[Style2Texture.length-9];
+						 appleTexture = Style2Texture[Style2Texture.length-8];
+						 bananaTexture = Style2Texture[Style2Texture.length-7];
+						 cherryTexture = Style2Texture[Style2Texture.length-6];
+						 grapeTexture = Style2Texture[Style2Texture.length-5];
+						 orangeTexture = Style2Texture[Style2Texture.length-4];
+						 pearTexture = Style2Texture[Style2Texture.length-3];
+						 pretzelTexture = Style2Texture[Style2Texture.length-2];
+						 strawberryTexture = Style2Texture[Style2Texture.length-1];
+						 
+						 backgroundState ="Style 2";
+					 }
+				 }
+				 
+				 //Update Themes
+				 colorThemes[8].update();
+				 colorThemes[9].update();
+				 colorThemes[10].update();
+				 colorThemes[11].update();
+				 
+				 //Temp update
+				 tempGhost.material = BlinkyTexture[5];
+				 tempFruit.material = appleTexture;
+				 
+			 }
 		 }
 	 });
 
@@ -1352,6 +1601,7 @@ function init() {
 																				 colorThemes[0].ghostYardColor = colorThemes[2].ghostYardColor;
 																				 colorThemes[0].portalColor = colorThemes[2].portalColor;
 																				 colorThemes[0].wallColor = colorThemes[2].wallColor;
+																				 colorThemes[0].colorThemes = 2;
 																				 colorThemes[2].parameters.fillStyle= "Gold";
 																				 colorThemes[3].parameters.fillStyle= "Grey";
 																				 colorThemes[4].parameters.fillStyle= "Grey";
@@ -1376,6 +1626,7 @@ function init() {
 																				 colorThemes[0].ghostYardColor = colorThemes[3].ghostYardColor;
 																				 colorThemes[0].portalColor = colorThemes[3].portalColor;
 																				 colorThemes[0].wallColor = colorThemes[3].wallColor;
+																				 colorThemes[0].colorThemes = 3;
 																				 colorThemes[2].parameters.fillStyle= "Grey";
 																				 colorThemes[3].parameters.fillStyle= "Gold";
 																				 colorThemes[4].parameters.fillStyle= "Grey";
@@ -1399,6 +1650,7 @@ function init() {
 																				 colorThemes[0].ghostYardColor = colorThemes[4].ghostYardColor;
 																				 colorThemes[0].portalColor = colorThemes[4].portalColor;
 																				 colorThemes[0].wallColor = colorThemes[4].wallColor;
+																				 colorThemes[0].colorThemes = 4;
 																				 colorThemes[2].parameters.fillStyle= "Grey";
 																				 colorThemes[3].parameters.fillStyle= "Grey";
 																				 colorThemes[4].parameters.fillStyle= "Gold";
@@ -1422,6 +1674,7 @@ function init() {
 																				 colorThemes[0].ghostYardColor = colorThemes[5].ghostYardColor;
 																				 colorThemes[0].portalColor = colorThemes[5].portalColor;
 																				 colorThemes[0].wallColor = colorThemes[5].wallColor;
+																				 colorThemes[0].colorThemes = 5;
 																				 colorThemes[2].parameters.fillStyle= "Grey";
 																				 colorThemes[3].parameters.fillStyle= "Grey";
 																				 colorThemes[4].parameters.fillStyle= "Grey";
@@ -1445,6 +1698,7 @@ function init() {
 																				 colorThemes[0].ghostYardColor = colorThemes[6].ghostYardColor;
 																				 colorThemes[0].portalColor = colorThemes[6].portalColor;
 																				 colorThemes[0].wallColor = colorThemes[6].wallColor;
+																				 colorThemes[0].colorThemes = 6;
 																				 colorThemes[2].parameters.fillStyle= "Grey";
 																				 colorThemes[3].parameters.fillStyle= "Grey";
 																				 colorThemes[4].parameters.fillStyle= "Grey";
@@ -1471,6 +1725,7 @@ function init() {
 																				 colorThemes[9].parameters.fillStyle= "#393939";
 																				 colorThemes[10].parameters.fillStyle= "#393939";
 																				 colorThemes[11].parameters.fillStyle= "#393939";
+																				 colorThemes[0].sprites = 8;
 																				 colorThemes[8].update();
 																				 colorThemes[9].update();
 																				 colorThemes[10].update();
@@ -1504,6 +1759,7 @@ function init() {
 																				 colorThemes[9].parameters.fillStyle= "Gold";
 																				 colorThemes[10].parameters.fillStyle= "#393939";
 																				 colorThemes[11].parameters.fillStyle= "#393939";
+																				 colorThemes[0].sprites = 9;
 																				 colorThemes[8].update();
 																				 colorThemes[9].update();
 																				 colorThemes[10].update();
@@ -1537,6 +1793,7 @@ function init() {
 																				 colorThemes[9].parameters.fillStyle= "#393939";
 																				 colorThemes[10].parameters.fillStyle= "Gold";
 																				 colorThemes[11].parameters.fillStyle= "#393939";
+																				 colorThemes[0].sprites = 10;
 																				 colorThemes[8].update();
 																				 colorThemes[9].update();
 																				 colorThemes[10].update();
@@ -1570,6 +1827,7 @@ function init() {
 																				 colorThemes[9].parameters.fillStyle= "#393939";
 																				 colorThemes[10].parameters.fillStyle= "#393939";
 																				 colorThemes[11].parameters.fillStyle= "Gold";
+																				 colorThemes[0].sprites = 11;
 																				 colorThemes[8].update();
 																				 colorThemes[9].update();
 																				 colorThemes[10].update();
@@ -4250,7 +4508,9 @@ function init() {
 		 var defaultColorsLoaded = {
 			 wallColor : "0x2252df",
 			 portalColor : "0xff528f",
-			 ghostYardColor : "0x55ff5f"
+			 ghostYardColor : "0x55ff5f",
+			 colorThemes : 2,
+			 sprites : 8
 		 };
 		 colorThemes.push(defaultColorsLoaded);
 		 
