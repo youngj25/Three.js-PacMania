@@ -106,6 +106,7 @@ function init() {
 	 PacMania.on('Update Game State', function(data){
 		 if(Game_Status == "Active"){
 			 
+			 
 			 //Player Text
 			 if(data.PacList.length >= 1){
 				 scene.add(P1Text);
@@ -408,7 +409,7 @@ function init() {
 				 pellets.splice(pellets.length-1,1);
 			 }
 		 }
-	 });
+	});
 	 
 	 //Stops the Game, it's Over
 	 PacMania.on('Game Over', function(data){
@@ -588,11 +589,27 @@ function init() {
 				 load_Credit_Screen();
 				 scene.remove(SectionHighlight);
 			 }
-			 
+			 else if(SectionHighlight.button == gsButton.name){
+				 //Remove Buttons
+				 remove_Start_Screen();
+				 load_Additional_Game_Settings_Screen();
+				 scene.remove(SectionHighlight);
+			 }
 			 
 		 }
-		 else if((Game_Status == "About" || Game_Status == "Credit" || Game_Status == "How to Play") && e.control == "FACE_2"){
+		 else if((Game_Status == "About" || Game_Status == "Credit" || Game_Status == "How to Play" || Game_Status == "How to Play") && e.control == "FACE_2"){
 			 return_to_Start_Screen();
+		 }
+		 else if(Game_Status == "Additional Game Setting" && e.control == "FACE_2"){
+			 for(var x = 1; x<colorThemes.length; x++)
+				 removeButton(colorThemes[x]);
+			 
+			 for(var x = 0; x<colorExampleMaze.length; x++)
+				 scene.remove(colorExampleMaze[x].block);
+			 
+			 scene.remove(textureBox);
+			 scene.remove(colorSchemeBox);
+			 return_to_Start_Screen();			 
 		 }
 		 //return_to_Start_Screen();
 		 else console.log(e.control);
@@ -743,6 +760,34 @@ function init() {
 			 
 			 //Update Source :Link
 			 sourceLinkButton.url = htpTextArray[sceneNumber].url;
+		 }
+		 else if(Game_Status == "Additional Game Setting"){
+			 
+			 colorThemes[0].ghostYardColor = colorThemes[2].ghostYardColor;
+			 colorThemes[0].portalColor = colorThemes[2].portalColor;
+			 colorThemes[0].wallColor = colorThemes[2].wallColor;
+			 
+			 colorThemes[2].parameters.fillStyle= "Gold";
+			 colorThemes[3].parameters.fillStyle= "Grey";
+			 colorThemes[4].parameters.fillStyle= "Grey";
+			 colorThemes[5].parameters.fillStyle= "Grey";
+			 colorThemes[6].parameters.fillStyle= "Grey";
+			 
+			 colorThemes[2].update();
+			 colorThemes[3].update();
+			 colorThemes[4].update();
+			 colorThemes[5].update();
+			 colorThemes[6].update();
+			 
+			 //Recolors the Maze
+			 for(var x = 0; x< colorExampleMaze.length; x++)																					 
+				 if(colorExampleMaze[x].type == "Portal")
+					 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].portalColor);
+				 else if(colorExampleMaze[x].type == "Ghost Yard")
+					 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].ghostYardColor);
+				 else
+					 colorExampleMaze[x].block.material.color.setHex(colorThemes[0].wallColor);
+		 
 		 }
 	 });
 
