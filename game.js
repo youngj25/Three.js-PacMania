@@ -6,7 +6,7 @@ var Game_Status="Ready",camera;
 var objects = [];
 var bgButton, tempGhost, tempFruit, startButton, backgroundState = 'Original'; //Background functions
 var aboutButton, howToPlayButton, creditButton, titleSectionText, returnButton, playAgainButton;
-var gameSettingsOptions=[], countDown,occuranceBar, occuranceCircle;//For the Waiting Screen
+var gameSettingsOptions=[], countDown, occuranceBar, occuranceCircle;//For the Waiting Screen
 
 //For Players Controls
 var NorthButton, SouthButton, EastButton, WestButton; //FOR THE TOUCH SCREENS CONtrols The four buttons
@@ -561,6 +561,21 @@ function init() {
 				 PacMania.emit('Move',data);				 
 			 }
 		 }
+		 else if((Game_Status == "Waiting" && e.control == "START_FORWARD") ||(SectionHighlight.button == startButton.name && e.control == "FACE_1") ){
+			 PacMania.emit('Player has joined',gameSettingsOptions[0]);
+			 remove_Game_Settings_Screen();
+			 removeButton(returnButton);
+			 controllerDirection = "";
+			 scene.remove(occuranceBar);		 
+			 scene.remove( occuranceCircle );
+			 if(scene.getObjectByName('SectionHighlight') != null)
+				 scene.remove(SectionHighlight);
+			 load_Game_Maze_1();			 
+		 }
+		 else if(Game_Status == "Waiting" && e.control == "FACE_2"){
+			 remove_Game_Settings_Screen();
+			 return_to_Start_Screen();
+		 }
 		 else if(Game_Status == "Ready" && e.control == "FACE_1"){
 				 
 			 if(SectionHighlight.button == gameButton.name){
@@ -611,7 +626,59 @@ function init() {
 			 scene.remove(colorSchemeBox);
 			 return_to_Start_Screen();			 
 		 }
-		 //return_to_Start_Screen();
+		 else if(Game_Status == "Game Over" && e.control == "FACE_2"){
+			 scene.remove(gameOver);
+			 scene.remove(Board);
+			 scene.remove(Outline);
+			  
+			 if(scene.getObjectByName('king') != null)
+				 scene.remove(king);
+			 else if(scene.getObjectByName('winner') != null)
+				 scene.remove(winner);
+			 else if(scene.getObjectByName('fallenKing') != null)
+				 scene.remove(fallenKing);
+			 else if(scene.getObjectByName('sorry') != null)
+				 scene.remove(sorry);
+			 
+			 //Removing the extra pellets
+			 while(pellets.length > 0){
+				 scene.remove(pellets[0]);
+				 pellets.splice(0,1);
+			 }
+			 
+			 //Removing the maze
+			 while(gameMaze.length > 0){
+				 scene.remove(gameMaze[0].block);
+				 gameMaze.splice(0,1);
+			 }
+			 
+			 //Remove Ghost if present
+			 while(GhostList.length >0){
+				 scene.remove(GhostList[0]);
+				 GhostList.splice(0,1);
+			 }
+			 
+			 //Remove Players if present
+			 while(PacList.length >0){
+				 scene.remove(PacList[0]);
+				 PacList.splice(0,1);
+			 }		 
+			 PacList = [];
+			 
+			 //Removing Buttons
+			 removeButton(NorthButton);
+			 removeButton(SouthButton);
+			 removeButton(EastButton);
+			 removeButton(WestButton);
+			 
+			 //Remove the Scores
+			 scene.remove(P1Text);
+			 scene.remove(P2Text);
+			 scene.remove(P3Text);
+			 scene.remove(P4Text);
+			 P1SCORE = P2SCORE = P3SCORE = P4SCORE = 0;
+			 return_to_Start_Screen();
+		 }
 		 else console.log(e.control);
 	 });
 	 
@@ -645,38 +712,45 @@ function init() {
 			 if(scene.getObjectByName('SectionHighlight') == null){
 				 SectionHighlight.position.set(gameButton.position.x,gameButton.position.y-.5, -1);
 				 SectionHighlight.button = gameButton.name;
+				 SectionHighlight.geometry.parameters.width = gameButton.geometry.parameters.width;
 				 scene.add(SectionHighlight);
 			 }
 			 //Above Credits Button going Leftwards
 			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X")  && e.value == -1 && SectionHighlight.button != gsButton.name){
 				 SectionHighlight.position.set(aboutButton.position.x-.5,aboutButton.position.y-1, -1);	
 				 SectionHighlight.button = aboutButton.name;
+				 SectionHighlight.geometry.parameters.width = aboutButton.geometry.parameters.width;
 			 }
 			 //Above Credits Button going Rightwards
 			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X")  && e.value == 1 && SectionHighlight.button != gsButton.name){
 				 SectionHighlight.position.set(howToPlayButton.position.x+1,howToPlayButton.position.y-1, -1);
 				 SectionHighlight.button = howToPlayButton.name;
+				 SectionHighlight.geometry.parameters.width = howToPlayButton.geometry.parameters.width;
 			 }
 			 //Above Credit Button going Upwards
 			 else if(e.axis == "LEFT_STICK_Y" && e.value == -1 && SectionHighlight.button != gsButton.name){
 				 SectionHighlight.position.set(gameButton.position.x,gameButton.position.y-.5, -1);
 				 SectionHighlight.button = gameButton.name;
+				 SectionHighlight.geometry.parameters.width = gameButton.geometry.parameters.width;
 			 }
 			 //Above Credit Button going Downwards
 			 else if(e.axis == "LEFT_STICK_Y" && e.value == 1 && SectionHighlight.button != gsButton.name && SectionHighlight.button != creditButton.name){
 				 SectionHighlight.position.set(creditButton.position.x,creditButton.position.y-1.5, -1);
 				 SectionHighlight.button = creditButton.name;
+				 SectionHighlight.geometry.parameters.width = creditButton.geometry.parameters.width;
 			 }
 			 //At Credit Button going Downwards
 			 else if(e.axis == "LEFT_STICK_Y" && e.value == 1 && SectionHighlight.button != gsButton.name){
 				 SectionHighlight.position.set(gsButton.position.x,gsButton.position.y, -2);
 				 SectionHighlight.button = gsButton.name;
+				 SectionHighlight.geometry.parameters.width = gsButton.scale.x;
 				 console.log("down");
 			 } 
 			 //At Game Setting Button going Upwards
 			 else if(e.axis == "LEFT_STICK_Y" && e.value == -1 && SectionHighlight.button == gsButton.name){
 				 SectionHighlight.position.set(creditButton.position.x,creditButton.position.y-1.5, -1);
 				 SectionHighlight.button = creditButton.name;
+				 SectionHighlight.geometry.parameters.width = creditButton.geometry.parameters.width;
 			 }
 			 
 		 
@@ -1035,8 +1109,59 @@ function init() {
 				 //Temp update
 				 tempGhost.material = BlinkyTexture[5];
 				 tempFruit.material = appleTexture;
-				 
 			 }
+		 }
+		 else if(Game_Status == "Waiting"){
+			 //Ensure that the 'SectionHighlight' is there first
+			 if(scene.getObjectByName('SectionHighlight') == null){
+				 SectionHighlight.position.set(gameSettingsOptions[2].position.x,gameSettingsOptions[2].position.y+.5, -1);
+				 SectionHighlight.button = gameSettingsOptions[2].name;
+				 SectionHighlight.scale.x = gameSettingsOptions[2].geometry.parameters.width;
+				 scene.add(SectionHighlight);
+			 }
+			 // TYPES OF GAMES------------------
+			 //At "Type of Games" going Rightwards
+			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X")  && e.value == 1 && SectionHighlight.button == gameSettingsOptions[2].name){
+				 SectionHighlight.position.set(gameSettingsOptions[3].position.x+1,gameSettingsOptions[3].position.y+.5, -1);
+				 SectionHighlight.button = gameSettingsOptions[3].name;
+				 SectionHighlight.scale.x = gameSettingsOptions[3].geometry.parameters.width;
+			 }
+			  //At "Type of Games" going Leftwards
+			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X")  && e.value == -1 && SectionHighlight.button == gameSettingsOptions[3].name){
+				 SectionHighlight.position.set(gameSettingsOptions[2].position.x+1,gameSettingsOptions[2].position.y+.5, -1);
+				 SectionHighlight.button = gameSettingsOptions[2].name;
+				 SectionHighlight.scale.x = gameSettingsOptions[2].geometry.parameters.width;
+			 }
+			 //At "Type of Games " going Downwards
+			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == 1 && (SectionHighlight.button == gameSettingsOptions[2].name || SectionHighlight.button == gameSettingsOptions[3].name)){
+				 SectionHighlight.position.set(occuranceBar.position.x,occuranceBar.position.y, -1);
+				 SectionHighlight.button = occuranceBar.name;
+				 SectionHighlight.scale.x = occuranceBar.geometry.parameters.width;
+			 }
+			 //FRUIT OCCURANCE-----------------------
+			 //At "Fruit Occurance" going Rightwards/Leftwards
+			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X") && SectionHighlight.button == occuranceBar.name){
+				 //Rightwards
+				 if(e.value == 1)
+					 occuranceCircle.position.x += 1.25;
+				 if(e.value == -1)
+					 occuranceCircle.position.x -= 1.25;
+				 
+				 if(occuranceCircle.position.x > occuranceBar.geometry.parameters.width/2)
+					 occuranceCircle.position.x = occuranceBar.geometry.parameters.width/2; 
+				 else if(occuranceCircle.position.x < -(occuranceBar.geometry.parameters.width/2))
+					 occuranceCircle.position.x = -(occuranceBar.geometry.parameters.width/2); 
+					
+				 console.log(occuranceCircle.position.x);
+				 gameSettingsOptions[0].fruitOccurance = (16 + occuranceCircle.position.x) * 2.5 + 10;
+			 }
+			 //At "Type of Games " going Downwards
+			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == 1 && SectionHighlight.button == occuranceBar.name){
+				 SectionHighlight.position.set(startButton.position.x,startButton.position.y, -1);
+				 SectionHighlight.button = startButton.name;
+				 SectionHighlight.scale.x = startButton.geometry.parameters.width;
+			 }
+			 
 		 }
 	 });
 
@@ -1123,6 +1248,8 @@ function init() {
 																				 scene.remove(occuranceBar);		 
 																				 scene.remove( occuranceCircle );
 																				 load_Game_Maze_1();
+																				 if(scene.getObjectByName('SectionHighlight') != null)
+																					 scene.remove(SectionHighlight);
 																			 }
 																			 else if (event.object == gameButton){
 																				 //Rescale and Reposition the Title
@@ -1412,9 +1539,8 @@ function init() {
 																			 //Type of Game
 																			 else if (event.object.name == "endless"){ //Endless Settings is chosen for Type of Game
 																				 //Updates Animation
-																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[2].posX;
-																				 gameSettingsOptions[2].parameters.fillStyle= "#0365FA";
-																				 gameSettingsOptions[3].parameters.fillStyle= "Midnightblue";
+																				 gameSettingsOptions[2].parameters.fillStyle= "#03A5FA";
+																				 gameSettingsOptions[3].parameters.fillStyle= "darkslateblue";
 																				 gameSettingsOptions[2].update();
 																				 gameSettingsOptions[3].update();
 																				 //Sets the Game Setting
@@ -1422,90 +1548,25 @@ function init() {
 																			 }
 																			 else if (event.object.name == "lastManStanding"){ //Last Man Standing Settings is chosen for Type of Game
 																				 //Updates Animation
-																				 gameSettingsOptions[gameSettingsOptions.length-2].position.x= gameSettingsOptions[3].posX;
-																				 gameSettingsOptions[3].parameters.fillStyle= "#0365FA";
-																				 gameSettingsOptions[2].parameters.fillStyle= "Midnightblue";
+																				 gameSettingsOptions[3].parameters.fillStyle= "#03A5FA";
+																				 gameSettingsOptions[2].parameters.fillStyle= "darkslateblue";
 																				 gameSettingsOptions[2].update();
 																				 gameSettingsOptions[3].update();																				 
 																				 //Sets the Game Setting
 																				 gameSettingsOptions[0].typeOfGame= gameSettingsOptions[3].parameters.text;
 																			 }
 																			 //Fruits Occurance
-																			 else if (event.object == gameSettingsOptions[5]){ //Less Fruits Settings is chosen for Fruit Occurance
-																				 //Updates Animation
-																				 gameSettingsOptions[gameSettingsOptions.length-1].position.x= gameSettingsOptions[5].posX;
-																				 gameSettingsOptions[5].parameters.fillStyle= gameSettingsOptions[4].parameters.fillStyle;
-																				 gameSettingsOptions[6].parameters.fillStyle= "Indigo";
-																				 gameSettingsOptions[7].parameters.fillStyle= "Indigo";
-																				 gameSettingsOptions[5].update();
-																				 gameSettingsOptions[6].update();
-																				 gameSettingsOptions[7].update();
-																				 
-																				 //Sets the Game Setting
-																				 gameSettingsOptions[0].fruitOccurance= gameSettingsOptions[5].parameters.text;
-																			 }
-																			 else if (event.object == gameSettingsOptions[6]){ //Usual Amount is chosen for Fruit Occurance
-																				 //Updates Animation
-																				 gameSettingsOptions[gameSettingsOptions.length-1].position.x= gameSettingsOptions[6].posX;
-																				 gameSettingsOptions[5].parameters.fillStyle= "Indigo";
-																				 gameSettingsOptions[6].parameters.fillStyle= gameSettingsOptions[4].parameters.fillStyle;
-																				 gameSettingsOptions[7].parameters.fillStyle= "Indigo";
-																				 gameSettingsOptions[5].update();
-																				 gameSettingsOptions[6].update();
-																				 gameSettingsOptions[7].update();		
-																				 
-																				 /**
-																				 if(scene.getObjectByName('typesOfFruits') == null)
-																					 scene.add(gameSettingsOptions[8]);
-																				 if(scene.getObjectByName('moreBadFruits') == null)
-																					 addButton(gameSettingsOptions[9]);
-																				 if(scene.getObjectByName('evenMix') == null)
-																					 addButton(gameSettingsOptions[10]);
-																				 if(scene.getObjectByName('moreGoodFruits') == null)
-																					 addButton(gameSettingsOptions[11]);
-																				 if(scene.getObjectByName('HighLights-RowThree') == null)
-																					 scene.add(gameSettingsOptions[gameSettingsOptions.length-1]);
-																				 **/
-																				 
-																				 //Sets the Game Setting
-																				 gameSettingsOptions[0].fruitOccurance= gameSettingsOptions[6].parameters.text;
-																			 }
-																			 else if (event.object == gameSettingsOptions[7]){ //More Fruits Settings is chosen for Fruit Occurance
-																				 //Updates Animation
-																				 gameSettingsOptions[gameSettingsOptions.length-1].position.x= gameSettingsOptions[7].posX;
-																				 gameSettingsOptions[5].parameters.fillStyle= "Indigo";
-																				 gameSettingsOptions[6].parameters.fillStyle= "Indigo";
-																				 gameSettingsOptions[7].parameters.fillStyle= gameSettingsOptions[4].parameters.fillStyle;
-																				 gameSettingsOptions[5].update();
-																				 gameSettingsOptions[6].update();
-																				 gameSettingsOptions[7].update();	
-																				 
-																				 /**
-																				 if(scene.getObjectByName('typesOfFruits') == null)
-																					 scene.add(gameSettingsOptions[8]);
-																				 if(scene.getObjectByName('moreBadFruits') == null)
-																					 addButton(gameSettingsOptions[9]);
-																				 if(scene.getObjectByName('evenMix') == null)
-																					 addButton(gameSettingsOptions[10]);
-																				 if(scene.getObjectByName('moreGoodFruits') == null)
-																					 addButton(gameSettingsOptions[11]);
-																				 if(scene.getObjectByName('HighLights-RowThree') == null)
-																					 scene.add(gameSettingsOptions[gameSettingsOptions.length-1]);
-																				 **/
-																				 
-																				 //Sets the Game Setting
-																				 gameSettingsOptions[0].fruitOccurance= gameSettingsOptions[7].parameters.text;
-																			 }
+																			 
 																			 //Fruits
 																			 //Apple selection																 
 																			 else if (event.object.name == "appleOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].apple){
-																					 gameSettingsOptions[9].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[6].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].apple = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[9].material.color.set("#ffffff");
+																					 gameSettingsOptions[6].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].apple = true;
 																				 }
 																			 }
@@ -1513,11 +1574,11 @@ function init() {
 																			 else if (event.object.name == "bananaOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].banana){
-																					 gameSettingsOptions[10].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[7].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].banana = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[10].material.color.set("#ffffff");
+																					 gameSettingsOptions[7].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].banana = true;
 																				 }
 																			 }
@@ -1525,11 +1586,11 @@ function init() {
 																			 else if (event.object.name == "cherryOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].cherry){
-																					 gameSettingsOptions[11].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[8].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].cherry = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[11].material.color.set("#ffffff");
+																					 gameSettingsOptions[8].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].cherry = true;
 																				 }
 																			 }
@@ -1537,11 +1598,11 @@ function init() {
 																			 else if (event.object.name == "grapeOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].grape){
-																					 gameSettingsOptions[12].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[9].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].grape = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[12].material.color.set("#ffffff");
+																					 gameSettingsOptions[9].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].grape = true;
 																				 }
 																			 }
@@ -1549,11 +1610,11 @@ function init() {
 																			 else if (event.object.name == "orangeOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].orange){
-																					 gameSettingsOptions[13].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[10].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].orange = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[13].material.color.set("#ffffff");
+																					 gameSettingsOptions[10].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].orange = true;
 																				 }
 																			 }
@@ -1561,11 +1622,11 @@ function init() {
 																			 else if (event.object.name == "pearOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].pear){
-																					 gameSettingsOptions[14].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[11].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].pear = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[14].material.color.set("#ffffff");
+																					 gameSettingsOptions[11].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].pear = true;
 																				 }
 																			 }
@@ -1573,11 +1634,11 @@ function init() {
 																			 else if (event.object.name == "pretzelOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].pretzel){
-																					 gameSettingsOptions[15].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[12].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].pretzel = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[15].material.color.set("#ffffff");
+																					 gameSettingsOptions[12].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].pretzel = true;
 																				 }
 																			 }
@@ -1585,11 +1646,11 @@ function init() {
 																			 else if (event.object.name == "strawberryOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].strawberry){
-																					 gameSettingsOptions[16].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[13].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].strawberry = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[16].material.color.set("#ffffff");
+																					 gameSettingsOptions[13].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].strawberry = true;
 																				 }
 																			 }
@@ -1943,10 +2004,26 @@ function init() {
 																				 colorThemes[10].position.set(colorThemes[10].posX, colorThemes[10].posY, colorThemes[10].posZ);
 																			 else if(event.object == colorThemes[11])
 																				 colorThemes[11].position.set(colorThemes[11].posX, colorThemes[11].posY, colorThemes[11].posZ);
-																			 
+																			 //OccuranceCircle
+																			 else if (event.object.name == "occuranceCircle"){
+																				 event.object.position.y = event.object.posY; 
+																				 
+																				 if(event.object.position.x > occuranceBar.geometry.parameters.width/2)
+																					 event.object.position.x = occuranceBar.geometry.parameters.width/2; 
+																				 else if(event.object.position.x < -(occuranceBar.geometry.parameters.width/2))
+																					 event.object.position.x = -(occuranceBar.geometry.parameters.width/2); 
+																			 }
 																		 });
 																		
-			 dragControls.addEventListener( 'dragend', function(event)   {});
+			 dragControls.addEventListener( 'dragend', function(event)   {
+																			 if (event.object.name == "occuranceCircle"){
+																				 console.log(event.object.position.x);
+																				 event.object.position.y = event.object.posY; 
+																				 gameSettingsOptions[0].fruitOccurance = (16 + event.object.position.x) * 2.5 + 10;
+																			 }
+				 
+				 
+			 });
 																		 
 			 //console.log(dragControls);
 			 //https://www.learnthreejs.com/drag-drop-dragcontrols-mouse/
@@ -3009,10 +3086,10 @@ function init() {
 		 startButton.parameters.font= "155px Arial";
 		 startButton.parameters.fillStyle= "#DD2222";
 		 startButton.posX = 0;
-		 startButton.posY = 11;
+		 startButton.posY = -16;
 		 startButton.posZ = 5;
 		 startButton.position.set(startButton.posX, startButton.posY, startButton.posZ);
-		 startButton.scale.set(18,7,1);
+		 startButton.scale.set(25,7,1);
 		 startButton.update();
 		 startButton.name = "startButton";
 		 
@@ -4093,11 +4170,13 @@ function init() {
 		 var len = gameSettingsOptions.length;
 		 
 		 
-		// scene.add(occuranceBar);		 
-		 //scene.add( occuranceCircle );
+		 scene.add(occuranceBar);
+		 scene.add( occuranceCircle );
+		 objects.push(occuranceCircle);
+		 
 		  
 		 //Goes through the gameSettingsOptions Array and adds the text to the scene and turn the items set as buttons into buttons
-		 for(var x=1; x< len; x++){
+		 for(var x=1; x< len-1; x++){
 			 
 			 if(gameSettingsOptions[x].displayType == "Scene")
 				 scene.add(gameSettingsOptions[x]);				
@@ -4141,10 +4220,8 @@ function init() {
 				 (length - 2) - HighLights for the 'Fruits Occurance'
 				 (length - 1) - HighLights for the 'Types of Fruits'
 			 **/
-		}
+		 }
 	
-		 //Add the Return Button
-		 addButton(returnButton);
 		 //Add the Start Button
 		 addButton(startButton);
 	 }
@@ -4156,7 +4233,7 @@ function init() {
 		 //The Users Game Settings
 		 var usersGameSettings = {
 			 typeOfGame : "Endless",
-			 fruitOccurance : "Usual Amount",
+			 fruitOccurance : 50, // Default 50
 			 apple : true,
 			 banana : true,
 			 cherry : true,
@@ -4168,7 +4245,7 @@ function init() {
 		 }
 		 gameSettingsOptions.push(usersGameSettings);
 		  
-		 var roundOne = yShifter+6.5;		 
+		 var roundOne = yShifter+16;		 
 		 //typeOfGame
 		 var typeOfGame = new text_creation("Type of Game:", 1, 3, 0.5 );
 		 typeOfGame.parameters.font= "125px Arial";
@@ -4183,7 +4260,7 @@ function init() {
 		 //endless
 		 var endless = text_creation("Endless", 0, 2, 0.5 );
 		 endless.parameters.font= "105px Arial";
-		 endless.parameters.fillStyle= "#0365FA";
+		 endless.parameters.fillStyle= "#03A5FA";
 		 endless.posX = -16;
 		 endless.posY = roundOne-4;
 		 endless.posZ = 1;
@@ -4197,18 +4274,18 @@ function init() {
 		 //lastManStanding
 		 var lastManStanding = new text_creation("Last Man Standing", 0, 3, 0.5 );
 		 lastManStanding.parameters.font= "105px Arial";
-		 lastManStanding.parameters.fillStyle= "Midnightblue";
+		 lastManStanding.parameters.fillStyle= "darkslateblue";
 		 lastManStanding.posX = 16;
 		 lastManStanding.posY = roundOne-4;
 		 lastManStanding.posZ = 1;
 		 lastManStanding.position.set(lastManStanding.posX, lastManStanding.posY, lastManStanding.posZ);
-		 lastManStanding.scale.set(16,3,1);
+		 lastManStanding.scale.set(18,3,1);
 		 lastManStanding.update();
 		 lastManStanding.displayType = "Button";
 		 lastManStanding.name = "lastManStanding";
 		 gameSettingsOptions.push(lastManStanding);
 		 
-		 var roundTwo = yShifter-1;
+		 var roundTwo = yShifter+6.5;
 		 //fruitOccurance
 		 var fruitOccurance = new text_creation("Fruits Occurance:", 1, 3, 0.5 );
 		 fruitOccurance.parameters.font= "113px Arial";
@@ -4220,62 +4297,51 @@ function init() {
 		 fruitOccurance.name = "fruitOccurance";
 		 gameSettingsOptions.push(fruitOccurance);
 		 
-		 //Less Button
-		 
-		 //Outline
-		// var OutlineGeometry = new THREE.PlaneBufferGeometry (40, 3,0);
-		// var OutlineMaterial = new THREE.MeshBasicMaterial({color: 0x050538}); //RGB
-		// occuranceBar = new THREE.Mesh(OutlineGeometry, OutlineMaterial);
-		// occuranceBar.position.set(0, roundTwo-4, 0); 
+		 //Outline - Length equals 32
+		 //The ranges for more and less fruits is between 10-90 = 80.
+		 //So 80/32 = 10/4 = 5/2 = 2.5
+		 //-16 will be the Lesser and +16 will be the Greater
+		 //Calculation = (16 + occuranceCircle x position) * 2.5 + 10 = Fruit Occurance
+		 var OutlineGeometry = new THREE.PlaneBufferGeometry (32, 3,0);
+		 var OutlineMaterial = new THREE.MeshBasicMaterial({color: 0x350538}); //RGB
+		 occuranceBar = new THREE.Mesh(OutlineGeometry, OutlineMaterial);
+		 occuranceBar.position.set(0, roundTwo-4, -0.5); 
+		 occuranceBar.material.opacity = 0.5;
+		 occuranceBar.material.transparent = true; 
+		 occuranceBar.name = "occuranceBar"; 
+		 console.log(occuranceBar);
 		  
+		 //Occurance Circle
+		 var geometry = new THREE.CircleGeometry( 1.75, 32 );
+		 var material = new THREE.MeshBasicMaterial( { color: 0xa000a0 } );
+		 occuranceCircle = new THREE.Mesh( geometry, material );
+		 occuranceCircle.position.set(0, roundTwo-4, 0); 
+		 occuranceCircle.posY = roundTwo-4; 
+		 occuranceCircle.name = "occuranceCircle"; 
+
+		 // Less Text
+		 var less = new text_creation("Less", 1, 3, 0.5 );
+		 less.parameters.font= "125px Arial";
+		 less.parameters.fillStyle= "#a000a0";
+		 less.position.set(-occuranceBar.geometry.parameters.width/2-3.5,roundTwo-4.5,1);
+		 less.scale.set(24,7.5,1);
+		 less.update();
+		 less.displayType = "Scene";
+		 less.name = "Less";
+		 gameSettingsOptions.push(less);
 		 
-		// var geometry = new THREE.CircleGeometry( 5, 32 );
-		 //var material = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
-		 //occuranceCircle = new THREE.Mesh( geometry, material );
-		
-		  
+		 //More Text
+		 var more = new text_creation("More", 1, 3, 0.5 );
+		 more.parameters.font= "125px Arial";
+		 more.parameters.fillStyle= "#a000a0";
+		 more.position.set(occuranceBar.geometry.parameters.width/2+3.5,roundTwo-4.5,1);
+		 more.scale.set(24,7.5,1);
+		 more.update();
+		 more.displayType = "Scene";
+		 more.name = "More";
+		 gameSettingsOptions.push(more);
 		 
-		  
-		 //lessFruits
-		 var lessFruits = new text_creation("Less Fruits", 0, 3, 0.6 );
-		 lessFruits.parameters.font= "115px Arial";
-		 lessFruits.parameters.fillStyle= "Indigo";
-		 lessFruits.posX = -16;
-		 lessFruits.posY = roundTwo-4;
-		 lessFruits.posZ = 1;
-		 lessFruits.position.set(lessFruits.posX, lessFruits.posY, lessFruits.posZ);
-		 lessFruits.scale.set(16,3,1);
-		 lessFruits.update();
-		 lessFruits.displayType = "Button";
-		 gameSettingsOptions.push(lessFruits);
-		 
-		 //usualAmount
-		 var usualAmount = new text_creation("Usual Amount", 0, 3, 0.6 );
-		 usualAmount.parameters.font= "115px Arial";
-		 usualAmount.parameters.fillStyle= "#8D4CF6";
-		 usualAmount.posX = 0;
-		 usualAmount.posY = roundTwo-4;
-		 usualAmount.posZ = 1;
-		 usualAmount.position.set(usualAmount.posX, usualAmount.posY, usualAmount.posZ);
-		 usualAmount.scale.set(16,3,1);
-		 usualAmount.update();
-		 usualAmount.displayType = "Button";
-		 gameSettingsOptions.push(usualAmount);
-		 
-		 //moreFruits
-		 var moreFruits = new text_creation("More Fruits", 0, 3, 0.6 );
-		 moreFruits.parameters.font= "115px Arial";
-		 moreFruits.parameters.fillStyle= "Indigo";
-		 moreFruits.posX = 16;
-		 moreFruits.posY = roundTwo-4;
-		 moreFruits.posZ = 1;
-		 moreFruits.position.set(moreFruits.posX, moreFruits.posY, moreFruits.posZ);
-		 moreFruits.scale.set(16,3,1);
-		 moreFruits.update();
-		 moreFruits.displayType = "Button";
-		 gameSettingsOptions.push(moreFruits);
-		 
-		 var roundThree = yShifter-11;
+		 var roundThree = yShifter-5.5;
 		 //Fruits Selection
 		 var fruitsSelection = new text_creation("Fruits Selection:", 1, 3, 0.5 );
 		 fruitsSelection.parameters.font= "115px Arial";
@@ -4422,12 +4488,6 @@ function init() {
 		 highLightOne.displayType = "HighLights-RowOne";
 		 highLightOne.name = "HighLights-RowOne";
 		 gameSettingsOptions.push(highLightOne);
-		 
-		 var highLightTwo = new THREE.Mesh(planeGeometry, planeMaterial);
-		 highLightTwo.displayType = "HighLights-RowTwo";
-		 highLightTwo.name = "HighLights-RowTwo";
-		 highLightTwo.position.set(gameSettingsOptions[6].posX,roundTwo-4, -1);
-		 gameSettingsOptions.push(highLightTwo);
 		 
 		 //Rules
 		 var rules = new text_creation("Rules", 1, 3, 0.5 );
@@ -5037,6 +5097,12 @@ function init() {
 		 //Remove the Section Title
 		 scene.remove(titleSectionText);
 		 
+		 
+		 if(scene.getObjectByName('occuranceBar') != null)
+			 scene.remove(occuranceBar);
+		 
+		 if(scene.getObjectByName('occuranceCircle') != null)
+			 scene.remove(occuranceCircle);
 		 
 		 if(scene.getObjectByName('tempGhost') != null)
 			 scene.remove(tempGhost);
