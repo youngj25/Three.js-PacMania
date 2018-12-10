@@ -597,7 +597,102 @@ function init() {
 					 //Sets the Game Setting
 					 gameSettingsOptions[0].typeOfGame= gameSettingsOptions[3].parameters.text;
 				 }
-				 
+				 //Fruit Selection
+				 else if(SectionHighlight.button == gameSettingsOptions[8].name||SectionHighlight.button == gameSettingsOptions[9].name||
+				 SectionHighlight.button == gameSettingsOptions[10].name||SectionHighlight.button == gameSettingsOptions[11].name||
+				 SectionHighlight.button == gameSettingsOptions[12].name||SectionHighlight.button == gameSettingsOptions[13].name||
+				 SectionHighlight.button == gameSettingsOptions[14].name||SectionHighlight.button == gameSettingsOptions[15].name){
+				
+					 //Apple
+					 if( SectionHighlight.fruitNo == 8){
+						 if(gameSettingsOptions[0].apple){
+							 gameSettingsOptions[8].material.color.set("#7f7f7f");
+							 gameSettingsOptions[0].apple = false;
+						 }
+						 else{
+							 gameSettingsOptions[8].material.color.set("#ffffff");
+							 gameSettingsOptions[0].apple = true;
+						 }
+					 }
+					 //Banana
+					 else if( SectionHighlight.fruitNo == 9){
+						 if(gameSettingsOptions[0].banana){
+							 gameSettingsOptions[9].material.color.set("#7f7f7f");
+							 gameSettingsOptions[0].banana = false;
+						 }
+						 else{
+							 gameSettingsOptions[9].material.color.set("#ffffff");
+							 gameSettingsOptions[0].banana = true;
+						 }
+					 }
+					 //Cherry
+					 else if( SectionHighlight.fruitNo == 10){
+						 if(gameSettingsOptions[0].cherry){
+							 gameSettingsOptions[10].material.color.set("#7f7f7f");
+							 gameSettingsOptions[0].cherry = false;
+						 }
+						 else{
+							 gameSettingsOptions[10].material.color.set("#ffffff");
+							 gameSettingsOptions[0].cherry = true;
+						 }
+					 }
+					 //Grapes
+					 else if( SectionHighlight.fruitNo == 11){
+						 if(gameSettingsOptions[0].grape){
+							 gameSettingsOptions[11].material.color.set("#7f7f7f");
+							 gameSettingsOptions[0].grape = false;
+						 }
+						 else{
+							 gameSettingsOptions[11].material.color.set("#ffffff");
+							 gameSettingsOptions[0].grape = true;
+						 }
+					 }
+					 //Oranges
+					 else if( SectionHighlight.fruitNo == 12){
+						 if(gameSettingsOptions[0].orange){
+							 gameSettingsOptions[12].material.color.set("#7f7f7f");
+							 gameSettingsOptions[0].orange = false;
+						 }
+						 else{
+							 gameSettingsOptions[12].material.color.set("#ffffff");
+							 gameSettingsOptions[0].orange = true;
+						 }
+					 }
+					 //Pear
+					 else if( SectionHighlight.fruitNo == 13){
+						 if(gameSettingsOptions[0].pear){
+							 gameSettingsOptions[13].material.color.set("#7f7f7f");
+							 gameSettingsOptions[0].pear = false;
+						 }
+						 else{
+							 gameSettingsOptions[13].material.color.set("#ffffff");
+							 gameSettingsOptions[0].pear = true;
+						 }
+					 }
+					 //Pretzel
+					 else if( SectionHighlight.fruitNo == 14){
+						 if(gameSettingsOptions[0].pretzel){
+							 gameSettingsOptions[14].material.color.set("#7f7f7f");
+							 gameSettingsOptions[0].pretzel = false;
+						 }
+						 else{
+							 gameSettingsOptions[14].material.color.set("#ffffff");
+							 gameSettingsOptions[0].pretzel = true;
+						 }
+					 }
+					 //Strawberry
+					 else if( SectionHighlight.fruitNo == 15){
+						 if(gameSettingsOptions[0].strawberry){
+							 gameSettingsOptions[15].material.color.set("#7f7f7f");
+							 gameSettingsOptions[0].strawberry = false;
+						 }
+						 else{
+							 gameSettingsOptions[15].material.color.set("#ffffff");
+							 gameSettingsOptions[0].strawberry = true;
+						 }
+					 }
+					 
+				 }
 				 
 				 
 				 
@@ -1199,13 +1294,17 @@ function init() {
 			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == 1 && SectionHighlight.button == occuranceBar.name){
 				 SectionHighlight.position.set(gameSettingsOptions[8].position.x-1,gameSettingsOptions[8].position.y-.5, -1);
 				 SectionHighlight.button =  gameSettingsOptions[8].name;
+				 SectionHighlight.fruitNo =  8;
 				 SectionHighlight.scale.x = 0.2;
 			 }
 			 
 			 //FRUIT SELECTION----------------------------
 			 //At "Fruit Selection " going Upwards
 			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == -1 &&
-				 (SectionHighlight.button == gameSettingsOptions[8].name || SectionHighlight.button == gameSettingsOptions[9].name)){
+				 (SectionHighlight.button == gameSettingsOptions[8].name ||SectionHighlight.button == gameSettingsOptions[9].name||
+				 SectionHighlight.button == gameSettingsOptions[10].name||SectionHighlight.button == gameSettingsOptions[11].name||
+				 SectionHighlight.button == gameSettingsOptions[12].name||SectionHighlight.button == gameSettingsOptions[13].name||
+				 SectionHighlight.button == gameSettingsOptions[14].name||SectionHighlight.button == gameSettingsOptions[15].name)){
 				 SectionHighlight.position.set(occuranceBar.position.x,occuranceBar.position.y, -1);
 				 SectionHighlight.button = occuranceBar.name;
 				 SectionHighlight.scale.x = occuranceBar.geometry.parameters.width;
@@ -1213,30 +1312,28 @@ function init() {
 			 
 			 //At "Fruit Selection" going Leftwards/Rightwards
 			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X") &&
-			 (SectionHighlight.button == gameSettingsOptions[8].name||SectionHighlight.button == gameSettingsOptions[9].name||
+			 (SectionHighlight.button == gameSettingsOptions[8].name ||SectionHighlight.button == gameSettingsOptions[9].name||
 			  SectionHighlight.button == gameSettingsOptions[10].name||SectionHighlight.button == gameSettingsOptions[11].name||
 			  SectionHighlight.button == gameSettingsOptions[12].name||SectionHighlight.button == gameSettingsOptions[13].name||
 			  SectionHighlight.button == gameSettingsOptions[14].name||SectionHighlight.button == gameSettingsOptions[15].name)){
 				  
 				 //Rightwards
-				 if(e.value == 1)
-					 occuranceCircle.position.x += 1.25;
+				 if(e.value == 1 && SectionHighlight.fruitNo< 15)
+					 SectionHighlight.fruitNo++;
 				 //Leftwards
-				 else if(e.value == -1)
-					 occuranceCircle.position.x -= 1.25;
+				 else if(e.value == -1 && SectionHighlight.fruitNo> 8)
+					 SectionHighlight.fruitNo--;
 				 
-				 if(occuranceCircle.position.x > occuranceBar.geometry.parameters.width/2)
-					 occuranceCircle.position.x = occuranceBar.geometry.parameters.width/2; 
-				 else if(occuranceCircle.position.x < -(occuranceBar.geometry.parameters.width/2))
-					 occuranceCircle.position.x = -(occuranceBar.geometry.parameters.width/2); 
-					
-				 //console.log(occuranceCircle.position.x);
-				 gameSettingsOptions[0].fruitOccurance = (16 + occuranceCircle.position.x) * 2.5 + 10;
+				 SectionHighlight.position.set(gameSettingsOptions[SectionHighlight.fruitNo].position.x-1+1*(SectionHighlight.fruitNo-8)/4,gameSettingsOptions[SectionHighlight.fruitNo].position.y-.5, -1);
+				 SectionHighlight.button =  gameSettingsOptions[SectionHighlight.fruitNo].name;
 			 }
 			 
 			 //At "Fruit Selection" going Downwards
 			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == 1 &&
-				 (SectionHighlight.button == gameSettingsOptions[8].name||SectionHighlight.button == gameSettingsOptions[9].name)){
+				 (SectionHighlight.button == gameSettingsOptions[8].name||SectionHighlight.button == gameSettingsOptions[9].name||
+				 SectionHighlight.button == gameSettingsOptions[10].name||SectionHighlight.button == gameSettingsOptions[11].name||
+				 SectionHighlight.button == gameSettingsOptions[12].name||SectionHighlight.button == gameSettingsOptions[13].name||
+				 SectionHighlight.button == gameSettingsOptions[14].name||SectionHighlight.button == gameSettingsOptions[15].name)){
 				 SectionHighlight.position.set(startButton.position.x,startButton.position.y-1.75, -1);
 				 SectionHighlight.button = startButton.name;
 				 SectionHighlight.scale.x = startButton.geometry.parameters.width*1.5;
@@ -1247,8 +1344,8 @@ function init() {
 			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == -1 && SectionHighlight.button == startButton.name){
 				 SectionHighlight.position.set(gameSettingsOptions[8].position.x-1,gameSettingsOptions[8].position.y-.5, -1);
 				 SectionHighlight.button =  gameSettingsOptions[8].name;
+				 SectionHighlight.fruitNo =  8;
 				 SectionHighlight.scale.x = 0.2;
-				 console.log("yup")
 			 }
 		 }
 	 });
