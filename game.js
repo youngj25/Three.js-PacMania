@@ -49,7 +49,7 @@ function init() {
 	 camera.position.set(0,0,53);
 	 scene.add(camera);
 	 scene.background = new THREE.Color( 0x0a0a0a );
-	 console.log(scene);
+	 //console.log(scene);
 	 // create a render and set the size
 	 var renderer = new THREE.WebGLRenderer({ antialias: true} );
 	 renderer.setClearColor(new THREE.Color(0x000000, 0.0));
@@ -561,20 +561,55 @@ function init() {
 				 PacMania.emit('Move',data);				 
 			 }
 		 }
-		 else if((Game_Status == "Waiting" && e.control == "START_FORWARD") ||(SectionHighlight.button == startButton.name && e.control == "FACE_1") ){
-			 PacMania.emit('Player has joined',gameSettingsOptions[0]);
-			 remove_Game_Settings_Screen();
-			 removeButton(returnButton);
-			 controllerDirection = "";
-			 scene.remove(occuranceBar);		 
-			 scene.remove( occuranceCircle );
-			 if(scene.getObjectByName('SectionHighlight') != null)
-				 scene.remove(SectionHighlight);
-			 load_Game_Maze_1();			 
-		 }
-		 else if(Game_Status == "Waiting" && e.control == "FACE_2"){
-			 remove_Game_Settings_Screen();
-			 return_to_Start_Screen();
+		 else if(Game_Status == "Waiting"){
+			 //Starting the Game
+			 if(e.control == "START_FORWARD" ||(SectionHighlight.button == startButton.name && e.control == "FACE_1")){
+				 PacMania.emit('Player has joined',gameSettingsOptions[0]);
+				 remove_Game_Settings_Screen();
+				 removeButton(returnButton);
+				 controllerDirection = "";
+				 scene.remove(occuranceBar);		 
+				 scene.remove( occuranceCircle );
+				 if(scene.getObjectByName('SectionHighlight') != null)
+					 scene.remove(SectionHighlight);
+				 load_Game_Maze_1();
+			 }			 
+			 //Changing a choice using A Button
+			 else if(e.control == "FACE_1"){
+				 // Game Type
+				 //Endless
+				 if(SectionHighlight.button == gameSettingsOptions[2].name){
+					 //Updates Animation
+					 gameSettingsOptions[2].parameters.fillStyle= "#03A5FA";
+					 gameSettingsOptions[3].parameters.fillStyle= "darkslateblue";
+					 gameSettingsOptions[2].update();
+					 gameSettingsOptions[3].update();
+					 //Sets the Game Setting
+					 gameSettingsOptions[0].typeOfGame= gameSettingsOptions[2].parameters.text;
+				 }
+				 //Last Man Standing
+				 else if(SectionHighlight.button == gameSettingsOptions[3].name){
+					 //Updates Animation
+					 gameSettingsOptions[2].parameters.fillStyle= "darkslateblue";
+					 gameSettingsOptions[3].parameters.fillStyle= "#03A5FA";
+					 gameSettingsOptions[2].update();
+					 gameSettingsOptions[3].update();
+					 //Sets the Game Setting
+					 gameSettingsOptions[0].typeOfGame= gameSettingsOptions[3].parameters.text;
+				 }
+				 
+				 
+				 
+				 
+				 
+			 }
+			 //Canceling out using B Button
+			 else if(e.control == "FACE_2"){
+				 remove_Game_Settings_Screen();
+				 return_to_Start_Screen();
+			 }
+			 
+		 
 		 }
 		 else if(Game_Status == "Ready" && e.control == "FACE_1"){
 				 
@@ -582,14 +617,11 @@ function init() {
 				 //Rescale and Reposition the Title
 				 Title1.position.set(0,22.95,-2);
 				 Title1.scale.set(24.5,4.5,1);
-				 console.log("1");
 				 //Remove Buttons
 				 remove_Start_Screen();
-				 console.log("1")
 				 Game_Status = "Waiting";
 				 //Load Game Settings Start
 				 load_Game_Settings_Screen();
-				 console.log("1");
 				 scene.remove(SectionHighlight);
 			 }
 			 else if(SectionHighlight.button == aboutButton.name){
@@ -712,45 +744,46 @@ function init() {
 			 if(scene.getObjectByName('SectionHighlight') == null){
 				 SectionHighlight.position.set(gameButton.position.x,gameButton.position.y-.5, -1);
 				 SectionHighlight.button = gameButton.name;
-				 SectionHighlight.geometry.parameters.width = gameButton.geometry.parameters.width;
-				 scene.add(SectionHighlight);
+				 SectionHighlight.scale.x = gameButton.geometry.parameters.width;
+				 scene.add(SectionHighlight); 
+			 
 			 }
 			 //Above Credits Button going Leftwards
 			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X")  && e.value == -1 && SectionHighlight.button != gsButton.name){
 				 SectionHighlight.position.set(aboutButton.position.x-.5,aboutButton.position.y-1, -1);	
 				 SectionHighlight.button = aboutButton.name;
-				 SectionHighlight.geometry.parameters.width = aboutButton.geometry.parameters.width;
+				 SectionHighlight.scale.x = aboutButton.geometry.parameters.width;
 			 }
 			 //Above Credits Button going Rightwards
 			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X")  && e.value == 1 && SectionHighlight.button != gsButton.name){
 				 SectionHighlight.position.set(howToPlayButton.position.x+1,howToPlayButton.position.y-1, -1);
 				 SectionHighlight.button = howToPlayButton.name;
-				 SectionHighlight.geometry.parameters.width = howToPlayButton.geometry.parameters.width;
+				 SectionHighlight.scale.x = howToPlayButton.geometry.parameters.width;
 			 }
 			 //Above Credit Button going Upwards
 			 else if(e.axis == "LEFT_STICK_Y" && e.value == -1 && SectionHighlight.button != gsButton.name){
 				 SectionHighlight.position.set(gameButton.position.x,gameButton.position.y-.5, -1);
 				 SectionHighlight.button = gameButton.name;
-				 SectionHighlight.geometry.parameters.width = gameButton.geometry.parameters.width;
+				 SectionHighlight.scale.x = gameButton.geometry.parameters.width;
 			 }
 			 //Above Credit Button going Downwards
 			 else if(e.axis == "LEFT_STICK_Y" && e.value == 1 && SectionHighlight.button != gsButton.name && SectionHighlight.button != creditButton.name){
-				 SectionHighlight.position.set(creditButton.position.x,creditButton.position.y-1.5, -1);
+				 SectionHighlight.position.set(creditButton.position.x,creditButton.position.y-1.75, -1);
 				 SectionHighlight.button = creditButton.name;
-				 SectionHighlight.geometry.parameters.width = creditButton.geometry.parameters.width;
+				 SectionHighlight.scale.x = creditButton.geometry.parameters.width;
 			 }
 			 //At Credit Button going Downwards
 			 else if(e.axis == "LEFT_STICK_Y" && e.value == 1 && SectionHighlight.button != gsButton.name){
 				 SectionHighlight.position.set(gsButton.position.x,gsButton.position.y, -2);
 				 SectionHighlight.button = gsButton.name;
-				 SectionHighlight.geometry.parameters.width = gsButton.scale.x;
+				 SectionHighlight.scale.x = gameButton.geometry.parameters.width;
 				 console.log("down");
 			 } 
 			 //At Game Setting Button going Upwards
 			 else if(e.axis == "LEFT_STICK_Y" && e.value == -1 && SectionHighlight.button == gsButton.name){
-				 SectionHighlight.position.set(creditButton.position.x,creditButton.position.y-1.5, -1);
+				 SectionHighlight.position.set(creditButton.position.x,creditButton.position.y-1.75, -1);
 				 SectionHighlight.button = creditButton.name;
-				 SectionHighlight.geometry.parameters.width = creditButton.geometry.parameters.width;
+				 SectionHighlight.scale.x = creditButton.geometry.parameters.width;
 			 }
 			 
 		 
@@ -1144,7 +1177,8 @@ function init() {
 				 //Rightwards
 				 if(e.value == 1)
 					 occuranceCircle.position.x += 1.25;
-				 if(e.value == -1)
+				 //Leftwards
+				 else if(e.value == -1)
 					 occuranceCircle.position.x -= 1.25;
 				 
 				 if(occuranceCircle.position.x > occuranceBar.geometry.parameters.width/2)
@@ -1152,16 +1186,70 @@ function init() {
 				 else if(occuranceCircle.position.x < -(occuranceBar.geometry.parameters.width/2))
 					 occuranceCircle.position.x = -(occuranceBar.geometry.parameters.width/2); 
 					
-				 console.log(occuranceCircle.position.x);
+				 //console.log(occuranceCircle.position.x);
 				 gameSettingsOptions[0].fruitOccurance = (16 + occuranceCircle.position.x) * 2.5 + 10;
 			 }
-			 //At "Type of Games " going Downwards
+			 //At "Fruit Occurance " going Upwards
+			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == -1 && SectionHighlight.button == occuranceBar.name){
+				 SectionHighlight.position.set(gameSettingsOptions[2].position.x,gameSettingsOptions[2].position.y+.5, -1);
+				 SectionHighlight.button = gameSettingsOptions[2].name;
+				 SectionHighlight.scale.x = gameSettingsOptions[2].geometry.parameters.width;
+			 }
+			 //At "Fruit Occurance " going Downwards
 			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == 1 && SectionHighlight.button == occuranceBar.name){
-				 SectionHighlight.position.set(startButton.position.x,startButton.position.y, -1);
-				 SectionHighlight.button = startButton.name;
-				 SectionHighlight.scale.x = startButton.geometry.parameters.width;
+				 SectionHighlight.position.set(gameSettingsOptions[8].position.x-1,gameSettingsOptions[8].position.y-.5, -1);
+				 SectionHighlight.button =  gameSettingsOptions[8].name;
+				 SectionHighlight.scale.x = 0.2;
 			 }
 			 
+			 //FRUIT SELECTION----------------------------
+			 //At "Fruit Selection " going Upwards
+			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == -1 &&
+				 (SectionHighlight.button == gameSettingsOptions[8].name || SectionHighlight.button == gameSettingsOptions[9].name)){
+				 SectionHighlight.position.set(occuranceBar.position.x,occuranceBar.position.y, -1);
+				 SectionHighlight.button = occuranceBar.name;
+				 SectionHighlight.scale.x = occuranceBar.geometry.parameters.width;
+			 }
+			 
+			 //At "Fruit Selection" going Leftwards/Rightwards
+			 else if((e.axis == "LEFT_STICK_X" || e.axis =="RIGHT_STICK_X") &&
+			 (SectionHighlight.button == gameSettingsOptions[8].name||SectionHighlight.button == gameSettingsOptions[9].name||
+			  SectionHighlight.button == gameSettingsOptions[10].name||SectionHighlight.button == gameSettingsOptions[11].name||
+			  SectionHighlight.button == gameSettingsOptions[12].name||SectionHighlight.button == gameSettingsOptions[13].name||
+			  SectionHighlight.button == gameSettingsOptions[14].name||SectionHighlight.button == gameSettingsOptions[15].name)){
+				  
+				 //Rightwards
+				 if(e.value == 1)
+					 occuranceCircle.position.x += 1.25;
+				 //Leftwards
+				 else if(e.value == -1)
+					 occuranceCircle.position.x -= 1.25;
+				 
+				 if(occuranceCircle.position.x > occuranceBar.geometry.parameters.width/2)
+					 occuranceCircle.position.x = occuranceBar.geometry.parameters.width/2; 
+				 else if(occuranceCircle.position.x < -(occuranceBar.geometry.parameters.width/2))
+					 occuranceCircle.position.x = -(occuranceBar.geometry.parameters.width/2); 
+					
+				 //console.log(occuranceCircle.position.x);
+				 gameSettingsOptions[0].fruitOccurance = (16 + occuranceCircle.position.x) * 2.5 + 10;
+			 }
+			 
+			 //At "Fruit Selection" going Downwards
+			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == 1 &&
+				 (SectionHighlight.button == gameSettingsOptions[8].name||SectionHighlight.button == gameSettingsOptions[9].name)){
+				 SectionHighlight.position.set(startButton.position.x,startButton.position.y-1.75, -1);
+				 SectionHighlight.button = startButton.name;
+				 SectionHighlight.scale.x = startButton.geometry.parameters.width*1.5;
+			 }
+			 
+			 //START GAME ------
+			 //At "Start  Game" going Upwards
+			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == -1 && SectionHighlight.button == startButton.name){
+				 SectionHighlight.position.set(gameSettingsOptions[8].position.x-1,gameSettingsOptions[8].position.y-.5, -1);
+				 SectionHighlight.button =  gameSettingsOptions[8].name;
+				 SectionHighlight.scale.x = 0.2;
+				 console.log("yup")
+			 }
 		 }
 	 });
 
@@ -1422,10 +1510,6 @@ function init() {
 																					 P1SCORE = P2SCORE = P3SCORE = P4SCORE = 0;
 																					 
 																				 }
-																				 else if(Game_Status == "Waiting"){
-																					 //Remove the Settings
-																					 remove_Game_Settings_Screen();
-																				 }
 																				 else if(Game_Status == "Additional Game Setting"){
 																					 for(var x = 1; x<colorThemes.length; x++)
 																						 removeButton(colorThemes[x]);
@@ -1438,7 +1522,10 @@ function init() {
 																				 }
 																				
 																				 return_to_Start_Screen();
-																			
+																			 }
+																			 else if (event.object == raButton){
+																				 remove_Game_Settings_Screen();
+																				 return_to_Start_Screen();
 																			 }
 																			 else if (event.object == sourceLinkButton){
 																				 //Opens the Url to the Source
@@ -1562,11 +1649,11 @@ function init() {
 																			 else if (event.object.name == "appleOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].apple){
-																					 gameSettingsOptions[6].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[8].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].apple = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[6].material.color.set("#ffffff");
+																					 gameSettingsOptions[8].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].apple = true;
 																				 }
 																			 }
@@ -1574,11 +1661,11 @@ function init() {
 																			 else if (event.object.name == "bananaOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].banana){
-																					 gameSettingsOptions[7].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[9].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].banana = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[7].material.color.set("#ffffff");
+																					 gameSettingsOptions[9].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].banana = true;
 																				 }
 																			 }
@@ -1586,11 +1673,11 @@ function init() {
 																			 else if (event.object.name == "cherryOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].cherry){
-																					 gameSettingsOptions[8].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[10].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].cherry = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[8].material.color.set("#ffffff");
+																					 gameSettingsOptions[10].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].cherry = true;
 																				 }
 																			 }
@@ -1965,15 +2052,11 @@ function init() {
 																			 else if (event.object == gameSettingsOptions[7])
 																				 gameSettingsOptions[7].position.set(gameSettingsOptions[7].posX, gameSettingsOptions[7].posY, gameSettingsOptions[7].posZ);
 																			 //Fruits
-																			 else if (event.object == gameSettingsOptions[9])
-																				 gameSettingsOptions[9].position.set(gameSettingsOptions[9].posX, gameSettingsOptions[9].posY, gameSettingsOptions[9].posZ);
-																			 else if (event.object == gameSettingsOptions[10])
-																				 gameSettingsOptions[10].position.set(gameSettingsOptions[10].posX, gameSettingsOptions[10].posY, gameSettingsOptions[10].posZ);
 																			 else if (event.object == gameSettingsOptions[11])
 																				 gameSettingsOptions[11].position.set(gameSettingsOptions[11].posX, gameSettingsOptions[11].posY, gameSettingsOptions[11].posZ);
-																			 else if(event.object == gameSettingsOptions[12])
+																			 else if (event.object == gameSettingsOptions[12])
 																				 gameSettingsOptions[12].position.set(gameSettingsOptions[12].posX, gameSettingsOptions[12].posY, gameSettingsOptions[12].posZ);
-																			 else if(event.object == gameSettingsOptions[13])
+																			 else if (event.object == gameSettingsOptions[13])
 																				 gameSettingsOptions[13].position.set(gameSettingsOptions[13].posX, gameSettingsOptions[13].posY, gameSettingsOptions[13].posZ);
 																			 else if(event.object == gameSettingsOptions[14])
 																				 gameSettingsOptions[14].position.set(gameSettingsOptions[14].posX, gameSettingsOptions[14].posY, gameSettingsOptions[14].posZ);
@@ -1981,6 +2064,10 @@ function init() {
 																				 gameSettingsOptions[15].position.set(gameSettingsOptions[15].posX, gameSettingsOptions[15].posY, gameSettingsOptions[15].posZ);
 																			 else if(event.object == gameSettingsOptions[16])
 																				 gameSettingsOptions[16].position.set(gameSettingsOptions[16].posX, gameSettingsOptions[16].posY, gameSettingsOptions[16].posZ);
+																			 else if(event.object == gameSettingsOptions[17])
+																				 gameSettingsOptions[17].position.set(gameSettingsOptions[17].posX, gameSettingsOptions[17].posY, gameSettingsOptions[17].posZ);
+																			 else if(event.object == gameSettingsOptions[18])
+																				 gameSettingsOptions[18].position.set(gameSettingsOptions[18].posX, gameSettingsOptions[18].posY, gameSettingsOptions[18].posZ);
 																			 
 																			 
 																			 //Additional Game Settings
@@ -3217,6 +3304,18 @@ function init() {
 		 gsButton.position.set(gsButton.posX, gsButton.posY, gsButton.posZ);
 		 gsButton.scale.set(14,5,1);		  
 		 gsButton.name = "gsButton";
+		 
+		 //Return Arrow Button
+		 T = loader.load( 'Images/return_icon.png' );
+		 T.minFilter = THREE.LinearFilter;
+		 var T1 =  new THREE.SpriteMaterial( { map: T, color: 0xffffff } );
+		 raButton = new THREE.Sprite(T1);	
+		 raButton.posX = -20.5;
+		 raButton.posY =  22.5;
+		 raButton.posZ = -2;
+		 raButton.position.set(raButton.posX, raButton.posY, raButton.posZ);
+		 raButton.scale.set(6,6,1);		  
+		 raButton.name = "raButton";
 	 }
 
 	 //Upload Game Maze 1
@@ -4169,11 +4268,15 @@ function init() {
 		 
 		 var len = gameSettingsOptions.length;
 		 
+		 if(scene.getObjectByName('SectionHighlight') != null)
+			 scene.remove(SectionHighlight);
 		 
 		 scene.add(occuranceBar);
 		 scene.add( occuranceCircle );
 		 objects.push(occuranceCircle);
 		 
+		 //Right Arrow Button
+		 addButton(raButton);
 		  
 		 //Goes through the gameSettingsOptions Array and adds the text to the scene and turn the items set as buttons into buttons
 		 for(var x=1; x< len-1; x++){
@@ -4309,7 +4412,6 @@ function init() {
 		 occuranceBar.material.opacity = 0.5;
 		 occuranceBar.material.transparent = true; 
 		 occuranceBar.name = "occuranceBar"; 
-		 console.log(occuranceBar);
 		  
 		 //Occurance Circle
 		 var geometry = new THREE.CircleGeometry( 1.75, 32 );
@@ -4538,6 +4640,9 @@ function init() {
 			 //Adds the Maze to the scene
 			 scene.add(colorExampleMaze[x].block);
 		 }
+		 
+		 if(scene.getObjectByName('SectionHighlight') != null)
+			 scene.remove(SectionHighlight);
 		 
 		 //The Ghost Example
 		 tempGhost.position.set(4*xMultiplier-4, 2*yMultiplier+yShifter-3, -2);
@@ -4927,6 +5032,8 @@ function init() {
 		 //Remove Start button
 		 removeButton(startButton);
 		 
+		 removeButton(raButton);
+		 
 		 //Goes through the gameSettingsOptions Array and adds the text to the scene and turn the items set as buttons into buttons
 		 for(var x=0; x< len; x++){
 			 if(gameSettingsOptions[x].displayType != "Button")
@@ -4940,6 +5047,9 @@ function init() {
 	 //Loads the About Page of the Game
 	 function load_About_Screen(){
 		 remove_Start_Screen();
+		 
+		 if(scene.getObjectByName('SectionHighlight') != null)
+			 scene.remove(SectionHighlight);
 		 
 		 //Adjust the Section Title and then add it to the scene
 		 titleSectionText.parameters.text= "About:";
@@ -4984,6 +5094,9 @@ function init() {
 		 
 		 //Scene Number Reset
 		 sceneNumber = 0;
+		 
+		 if(scene.getObjectByName('SectionHighlight') != null)
+			 scene.remove(SectionHighlight);
 		 
 		 //Display Box
 		 displayBox =  new THREE.Sprite(htpTextArray[sceneNumber]);	
@@ -5034,6 +5147,9 @@ function init() {
 	 //Loads the Credit Page of the Game
 	 function load_Credit_Screen(){
 		 remove_Start_Screen();
+		 
+		 if(scene.getObjectByName('SectionHighlight') != null)
+			 scene.remove(SectionHighlight);
 		 
 		 //Scene Number Reset
 		 sceneNumber = 0;		 
@@ -5097,6 +5213,8 @@ function init() {
 		 //Remove the Section Title
 		 scene.remove(titleSectionText);
 		 
+		 if(scene.getObjectByName('SectionHighlight') != null)
+			 scene.remove(SectionHighlight);
 		 
 		 if(scene.getObjectByName('occuranceBar') != null)
 			 scene.remove(occuranceBar);
@@ -5290,6 +5408,15 @@ function init() {
 		 var pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
 		 pic.text = "Got the image of the xBox controller from Wikipedia.";
 		 pic.url = "https://en.wikipedia.org/wiki/Xbox_360_controller";
+		 pic.scalingX = 18;
+		 pic.scalingY = 20;
+		 creditDisplayArray.push(pic);
+		 //Return Icon
+		 var texture = loader.load( 'Images/return_icon.png' );
+		 texture.minFilter = THREE.LinearFilter;
+		 var pic = new THREE.SpriteMaterial( { map: texture, color: 0xffffff } );
+		 pic.text = "Got the return icon from Kisspng.com";
+		 pic.url = "https://www.kisspng.com/png-computer-icons-clip-art-return-icon-3219493/";
 		 pic.scalingX = 18;
 		 pic.scalingY = 20;
 		 creditDisplayArray.push(pic);
