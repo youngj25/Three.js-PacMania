@@ -12,6 +12,9 @@ var gameSettingsOptions=[], countDown, occuranceBar, occuranceCircle;//For the W
 var NorthButton, SouthButton, EastButton, WestButton; //FOR THE TOUCH SCREENS CONtrols The four buttons
 var controllerDirection = "", SectionHighlight;
 
+//Ready Screen
+var yourPlayer, tempP1, tempP2, tempP3, tempP4 ;
+
 //Text
 var P1Text, P2Text, P3Text, P4TEXT, P1SCORE, P2SCORE, P3SCORE, P4SCORE; //SCORE BOARD
 var textBox, displayBox, displayArray=[];
@@ -80,7 +83,7 @@ function init() {
 	
 	 //Set up the Board
 	 PacMania.on('Setup Board', function(data){
-		 if(Game_Status == "Waiting"){
+		 if(Game_Status == "Ready/Waiting"){
 			 //Load the Text and the Board
 			 load_Text();
 			 load_Board();
@@ -89,16 +92,20 @@ function init() {
 			 //Addition of the Screen Bottoms and Background Button
 			 load_Touch_Screen_Controls();
 			 
+			 scene.remove(startButton);
+			 scene.remove(raButton);
+			 scene.remove(yourPlayer);
 			 scene.remove(countDown);
 			 scene.remove(tempGhost);
 			 scene.remove(tempFruit);
+			 scene.remove(tempP1);
+			 scene.remove(tempP2);
+			 scene.remove(tempP3);
+			 scene.remove(tempP4);
 			 
+			 
+			 load_Game_Maze_1();
 			 load_Maze();
-			
-				 /**
-					 color scheme should go here!!
-				 **/
-
 		 }
 	 });
 	 	
@@ -460,6 +467,59 @@ function init() {
 		 }
 	 });
 	 
+	 //Set up the Board
+	 PacMania.on('Players Ready', function(data){
+		 if(Game_Status == "Ready/Waiting"){
+			 
+			 //Player Text
+			 if(data.PacList.length == 1){
+				 tempP1.material.color.set("#ffffff");
+				 tempP2.material.color.set("#5f5f5f");
+				 tempP3.material.color.set("#5f5f5f");
+				 tempP4.material.color.set("#5f5f5f");
+				 
+			 }
+			 else if(data.PacList.length == 2){
+				 tempP1.material.color.set("#ffffff");
+				 tempP2.material.color.set("#ffffff");
+				 tempP3.material.color.set("#5f5f5f");
+				 tempP4.material.color.set("#5f5f5f");
+				 
+			 }
+			 else if(data.PacList.length == 3){
+				 tempP1.material.color.set("#ffffff");
+				 tempP2.material.color.set("#ffffff");
+				 tempP3.material.color.set("#ffffff");
+				 tempP4.material.color.set("#5f5f5f");
+				 
+			 }
+			 else if(data.PacList.length == 4){
+				 tempP1.material.color.set("#ffffff");
+				 tempP2.material.color.set("#ffffff");
+				 tempP3.material.color.set("#ffffff");
+				 tempP4.material.color.set("#ffffff");
+				 
+			 }
+			 
+			 if(data.PacList.length > 0 && PacMania.id == data.PacList[0].id){
+				 yourPlayer.position.x = tempP1.position.x-1.5;
+				 yourPlayer.parameters.fillStyle= "Red";
+			 }
+			 else if(data.PacList.length > 1 && PacMania.id == data.PacList[1].id){
+				 yourPlayer.position.x = tempP2.position.x-1;
+				 yourPlayer.parameters.fillStyle= "#DodgerBlue";
+			 }
+			 else if(data.PacList.length > 2 && PacMania.id == data.PacList[2].id){
+				 yourPlayer.position.x = tempP3.position.x+1;
+				 yourPlayer.parameters.fillStyle= "Green";
+			 }
+			 else if(data.PacList.length > 3 && PacMania.id == data.PacList[3].id){
+				 yourPlayer.position.x = tempP4.position.x+1.5;
+				 yourPlayer.parameters.fillStyle= "DarkOrchid";
+			 }
+		 }
+	 });
+	 
 	 //EVENT LISTENERS!!!!
 	
 	 //Keyboard Functions
@@ -693,9 +753,18 @@ function init() {
 					 }
 					 
 				 }
-				 
-				 
-				 
+				 //Complete Game Setting Button Clicked
+				 if(SectionHighlight.button == cgsButton.name){
+					 //PacMania.emit('Player has joined',gameSettingsOptions[0]);
+					 remove_Game_Settings_Screen();
+					 removeButton(raButton);
+					 controllerDirection = "";
+					 scene.remove(occuranceBar);		 
+					 scene.remove( occuranceCircle );
+					 load_Ready_Screen();
+					 if(scene.getObjectByName('SectionHighlight') != null)
+						 scene.remove(SectionHighlight);
+				 }
 				 
 			 }
 			 //Canceling out using B Button
@@ -1334,14 +1403,14 @@ function init() {
 				 SectionHighlight.button == gameSettingsOptions[10].name||SectionHighlight.button == gameSettingsOptions[11].name||
 				 SectionHighlight.button == gameSettingsOptions[12].name||SectionHighlight.button == gameSettingsOptions[13].name||
 				 SectionHighlight.button == gameSettingsOptions[14].name||SectionHighlight.button == gameSettingsOptions[15].name)){
-				 SectionHighlight.position.set(startButton.position.x,startButton.position.y-1.75, -1);
-				 SectionHighlight.button = startButton.name;
-				 SectionHighlight.scale.x = startButton.geometry.parameters.width*1.5;
+				 SectionHighlight.position.set(cgsButton.position.x,cgsButton.position.y-3, -1);
+				 SectionHighlight.button = cgsButton.name;
+				 SectionHighlight.scale.x = cgsButton.geometry.parameters.width*1.5;
 			 }
 			 
 			 //START GAME ------
 			 //At "Start  Game" going Upwards
-			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == -1 && SectionHighlight.button == startButton.name){
+			 else if((e.axis == "LEFT_STICK_Y" || e.axis =="RIGHT_STICK_Y") && e.value == -1 && SectionHighlight.button == cgsButton.name){
 				 SectionHighlight.position.set(gameSettingsOptions[8].position.x-1,gameSettingsOptions[8].position.y-.5, -1);
 				 SectionHighlight.button =  gameSettingsOptions[8].name;
 				 SectionHighlight.fruitNo =  8;
@@ -1393,6 +1462,8 @@ function init() {
 	 load_Display_Pictures();
 	 preset_Game_Settings_Screen();
 	 preset_Additional_Game_Settings_Screen();
+	 pre_set_readyScreen();
+	 load_Game_Maze_1();
 	
 	/**Finding a Number
 	 console.log("Finding a number");
@@ -1428,11 +1499,21 @@ function init() {
 																			 if (event.object == startButton){
 																				 PacMania.emit('Player has joined',gameSettingsOptions[0]);
 																				 remove_Game_Settings_Screen();
-																				 removeButton(returnButton);
+																				 removeButton(raButton);
 																				 controllerDirection = "";
 																				 scene.remove(occuranceBar);		 
 																				 scene.remove( occuranceCircle );
-																				 load_Game_Maze_1();
+																				 if(scene.getObjectByName('SectionHighlight') != null)
+																					 scene.remove(SectionHighlight);
+																			 }
+																			 else if (event.object == cgsButton){
+																				 //PacMania.emit('Player has joined',gameSettingsOptions[0]);
+																				 remove_Game_Settings_Screen();
+																				 removeButton(raButton);
+																				 controllerDirection = "";
+																				 scene.remove(occuranceBar);		 
+																				 scene.remove( occuranceCircle );
+																				 load_Ready_Screen();
 																				 if(scene.getObjectByName('SectionHighlight') != null)
 																					 scene.remove(SectionHighlight);
 																			 }
@@ -1558,6 +1639,7 @@ function init() {
 																					 scene.remove(gameOver);
 																					 scene.remove(Board);
 																					 scene.remove(Outline);
+																					 scene.remove(startButton);
 																					 
 																					 if(scene.getObjectByName('king') != null)
 																						 scene.remove(king);
@@ -1782,11 +1864,11 @@ function init() {
 																			 else if (event.object.name == "grapeOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].grape){
-																					 gameSettingsOptions[9].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[11].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].grape = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[9].material.color.set("#ffffff");
+																					 gameSettingsOptions[11].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].grape = true;
 																				 }
 																			 }
@@ -1794,11 +1876,11 @@ function init() {
 																			 else if (event.object.name == "orangeOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].orange){
-																					 gameSettingsOptions[10].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[12].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].orange = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[10].material.color.set("#ffffff");
+																					 gameSettingsOptions[12].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].orange = true;
 																				 }
 																			 }
@@ -1806,11 +1888,11 @@ function init() {
 																			 else if (event.object.name == "pearOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].pear){
-																					 gameSettingsOptions[11].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[13].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].pear = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[11].material.color.set("#ffffff");
+																					 gameSettingsOptions[13].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].pear = true;
 																				 }
 																			 }
@@ -1818,11 +1900,11 @@ function init() {
 																			 else if (event.object.name == "pretzelOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].pretzel){
-																					 gameSettingsOptions[12].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[14].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].pretzel = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[12].material.color.set("#ffffff");
+																					 gameSettingsOptions[14].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].pretzel = true;
 																				 }
 																			 }
@@ -1830,11 +1912,11 @@ function init() {
 																			 else if (event.object.name == "strawberryOption"){
 																				 //Updates Animation
 																				 if(gameSettingsOptions[0].strawberry){
-																					 gameSettingsOptions[13].material.color.set("#7f7f7f");
+																					 gameSettingsOptions[15].material.color.set("#7f7f7f");
 																					 gameSettingsOptions[0].strawberry = false;
 																				 }
 																				 else{
-																					 gameSettingsOptions[13].material.color.set("#ffffff");
+																					 gameSettingsOptions[15].material.color.set("#ffffff");
 																					 gameSettingsOptions[0].strawberry = true;
 																				 }
 																			 }
@@ -2149,7 +2231,13 @@ function init() {
 																			 else if (event.object == gameSettingsOptions[7])
 																				 gameSettingsOptions[7].position.set(gameSettingsOptions[7].posX, gameSettingsOptions[7].posY, gameSettingsOptions[7].posZ);
 																			 //Fruits
-																			 else if (event.object == gameSettingsOptions[11])
+																			 else if (event.object == gameSettingsOptions[8])
+																				 gameSettingsOptions[8].position.set(gameSettingsOptions[8].posX, gameSettingsOptions[8].posY, gameSettingsOptions[8].posZ);
+																			else if (event.object == gameSettingsOptions[9])
+																				 gameSettingsOptions[11].position.set(gameSettingsOptions[9].posX, gameSettingsOptions[9].posY, gameSettingsOptions[9].posZ);
+																			else if (event.object == gameSettingsOptions[10])
+																				 gameSettingsOptions[11].position.set(gameSettingsOptions[10].posX, gameSettingsOptions[10].posY, gameSettingsOptions[10].posZ);
+																			else if (event.object == gameSettingsOptions[11])
 																				 gameSettingsOptions[11].position.set(gameSettingsOptions[11].posX, gameSettingsOptions[11].posY, gameSettingsOptions[11].posZ);
 																			 else if (event.object == gameSettingsOptions[12])
 																				 gameSettingsOptions[12].position.set(gameSettingsOptions[12].posX, gameSettingsOptions[12].posY, gameSettingsOptions[12].posZ);
@@ -2159,12 +2247,8 @@ function init() {
 																				 gameSettingsOptions[14].position.set(gameSettingsOptions[14].posX, gameSettingsOptions[14].posY, gameSettingsOptions[14].posZ);
 																			 else if(event.object == gameSettingsOptions[15])
 																				 gameSettingsOptions[15].position.set(gameSettingsOptions[15].posX, gameSettingsOptions[15].posY, gameSettingsOptions[15].posZ);
-																			 else if(event.object == gameSettingsOptions[16])
-																				 gameSettingsOptions[16].position.set(gameSettingsOptions[16].posX, gameSettingsOptions[16].posY, gameSettingsOptions[16].posZ);
-																			 else if(event.object == gameSettingsOptions[17])
-																				 gameSettingsOptions[17].position.set(gameSettingsOptions[17].posX, gameSettingsOptions[17].posY, gameSettingsOptions[17].posZ);
-																			 else if(event.object == gameSettingsOptions[18])
-																				 gameSettingsOptions[18].position.set(gameSettingsOptions[18].posX, gameSettingsOptions[18].posY, gameSettingsOptions[18].posZ);
+																			 else if(event.object == raButton)
+																				 raButton.position.set(raButton.posX, raButton.posY, raButton.posZ);
 																			 
 																			 
 																			 //Additional Game Settings
@@ -2201,7 +2285,7 @@ function init() {
 																		
 			 dragControls.addEventListener( 'dragend', function(event)   {
 																			 if (event.object.name == "occuranceCircle"){
-																				 console.log(event.object.position.x);
+																				 //console.log(event.object.position.x);
 																				 event.object.position.y = event.object.posY; 
 																				 gameSettingsOptions[0].fruitOccurance = (16 + event.object.position.x) * 2.5 + 10;
 																			 }
@@ -3034,6 +3118,26 @@ function init() {
 		 OriginalTexture.push(pacText);
 		 
 		 PlayerTexture = OriginalTexture.slice(36, 68);
+		 
+		 tempP1 = new THREE.Sprite();		
+		 tempP1.name= "tempP1";
+		 tempP1.scale.set(5,5,1);
+		 tempP1.material = PlayerTexture[2];
+		
+		 tempP2 = new THREE.Sprite();		
+		 tempP2.name= "tempP2";
+		 tempP2.scale.set(5,5,1);
+		 tempP2.material = PlayerTexture[11];
+		 
+		 tempP3 = new THREE.Sprite();		
+		 tempP3.name= "tempP3";
+		 tempP3.scale.set(5,5,1);
+		 tempP3.material = PlayerTexture[23];
+		 
+		 tempP4 = new THREE.Sprite();		
+		 tempP4.name= "tempP4";
+		 tempP4.scale.set(5,5,1);
+		 tempP4.material = PlayerTexture[30];
 	 }
      
 	 //Upload the Items/Fruits Sprite Sheets into the Texture Arrray
@@ -3277,8 +3381,20 @@ function init() {
 		 startButton.update();
 		 startButton.name = "startButton";
 		 
+		 //Complete Game Setup Button
+		 cgsButton = new text_creation("Complete Game Setup", 1, 4, 0.8 );
+		 cgsButton.parameters.font= "165px Arial";
+		 cgsButton.parameters.fillStyle= "#DD2222";
+		 cgsButton.posX = 0;
+		 cgsButton.posY = -16;
+		 cgsButton.posZ = 5;
+		 cgsButton.position.set(cgsButton.posX, cgsButton.posY, cgsButton.posZ);
+		 cgsButton.scale.set(25,5,1);
+		 cgsButton.update();
+		 cgsButton.name = "cgsButton";
+		 
 		 //Game Button
-		 gameButton = new text_creation("Game", 1, 3, 0.6 );
+		 gameButton = new text_creation("Game Setup", 1, 3, 0.6 );
 		 gameButton.parameters.font= "155px Arial";
 		 gameButton.parameters.fillStyle= "#FF0000";
 		 gameButton.posX = 0;
@@ -4359,6 +4475,47 @@ function init() {
 		 scene.remove(tempFruit);		 
 	 }
 	
+	 //Load Ready Screen
+	 function load_Ready_Screen(){
+		 tempP1.material.color.set("#5f5f5f");
+		 tempP2.material.color.set("#5f5f5f");
+		 tempP3.material.color.set("#5f5f5f");
+		 tempP4.material.color.set("#5f5f5f");
+		 
+		 Game_Status = "Ready/Waiting";
+		 PacMania.emit('Player Ready');
+		 scene.add(yourPlayer);
+		 scene.add(tempP1);
+		 scene.add(tempP2);
+		 scene.add(tempP3);
+		 scene.add(tempP4);
+		 
+		 //Add the Complete Game Setting Button
+		 addButton(startButton);
+		 
+		 addButton(raButton);
+	 }
+	 
+	 //Pre-set Ready Screen
+	 function pre_set_readyScreen(){
+		 tempP1.position.set(-15, yShifter, -2);
+		 tempP2.position.set(-5, yShifter, -2);
+		 tempP3.position.set(5, yShifter, -2);
+		 tempP4.position.set(15, yShifter, -2);
+		 
+		 //endless
+		 yourPlayer = text_creation("(You)", 0, 2, 0.5 );
+		 yourPlayer.parameters.font= "105px Arial";
+		 yourPlayer.parameters.fillStyle= "#03A5FA";
+		 yourPlayer.posX = -14.5;
+		 yourPlayer.posY = yShifter-5;
+		 yourPlayer.posZ = 1;
+		 yourPlayer.position.set(yourPlayer.posX, yourPlayer.posY, yourPlayer.posZ);
+		 yourPlayer.scale.set(10,3,1);
+		 yourPlayer.update();
+		 yourPlayer.name = "yourPlayer";
+	 }
+	
 	 //Loads the Game Settings Screen of the Game
 	 function load_Game_Settings_Screen(){
 		 remove_Start_Screen();
@@ -4422,8 +4579,8 @@ function init() {
 			 **/
 		 }
 	
-		 //Add the Start Button
-		 addButton(startButton);
+		 //Add the Complete Game Setting Button
+		 addButton(cgsButton);
 	 }
 	 
 	 //Pre-Sets the Text for the Game Settings Screen
@@ -5126,8 +5283,8 @@ function init() {
 		  //Remove the Settings
 		 var len = gameSettingsOptions.length;
 		 
-		 //Remove Start button
-		 removeButton(startButton);
+		 //Remove Complete Game Setting button
+		 removeButton(cgsButton);
 		 
 		 removeButton(raButton);
 		 
